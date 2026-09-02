@@ -605,10 +605,27 @@ function sendQuizNotification(payload) {
 
   const name = cleanText_(payload.name, 120);
   const email = cleanText_(payload.email, 254).toLowerCase();
-    const consultationDate = cleanText_(payload.consultationDate, 120);
+  const mobile = cleanText_(payload.mobile, 40);
+  const consultationDate = cleanText_(payload.consultationDate, 120);
   const privacyConsent = payload.privacyConsent === true;
   const nurtureConsent = payload.nurtureConsent === true;
   const nurtureConsentVersion = cleanText_(payload.nurtureConsentVersion, 80) || NURTURE_CONSENT_VERSION;
+  const submissionId = cleanText_(payload.submissionId, 120);
+  const submissionCacheKey = submissionId ? 'quiz-submission-' + submissionId : '';
+  const submissionLock = LockService.getScriptLock();
+  if (submissionCacheKey) {
+    submissionLock.waitLock(5000);
+    try {
+      if (CacheService.getScriptCache().get(submissionCacheKey)) {
+        console.log('Duplicate quiz submission ignored: ' + submissionId);
+        return { ok: true, duplicate: true };
+      }
+      // Covers duplicate beacon/fallback requests for six hours.
+      CacheService.getScriptCache().put(submissionCacheKey, 'processed', 21600);
+    } finally {
+      submissionLock.releaseLock();
+    }
+  }
   const answers = Array.isArray(payload.answers) ? payload.answers.slice(0, 20).map(function(item) {
     return {
       question: cleanText_(item && item.question, 500),
@@ -618,6 +635,7 @@ function sendQuizNotification(payload) {
 
   if (!name) throw new Error('Please provide your full name.');
   if (!isValidEmail_(email)) throw new Error('Please provide a valid email address.');
+  if (!isValidMobile_(mobile)) throw new Error('Please provide a valid mobile number.');
   if (!consultationDate) throw new Error('Please select a preferred consultation date and time.');
   if (!privacyConsent) throw new Error('Please confirm the privacy notice before submitting your request.');
 
@@ -627,7 +645,6 @@ function sendQuizNotification(payload) {
   const profile = getLeadProfile_(leadType);
   const subject = profile.agentSubject + ' · ' + name;
   const clientSubject = profile.clientSubject + ' · ' + AGENT_NAME;
-  // Generate the lead ID before sending so the initial client email and the Sheet2 row share the same token.
   const leadId = Utilities.getUuid();
   const answerRows = answers.map(function(item, index) {
     return '<tr><td style="padding:12px 14px;border-top:1px solid ' + BRAND.line + ';vertical-align:top;color:' + BRAND.muted + ';font-size:16px;width:38%;">' +
@@ -635,41 +652,17 @@ function sendQuizNotification(payload) {
       escapeHtml_(item.answer || 'No answer') + '</td></tr>';
   }).join('');
 
-  const agentText = buildAgentText_(name, email, consultationDate, submittedAt, answers, nurtureConsent, nurtureConsentVersion) + '\nPrivacy consent: Confirmed · notice ' + PRIVACY_NOTICE_VERSION;
-  const clientText = buildClientText_(name, consultationDate, leadType, answers, leadId);
+  const agentText = buildAgentText_(name, email, mobile, consultationDate, submittedAt, answers, nurtureConsent, nurtureConsentVersion) + '\nPrivacy consent: Confirmed · notice ' + PRIVACY_NOTICE_VERSION;
+  const clientText = buildClientText_(name, mobile, consultationDate, leadType, answers, leadId);
 
-  try {
-    MailApp.sendEmail({
-      to: AGENT_EMAIL,
-      subject: subject,
-      body: agentText,
-      htmlBody: buildAgentHtml_(name, email, consultationDate, submittedAt, answerRows, nurtureConsent, nurtureConsentVersion),
-      replyTo: email,
-      inlineImages: getEmailBrandLogo_(),
-      name: SENDER_NAME
-    });
-
-    MailApp.sendEmail({
-      to: email,
-      subject: clientSubject,
-      body: clientText,
-      htmlBody: buildClientHtml_(name, consultationDate, leadType, answers, leadId),
-      attachments: [getQuizGuide_()],
-      replyTo: AGENT_EMAIL,
-      inlineImages: getEmailBrandLogo_(),
-      name: SENDER_NAME
-    });
-  } catch (mailError) {
-    const mailMessage = String(mailError && mailError.message ? mailError.message : mailError);
-    console.error('sendQuizNotification email error: ' + mailMessage);
-    throw new Error('Email sending failed: ' + mailMessage);
-  }
-
+  // Save the lead before doing slow Drive and MailApp work. This ensures that
+  // the enquiry is recorded even if an email service or attachment fails.
   try {
     saveLead_(
       leadId,
       name,
       email,
+      mobile,
       consultationDate,
       leadType,
       answers,
@@ -684,8 +677,45 @@ function sendQuizNotification(payload) {
     console.error('sendQuizNotification save error: ' + saveMessage);
     throw new Error('Lead saving failed: ' + saveMessage);
   }
-  console.log('sendQuizNotification completed successfully');
-  return { ok: true, leadType: leadType };
+
+  // Email delivery is best-effort after the lead has been safely recorded.
+  // The browser does not wait for this function because the frontend uses
+  // sendBeacon()/keepalive for the public submission request.
+  let emailError = '';
+  try {
+    MailApp.sendEmail({
+      to: AGENT_EMAIL,
+      subject: subject,
+      body: agentText,
+      htmlBody: buildAgentHtml_(name, email, mobile, consultationDate, submittedAt, answerRows, nurtureConsent, nurtureConsentVersion),
+      replyTo: email,
+      inlineImages: getEmailBrandLogo_(),
+      name: SENDER_NAME
+    });
+
+    MailApp.sendEmail({
+      to: email,
+      subject: clientSubject,
+      body: clientText,
+      htmlBody: buildClientHtml_(name, mobile, consultationDate, leadType, answers, leadId),
+      attachments: [getQuizGuide_()],
+      replyTo: AGENT_EMAIL,
+      inlineImages: getEmailBrandLogo_(),
+      name: SENDER_NAME
+    });
+  } catch (mailError) {
+    emailError = String(mailError && mailError.message ? mailError.message : mailError);
+    console.error('sendQuizNotification email error for lead ' + leadId + ': ' + emailError);
+  }
+
+  console.log('sendQuizNotification completed for lead ' + leadId + (emailError ? ' with email warning.' : ' successfully.'));
+  return {
+    ok: true,
+    leadId: leadId,
+    leadType: leadType,
+    emailQueued: !emailError,
+    emailWarning: emailError || undefined
+  };
 }
 
 function diagnoseSubmissionBackend() {
@@ -712,7 +742,7 @@ function diagnoseSubmissionBackend() {
   return result;
 }
 
-function buildAgentHtml_(name, email, consultationDate, submittedAt, answerRows, nurtureConsent, nurtureConsentVersion) {
+function buildAgentHtml_(name, email, mobile, consultationDate, submittedAt, answerRows, nurtureConsent, nurtureConsentVersion) {
   return emailShell_(
     'New property inquiry',
     '<div style="background:' + BRAND.deepGreen + ';padding:28px 30px 24px;color:#ffffff;">' +
@@ -725,6 +755,7 @@ function buildAgentHtml_(name, email, consultationDate, submittedAt, answerRows,
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:' + BRAND.cream + ';border:1px solid ' + BRAND.line + ';border-radius:10px;overflow:hidden;">' +
         detailRow_('Client name', escapeHtml_(name)) +
         detailRow_('Email address', '<a href="mailto:' + escapeHtml_(email) + '" style="color:' + BRAND.emerald + ';font-weight:700;text-decoration:none;">' + escapeHtml_(email) + '</a>') +
+        detailRow_('Mobile number', escapeHtml_(mobile)) +
         detailRow_('Preferred consultation', escapeHtml_(consultationDate)) +
         detailRow_('Submitted', escapeHtml_(submittedAt)) +
         detailRow_('Privacy consent', 'Confirmed · notice ' + escapeHtml_(PRIVACY_NOTICE_VERSION)) +
@@ -740,7 +771,7 @@ function buildAgentHtml_(name, email, consultationDate, submittedAt, answerRows,
   );
 }
 
-function buildClientHtml_(name, consultationDate, leadType, answers, leadId) {
+function buildClientHtml_(name, mobile, consultationDate, leadType, answers, leadId) {
   const submittedAnswerRows = (answers || []).map(function(item, index) {
     return '<tr><td style="padding:10px 12px;border-top:1px solid ' + BRAND.line + ';vertical-align:top;color:' + BRAND.muted + ';font-size:15px;width:42%;">' +
       (index + 1) + '. ' + escapeHtml_(item.question) + '</td><td style="padding:10px 12px;border-top:1px solid ' + BRAND.line + ';vertical-align:top;color:' + BRAND.ink + ';font-size:15px;font-weight:600;">' +
@@ -769,6 +800,7 @@ function buildClientHtml_(name, consultationDate, leadType, answers, leadId) {
       '<div style="margin:22px 0;padding:18px 20px;background:' + BRAND.cream + ';border:1px solid ' + BRAND.line + ';border-left:5px solid ' + BRAND.gold + ';border-radius:8px;">' +
         '<div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:6px;">Your preferred consultation</div>' +
         '<div style="font-size:18px;color:' + BRAND.deepGreen + ';font-weight:700;">' + escapeHtml_(consultationDate) + '</div>' +
+        '<div style="margin-top:10px;font-size:13px;color:' + BRAND.muted + ';">Mobile: ' + escapeHtml_(mobile) + '</div>' +
       '</div>' +
       '<div style="margin:22px 0;padding:18px 20px;background:#ffffff;border:1px solid ' + BRAND.line + ';border-radius:10px;">' +
         '<div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:10px;">Your submitted quiz answers</div>' +
@@ -895,7 +927,7 @@ const NURTURE_OFFSETS_HOURS = FAST_TEST_MODE ? FAST_TEST_NURTURE_OFFSETS_HOURS :
 
 function ensureLeadHeaders_(sheet) {
   const required = [
-    'Lead ID', 'Name', 'Email', 'Lead Type', 'Consultation Date', 'Submitted At',
+    'Lead ID', 'Name', 'Email', 'Mobile', 'Lead Type', 'Consultation Date', 'Submitted At',
     'Answers JSON', 'Privacy Consent', 'Privacy Consent At', 'Privacy Notice Version',
     'Nurture Consent', 'Nurture Consent At', 'Nurture Consent Version',
     'Nurture Step', 'Next Nurture At', 'Nurture Completed', 'Unsubscribed',
@@ -910,15 +942,34 @@ function ensureLeadHeaders_(sheet) {
   if (!hasAnyHeader) {
     sheet.getRange(1, 1, 1, required.length).setValues([required]);
   } else {
-    const additions = required.filter(function(header) { return current.indexOf(header) === -1; });
+    // Keep Mobile directly after Email, including on an existing sheet where
+    // an earlier version may have appended the new column at the far right.
+    const emailColumn = current.indexOf('Email') + 1;
+    const mobileColumn = current.indexOf('Mobile') + 1;
+    if (emailColumn > 0 && mobileColumn === 0) {
+      sheet.insertColumnAfter(emailColumn);
+      sheet.getRange(1, emailColumn + 1).setValue('Mobile');
+    } else if (emailColumn > 0 && mobileColumn > 0 && mobileColumn !== emailColumn + 1) {
+      const rowCount = Math.max(sheet.getMaxRows(), 1);
+      const mobileValues = sheet.getRange(1, mobileColumn, rowCount, 1).getValues();
+      sheet.insertColumnAfter(emailColumn);
+      const oldMobileColumn = mobileColumn > emailColumn ? mobileColumn + 1 : mobileColumn;
+      sheet.getRange(1, emailColumn + 1, rowCount, 1).setValues(mobileValues);
+      sheet.deleteColumn(oldMobileColumn);
+    }
+
+    const refreshedWidth = Math.max(sheet.getLastColumn(), 1);
+    const refreshed = sheet.getRange(1, 1, 1, refreshedWidth).getValues()[0]
+      .map(function(value) { return String(value || '').trim(); });
+    const additions = required.filter(function(header) { return refreshed.indexOf(header) === -1; });
     if (additions.length) {
-      sheet.getRange(1, current.length + 1, 1, additions.length).setValues([additions]);
+      sheet.getRange(1, refreshed.length + 1, 1, additions.length).setValues([additions]);
     }
   }
   sheet.setFrozenRows(1);
 }
 
-function saveLead_(leadId, name, email, consultationDate, leadType, answers, consentAt,
+function saveLead_(leadId, name, email, mobile, consultationDate, leadType, answers, consentAt,
                    privacyNoticeVersion, nurtureConsent, nurtureConsentAt,
                    nurtureConsentVersion) {
   const sheet = getLeadsSheet_();
@@ -933,6 +984,7 @@ function saveLead_(leadId, name, email, consultationDate, leadType, answers, con
     'Lead ID': leadId || Utilities.getUuid(),
     'Name': name,
     'Email': email,
+    'Mobile': mobile,
     'Lead Type': leadType,
     'Consultation Date': consultationDate,
     'Submitted At': now,
@@ -959,13 +1011,9 @@ function saveLead_(leadId, name, email, consultationDate, leadType, answers, con
   });
   sheet.appendRow(values);
 
-  // Trigger installation is a one-time owner action. Do not let a trigger
-  // permission problem block a public form submission.
-  try {
-    ensureFollowUpTrigger_();
-  } catch (triggerError) {
-    console.error('Trigger setup warning: ' + (triggerError && triggerError.message ? triggerError.message : triggerError));
-  }
+  // Do not inspect or create triggers during a public submission.
+  // Install the follow-up trigger once by running installFollowUpAutomation()
+  // manually from the Apps Script editor.
 }
 
 function ensureFollowUpTrigger_() {
@@ -1235,6 +1283,8 @@ function getNurtureCopy_(step, leadType, name, answers, leadId) {
   let detail = '';
   let cta = '';
 
+  /* 30 DAYS AUTOMATION */
+
   switch (step) {
     case 1:
       intro = 'Welcome, and thank you for sharing your property goals. Over the next 30 days, I will send a few short, practical notes to help you think through the process without pressure.';
@@ -1416,7 +1466,7 @@ function renderPreferencePage_(heading, message, actionsHtml) {
   ).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-function buildAgentText_(name, email, consultationDate, submittedAt, answers, nurtureConsent, nurtureConsentVersion) {
+function buildAgentText_(name, email, mobile, consultationDate, submittedAt, answers, nurtureConsent, nurtureConsentVersion) {
   const answerText = answers.map(function(item, index) {
     return (index + 1) + '. ' + item.question + '\n   Answer: ' + (item.answer || 'No answer');
   }).join('\n\n');
@@ -1425,6 +1475,7 @@ function buildAgentText_(name, email, consultationDate, submittedAt, answers, nu
     'CLIENT SUMMARY',
     'Name: ' + name,
     'Email: ' + email,
+    'Mobile: ' + mobile,
     'Preferred consultation: ' + consultationDate,
     'Submitted: ' + submittedAt,
     'Property guidance emails: ' + (nurtureConsent ? 'Confirmed · version ' + (nurtureConsentVersion || NURTURE_CONSENT_VERSION) : 'Not selected'), '',
@@ -1433,7 +1484,7 @@ function buildAgentText_(name, email, consultationDate, submittedAt, answers, nu
   ].join('\n');
 }
 
-function buildClientText_(name, consultationDate, leadType, answers, leadId) {
+function buildClientText_(name, mobile, consultationDate, leadType, answers, leadId) {
   const profile = getLeadProfile_(leadType);
   const guideDownloadUrl = getQuizGuideDownloadUrl_();
   const answerText = (answers || []).map(function(item, index) {
@@ -1442,6 +1493,7 @@ function buildClientText_(name, consultationDate, leadType, answers, leadId) {
   return [
     'Hi ' + name + ',', '',
     profile.clientIntro,
+    'Mobile: ' + mobile,
     'Preferred consultation: ' + consultationDate, '',
     'YOUR SUBMITTED QUIZ ANSWERS', answerText || 'No answers were recorded.', '',
     'Your property guide is attached to this email.' + (guideDownloadUrl ? ' Download it here: ' + guideDownloadUrl : ''), '',
@@ -1469,6 +1521,11 @@ function isValidEmail_(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function isValidMobile_(mobile) {
+  return /^[0-9+() .-]{7,25}$/.test(String(mobile || '').trim());
+}
+
+
 /**
  * Sends one clearly labeled dummy buyer submission through the real workflow.
  * Replace TEST_CLIENT_EMAIL with an inbox you control before running.
@@ -1483,6 +1540,7 @@ function testDummyQuizSubmission() {
   const payload = {
     name: 'TEST Buyer 001',
     email: TEST_CLIENT_EMAIL.toLowerCase(),
+    mobile: '+639171234567',
     consultationDate: 'TEST — Tomorrow at 10:00 AM',
     privacyConsent: true,
     privacyNoticeVersion: PRIVACY_NOTICE_VERSION,
@@ -1511,6 +1569,7 @@ function testDummyQuizSubmission() {
   if (sheetAfter !== sheetBefore + 1) throw new Error('No new lead row was added to the sheet.');
   if (value('Name') !== payload.name) throw new Error('The test name was not saved correctly.');
   if (String(value('Email')).toLowerCase() !== payload.email) throw new Error('The test email was not saved correctly.');
+  if (String(value('Mobile')) !== payload.mobile) throw new Error('The test mobile number was not saved correctly.');
   if (String(value('Lead Type')).toLowerCase() !== 'buyer') throw new Error('The test lead was not classified as buyer.');
   if (Number(value('Nurture Step')) !== 0) throw new Error('The initial nurture step should be 0.');
   if (String(value('Privacy Consent')).toLowerCase() !== 'true') throw new Error('Privacy consent was not saved as true.');
@@ -1562,6 +1621,5 @@ function deleteLatestTestLead() {
   sheet.deleteRow(lastRow);
   Logger.log('Deleted test row ' + lastRow + '.');
 }
-
 
 
