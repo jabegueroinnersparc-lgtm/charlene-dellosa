@@ -5002,6 +5002,9 @@
                   <div class="email-row">
                     <input type="text" id="quizName" placeholder="Full Name" required />
                     <input type="email" id="quizEmail" placeholder="Email address" required />
+                    <input type="tel" id="quizMobile" placeholder="Mobile number"
+                      inputmode="tel" autocomplete="tel" pattern="[0-9+() .-]{7,25}"
+                      title="Enter a valid mobile number" required />
                     <button type="submit" class="submit-btn" id="quizSubmitBtn"><i class="fas fa-paper-plane"></i> Send Guide</button>
                   </div>
                   <div class="consent-row">
@@ -5079,6 +5082,7 @@
           e.preventDefault();
           const name = document.getElementById('quizName').value.trim();
           const email = document.getElementById('quizEmail').value.trim();
+          const mobile = document.getElementById('quizMobile').value.trim();
           const consultDateEl = document.getElementById('consultationDate');
           const consultDate = consultDateEl ? consultDateEl.value.trim() : '';
           const consentEl = document.getElementById('privacyConsent');
@@ -5087,7 +5091,8 @@
           const nurtureConsentEl = document.getElementById('nurtureConsent');
           const nurtureConsent = Boolean(nurtureConsentEl && nurtureConsentEl.checked);
           if (consentError) consentError.classList.toggle('show', !privacyConsent);
-          if(!name || !email) { alert('Please enter your name and email address.'); return false; }
+          if(!name || !email || !mobile) { alert('Please enter your name, email address, and mobile number.'); return false; }
+          if(!/^[0-9+() .-]{7,25}$/.test(mobile)) { alert('Please enter a valid mobile number.'); return false; }
           if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Please enter a valid email address'); return false; }
           if(!consultDate) { alert('Please select your preferred consultation date and time.'); return false; }
           if(!privacyConsent) { if (consentEl) consentEl.focus(); return false; }
@@ -5112,6 +5117,7 @@
             submissionId: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(36).slice(2),
             name: name,
             email: email,
+            mobile: mobile,
             consultationDate: consultDate,
             privacyConsent: privacyConsent,
             privacyNoticeVersion: '2026-08-24',
