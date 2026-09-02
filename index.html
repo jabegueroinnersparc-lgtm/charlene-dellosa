@@ -1513,6 +1513,18 @@
         color:white; border:none; border-radius:12px; font-size:0.95rem; font-weight:600;
         cursor:pointer; font-family:'Inter', sans-serif; white-space:nowrap;
       }
+      .quiz-modal .quiz-card .quiz-email-form .submit-btn.is-sending {
+        position:relative; overflow:hidden; min-width:170px; cursor:wait;
+        background:linear-gradient(135deg,#063c24,#275016);
+      }
+      .quiz-modal .quiz-card .quiz-email-form .submit-btn.is-sending::after {
+        content:''; position:absolute; left:0; bottom:0; height:3px; width:0;
+        background:#f5d68a; animation:send-progress .85s ease-out forwards;
+      }
+      .quiz-modal .quiz-card .quiz-email-form .submit-btn.is-done {
+        background:linear-gradient(135deg,#275016,#063c24);
+      }
+      @keyframes send-progress { from { width:0; } to { width:100%; } }
       .quiz-modal .quiz-card .quiz-email-form .submit-btn:hover {
         transform:translateY(-2px); box-shadow:0 8px 25px rgba(39,80,22,0.3);
       }
@@ -5096,6 +5108,8 @@
             answer: q.options[answers[i]]
           }));
           const payload = {
+            // Same ID is used for any fallback request, preventing duplicate emails.
+            submissionId: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(36).slice(2),
             name: name,
             email: email,
             consultationDate: consultDate,
@@ -5107,8 +5121,9 @@
           };
 
           btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+          btn.classList.add('is-sending');
           btn.disabled = true;
-          btn.style.opacity = '0.7';
+          btn.style.opacity = '0.92';
 
           // Netlify-hosted pages submit to the public Apps Script doPost endpoint.
           
@@ -5153,10 +5168,18 @@
 
             
             
-            renderThankYouPage(nurtureConsent, guideRequested);
+            window.setTimeout(function() {
+              btn.classList.remove('is-sending');
+              btn.classList.add('is-done');
+              btn.innerHTML = '<i class="fas fa-check"></i> Sent';
+            }, 650);
+            window.setTimeout(function() {
+              renderThankYouPage(nurtureConsent, guideRequested);
+            }, 900);
           } catch (error) {
             console.error('Unable to queue quiz submission:', error);
             alert('We could not submit your request right now. Please try again or contact Charlene directly.');
+            btn.classList.remove('is-sending', 'is-done');
             btn.innerHTML = orig;
             btn.disabled = false;
             btn.style.opacity = '1';
