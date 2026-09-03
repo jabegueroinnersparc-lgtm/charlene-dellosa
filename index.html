@@ -4883,6 +4883,62 @@
     border-radius: 14px;
   }
 }
+ 
+
+ 
+.testimonial-card .testimonial-image-wrapper {
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+  overflow: hidden;
+}
+
+.testimonial-card .testimonial-image {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  object-position: center;
+}
+
+@media (min-width: 769px) {
+  .testimonial-card .testimonial-image-slot {
+    align-self: center;
+  }
+
+  .testimonial-card .testimonial-image-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f4ee;
+  }
+}
+
+ 
+@media (max-width: 768px) {
+  .mobile-nav {
+    transition: transform .32s cubic-bezier(.2,.8,.2,1),
+                opacity .24s ease,
+                box-shadow .32s ease;
+    will-change: transform, opacity;
+  }
+
+  .mobile-nav.is-scroll-hidden {
+    transform: translateY(calc(-100% - env(safe-area-inset-top) - 8px));
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: none;
+  }
+
+  .mobile-nav.is-scroll-hidden * {
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav { transition: none !important; }
+}
 </style>
 
  
@@ -6149,5 +6205,50 @@
         setTimeout(hideLoader, 6000);
       }());
     </script>
+<script>
+  (function () {
+    const mobileNav = document.querySelector('.mobile-nav');
+    if (!mobileNav) return;
+
+    const mobileQuery = window.matchMedia('(max-width: 768px)');
+    const scrollRoot = document.scrollingElement || document.documentElement;
+    let lastY = Math.max(0, window.scrollY || scrollRoot.scrollTop || 0);
+    let ticking = false;
+    const threshold = 8;
+
+    function updateMobileNav() {
+      ticking = false;
+      if (!mobileQuery.matches) {
+        mobileNav.classList.remove('is-scroll-hidden');
+        lastY = Math.max(0, window.scrollY || scrollRoot.scrollTop || 0);
+        return;
+      }
+
+      const currentY = Math.max(0, window.scrollY || scrollRoot.scrollTop || 0);
+      const delta = currentY - lastY;
+
+      if (currentY <= 24 || delta < -threshold) {
+        mobileNav.classList.remove('is-scroll-hidden');
+      } else if (delta > threshold) {
+        mobileNav.classList.add('is-scroll-hidden');
+      }
+
+      lastY = currentY;
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(updateMobileNav);
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', updateMobileNav, { passive: true });
+    if (mobileQuery.addEventListener) mobileQuery.addEventListener('change', updateMobileNav);
+    else if (mobileQuery.addListener) mobileQuery.addListener(updateMobileNav);
+    updateMobileNav();
+  }());
+</script>
   </body>
   </html>
