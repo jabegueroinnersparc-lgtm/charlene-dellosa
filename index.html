@@ -2811,182 +2811,6 @@
         .mobile-nav a:not(.mobile-nav-brand) { transition: none; }
       }
        
-      .calculator-tabs, .calculator-swipe-hint { display: none; }
-      @media (max-width: 520px) {
-        .calculator-tabs {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: .45rem;
-          margin: 0 0 .55rem;
-          padding: .3rem;
-          border: 1px solid rgba(204,149,62,.18);
-          border-radius: 14px;
-          background: #faf8f5;
-        }
-        .calculator-tab {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: .45rem;
-          min-height: 48px;
-          padding: .65rem .8rem;
-          border: 0;
-          border-radius: 10px;
-          background: transparent;
-          color: #355447;
-          font: 700 1rem/1.2 'Inter', sans-serif;
-          cursor: pointer;
-          touch-action: manipulation;
-          -webkit-tap-highlight-color: transparent;
-          transition: background-color .16s ease, color .16s ease, transform .1s ease;
-        }
-        .calculator-tab i { color: #cc953e; }
-        .calculator-tab.is-active {
-          background: #275016;
-          color: #fff;
-          box-shadow: 0 5px 12px rgba(39,80,22,.16);
-        }
-        .calculator-tab.is-active i { color: #f5d68a; }
-        .calculator-tab:active { transform: scale(.98); }
-        .calculator-tab:focus-visible { outline: 3px solid rgba(201,146,61,.65); outline-offset: 2px; }
-        .calculator-swipe-hint {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: .4rem;
-          margin: 0 0 .85rem;
-          color: #66736c;
-          font-size: .78rem;
-          line-height: 1.45;
-          text-align: center;
-        }
-        .calculator-swipe-hint i { color: #cc953e; }
-        #calculatorPanels {
-          display: block;
-          overflow: hidden;
-          touch-action: pan-y;
-          overscroll-behavior-x: contain;
-        }
-        #calculatorPanels .calc-box {
-          display: none;
-          animation: calculator-panel-in .18s ease both;
-        }
-        #calculatorPanels .calc-box.is-active { display: flex; }
-        @keyframes calculator-panel-in {
-          from { opacity: .3; transform: translateX(12px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        #calculatorPanels[data-swipe-direction="previous"] .calc-box.is-active { animation-name: calculator-panel-in-previous; }
-        @keyframes calculator-panel-in-previous {
-          from { opacity: .3; transform: translateX(-12px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          #calculatorPanels .calc-box.is-active { animation: none; }
-        }
-      }
-
-       
-      .calculator-help {
-        display: flex;
-        align-items: flex-start;
-        gap: .5rem;
-        margin: 0 0 1rem;
-        padding: .8rem .9rem;
-        border-radius: 12px;
-        background: rgba(204,149,62,.08);
-        color: #355447;
-        font-size: .9rem;
-        line-height: 1.5;
-      }
-      .calculator-help i { flex: 0 0 auto; margin-top: .18rem; color: #cc953e; }
-      .calc-box { display: flex; flex-direction: column; min-width: 0; }
-      .calc-box input { min-height: 50px; font-size: 1rem; }
-      .calc-box .calc-result {
-        min-height: 92px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-      .calc-btn {
-        min-height: 52px;
-        transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
-        -webkit-tap-highlight-color: transparent;
-      }
-      .calc-btn.is-updated { background: linear-gradient(135deg, #275016, #1d3d10); }
-      .calc-btn:focus-visible { outline: 3px solid rgba(201,146,61,.65); outline-offset: 3px; }
-      @media (hover: none), (pointer: coarse) {
-        .calc-btn::before,
-        .btn-primary::before,
-        .btn-secondary::before,
-        .submit-btn::before,
-        .quiz-nav-btn.next::before,
-        .quiz-nav-btn.prev::before { display: none; }
-        .calc-btn:hover,
-        .btn-primary:hover,
-        .btn-secondary:hover,
-        .submit-btn:hover,
-        .quiz-nav-btn.next:hover,
-        .quiz-nav-btn.prev:hover { transform: none; }
-        .calc-btn:active,
-        .btn-primary:active,
-        .btn-secondary:active,
-        .submit-btn:active,
-        .quiz-nav-btn.next:active,
-        .quiz-nav-btn.prev:active { transform: scale(.98); transition-duration: .08s; }
-      }
-      @media (max-width: 768px) {
-        .calculator-card { scroll-margin-top: 4.6rem; }
-        .calc-grid { grid-template-columns: 1fr; gap: .9rem; }
-        .calc-box { padding: 1.15rem; border-radius: 1rem; }
-        .calc-box h4 { margin-bottom: .6rem; font-size: 1.18rem; }
-        .calc-box label { margin-top: .75rem; font-size: .92rem; }
-        .calc-box input { min-height: 52px; padding: .75rem .9rem; font-size: 16px; }
-        .calc-box .calc-result { min-height: 88px; margin-top: 1rem; padding: .9rem .75rem; }
-        .calc-box .calc-result .big-number { font-size: clamp(1.55rem, 7vw, 2rem); overflow-wrap: anywhere; }
-        .calc-box .calc-result .label { font-size: .78rem; }
-        .calc-btn { min-height: 54px; margin-top: .75rem; font-size: 1rem; }
-        #verdictDisplay { font-size: 1rem !important; line-height: 1.55; }
-      }
-      @media (min-width: 521px) and (max-width: 768px) {
-        .calc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
-      }
-      @media (max-width: 520px) {
-        .calculator-card { padding-inline: .85rem; }
-        .calculator-help { margin-bottom: .85rem; padding: .7rem .75rem; font-size: .84rem; }
-        .calculator-card .section-kicker { font-size: .72rem; }
-        .calc-box h4 { font-size: 1.12rem; }
-        .calc-box .calc-result { min-height: 82px; }
-      }
-       
-      .calculator-card { scroll-margin-top: 4.6rem; }
-      .calculator-tab.is-active { animation: calculator-tab-pop .2s ease both; }
-      @keyframes calculator-tab-pop {
-        from { opacity: .72; transform: scale(.97); }
-        to { opacity: 1; transform: scale(1); }
-      }
-      @media (max-width: 520px) {
-        html.calculator-input-focus { scroll-behavior: auto; }
-        body.calculator-keyboard-open { overscroll-behavior-y: none; }
-        .calculator-card { overflow: visible; }
-        #calculatorPanels .calc-box { will-change: opacity, transform; }
-        #calculatorPanels input {
-          min-height: 52px;
-          scroll-margin-top: 5.25rem;
-          scroll-margin-bottom: 1rem;
-          -webkit-appearance: none;
-          appearance: none;
-          caret-color: #275016;
-        }
-        #calculatorPanels input::-webkit-inner-spin-button,
-        #calculatorPanels input::-webkit-outer-spin-button { margin: 0; }
-        #calculatorPanels input:focus { scroll-margin-top: 5.25rem; }
-        .calculator-tab.is-active { animation-duration: .16s; }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .calculator-tab.is-active { animation: none; }
-      }
-       
       .mobile-contact-toggle,
       .mobile-contact-backdrop,
       .mobile-contact-panel { display: none; }
@@ -3597,7 +3421,6 @@
         .privacy-card,
         [id="mainTestimonial"],
         [id="services"],
-        [id="calculator"] { scroll-margin-top: 4.7rem; }
         .mobile-nav {
           width: 100%;
           min-height: 64px;
@@ -3885,13 +3708,6 @@
       #video-library .guide-video-card {
         background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(245,214,138,.16));
       }
-      #calculator {
-        background: linear-gradient(135deg, #fffaf0 0%, #f2f7f1 100%) !important;
-      }
-      #calculator .calc-box {
-        background: rgba(255,255,255,.82);
-        border-color: rgba(204,149,62,.22);
-      }
       #privacy {
         background: linear-gradient(135deg, #eef5ef 0%, #fbf8f2 100%) !important;
       }
@@ -4004,6 +3820,171 @@
           transform: translateY(14px) scale(.97);
         }
       }
+
+       
+      .scroll-hint { margin: 0 0 .8rem; color: #6a6a6a; font-size: .78rem; letter-spacing: .03em; }
+      .scroll-hint i { color: #cc953e; margin-right: .35rem; }
+       
+      .testimonial-box .testimonial-content.testimonial-scroll { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; max-height: none; overflow: visible; padding: .2rem .2rem .4rem; }
+      .testimonial-card { width: 100%; min-width: 0; padding: 1rem; border: 1px solid rgba(204,149,62,.22); border-radius: 16px; background: rgba(255,255,255,.48); }
+      .testimonial-card .testimonial-row { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(190px, .95fr); gap: 1.15rem; align-items: center; flex-wrap: nowrap; }
+      .testimonial-card .testimonial-text { min-width: 0; align-self: center; }
+      .testimonial-card .testimonial-text p { font-size: clamp(.95rem, 1.35vw, 1.08rem); line-height: 1.72; }
+      .testimonial-card .testimonial-image-slot { width: 100%; max-width: none; margin: 0; align-self: center; }
+      .testimonial-card .testimonial-image-wrapper { width: 100%; max-width: none; aspect-ratio: 1 / 1; min-height: 190px; }
+      .testimonial-card .client-info { margin-top: 1rem; }
+      .media-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; width: 100%; max-width: none; margin: 0; overflow: visible; padding: .3rem .2rem 1rem; }
+      .media-grid .media-card { width: 100%; min-width: 0; }
+      .media-grid.gallery-ready .media-card, .media-grid.gallery-ready .media-card.is-visible { display: block; animation: none; }
+      .gallery-scroll-hint { text-align: center; margin-bottom: .55rem; }
+      @media (max-width: 900px) { .media-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      @media (max-width: 900px) { .testimonial-box .testimonial-content.testimonial-scroll { grid-template-columns: 1fr; } }
+      @media (max-width: 900px) { .testimonial-card .testimonial-row { grid-template-columns: minmax(0, 1.05fr) minmax(180px, .95fr); } }
+      @media (max-width: 560px) { .testimonial-card .testimonial-row { grid-template-columns: 1fr; align-items: stretch; } .testimonial-card .testimonial-image-slot { max-width: 280px; margin-inline: auto; } .testimonial-card .testimonial-image-wrapper { min-height: 0; } .media-grid { grid-template-columns: 1fr; } }
+      @media (prefers-reduced-motion: reduce) { .testimonial-box .testimonial-content.testimonial-scroll { scroll-behavior: auto; } }
+
+       
+      .hero-consultation-cta {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        width: min(100%, 540px);
+        min-height: 86px;
+        padding: 1rem 1.25rem;
+        border: 1px solid rgba(245,214,138,.75);
+        border-radius: 18px;
+        background: linear-gradient(120deg, #063c24 0%, #275016 58%, #9a6017 100%);
+        box-shadow: 0 16px 34px rgba(6,60,36,.28), inset 0 1px 0 rgba(255,255,255,.18);
+        color: #fff;
+        text-align: left;
+        overflow: hidden;
+        isolation: isolate;
+        transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
+      }
+      .hero-consultation-cta::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,.2) 50%, transparent 75%); transform: translateX(-120%); transition: transform .6s ease; }
+      .hero-consultation-cta:hover, .hero-consultation-cta:focus-visible { color: #fff; transform: translateY(-4px) scale(1.015); box-shadow: 0 22px 42px rgba(6,60,36,.36), 0 0 0 4px rgba(245,214,138,.2); filter: saturate(1.08); outline: none; }
+      .hero-consultation-cta:hover::before, .hero-consultation-cta:focus-visible::before { transform: translateX(120%); }
+      .hero-consultation-cta-icon { display: grid; flex: 0 0 48px; width: 48px; height: 48px; place-items: center; border-radius: 14px; background: rgba(245,214,138,.18); color: #f5d68a; font-size: 1.35rem; }
+      .hero-consultation-cta-copy { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: .12rem; }
+      .hero-consultation-cta-copy strong { font-size: clamp(1.1rem, 2.6vw, 1.45rem); line-height: 1.2; letter-spacing: .01em; }
+      .hero-consultation-cta-copy small { color: rgba(255,255,255,.82); font-size: .82rem; line-height: 1.4; }
+      .hero-consultation-cta-arrow { color: #f5d68a; font-size: 1.2rem; transition: transform .25s ease; }
+      .hero-consultation-cta:hover .hero-consultation-cta-arrow, .hero-consultation-cta:focus-visible .hero-consultation-cta-arrow { transform: translateX(5px); }
+      @media (max-width: 560px) { .hero-consultation-cta { width: 100%; min-height: 78px; padding: .85rem .9rem; gap: .7rem; border-radius: 15px; } .hero-consultation-cta-icon { flex-basis: 42px; width: 42px; height: 42px; border-radius: 12px; } .hero-consultation-cta-copy small { font-size: .72rem; } }
+      @media (prefers-reduced-motion: reduce) { .hero-consultation-cta, .hero-consultation-cta::before, .hero-consultation-cta-arrow { transition: none; } }
+
+       
+      .testimonial-box .testimonial-content.testimonial-scroll { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+      .testimonial-card { display: flex; flex-direction: column; justify-content: space-between; min-height: 100%; padding: clamp(1rem, 2vw, 1.35rem); }
+      .testimonial-card .testimonial-row { display: flex; flex-direction: column; gap: 1rem; align-items: stretch; flex: 1; }
+      .testimonial-card .testimonial-text { width: 100%; align-self: auto; }
+      .testimonial-card .testimonial-text p { margin: 0; font-size: clamp(1rem, 1.45vw, 1.16rem); line-height: 1.72; }
+      .testimonial-card .testimonial-image-slot { width: min(100%, 260px); max-width: 260px; margin: .15rem auto 0; align-self: center; }
+      .testimonial-card .testimonial-image-wrapper { width: 100%; min-height: 0; aspect-ratio: 1 / 1; }
+      .testimonial-card .client-info { margin-top: 1.15rem; }
+      @media (min-width: 1200px) {
+        .testimonial-card .testimonial-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, .78fr); align-items: center; }
+        .testimonial-card .testimonial-image-slot { width: 100%; max-width: none; margin: 0; }
+      }
+      @media (max-width: 900px) { .testimonial-box .testimonial-content.testimonial-scroll { grid-template-columns: 1fr; } }
+      @media (max-width: 560px) { .testimonial-card .testimonial-text p { font-size: .98rem; } .testimonial-card .testimonial-image-slot { width: min(100%, 240px); max-width: 240px; } }
+
+       
+      .testimonial-box .testimonial-content.testimonial-scroll { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1rem, 2vw, 1.5rem); }
+      .testimonial-card { display: flex; flex-direction: column; min-width: 0; padding: clamp(1rem, 2vw, 1.35rem); border: 1px solid rgba(204,149,62,.25); border-radius: 20px; background: linear-gradient(145deg, rgba(255,255,255,.9), rgba(248,244,238,.92)); box-shadow: 0 12px 28px rgba(39,80,22,.1); }
+      .testimonial-card .testimonial-row { display: flex; flex-direction: column; gap: 1.15rem; align-items: stretch; flex: 1; }
+      .testimonial-card .testimonial-image-slot { order: -1; width: 100%; max-width: none; margin: 0; align-self: stretch; }
+      .testimonial-card .testimonial-image-wrapper { width: 100%; max-width: none; height: clamp(220px, 22vw, 300px); min-height: 0; aspect-ratio: auto; border-radius: 16px; overflow: hidden; }
+      .testimonial-card .testimonial-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .testimonial-card .testimonial-text { width: 100%; min-width: 0; align-self: auto; }
+      .testimonial-card .testimonial-text p { margin: 0; font-size: clamp(.98rem, 1.3vw, 1.12rem); line-height: 1.72; }
+      .testimonial-card .client-info { margin-top: 1.15rem; }
+      @media (max-width: 900px) { .testimonial-box .testimonial-content.testimonial-scroll { grid-template-columns: 1fr; } .testimonial-card .testimonial-image-wrapper { height: clamp(230px, 48vw, 340px); } }
+      @media (max-width: 560px) { .testimonial-card .testimonial-image-wrapper { height: 240px; } .testimonial-card .testimonial-text p { font-size: .98rem; } }
+       
+      .mistakes-checklist-section { font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif; }
+      .mistakes-checklist-section .section-kicker,
+      .mistakes-checklist-section .lead-magnet-intro,
+      .mistakes-checklist-section .mistake-card p,
+      .mistakes-checklist-section .mistakes-guide-action p,
+      .mistakes-checklist-section .lead-magnet-note { font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif; }
+      .mistakes-checklist-section h2,
+      .mistakes-checklist-section h3,
+      .mistakes-checklist-section .mistakes-guide-action strong { font-family: 'Playfair Display', Georgia, serif; }
+      .mistakes-checklist-section h2 { font-weight: 700; letter-spacing: -.01em; }
+      .mistakes-checklist-section h3 { font-weight: 700; letter-spacing: -.005em; }
+      .mistakes-checklist-section .mistake-number,
+      .mistakes-checklist-section .mistakes-guide-badge span { font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif; }
+       
+      .mistakes-checklist-section { position: relative; overflow: hidden; font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif; background: linear-gradient(145deg, #fffdf9 0%, #f7f3ec 58%, #edf3ed 100%) !important; }
+      .mistakes-checklist-section::before { content: ''; position: absolute; inset: 0 0 auto; height: 4px; background: linear-gradient(90deg, #275016, #cc953e 50%, #275016); opacity: .9; }
+      .mistakes-checklist-section .section-kicker { color: #a66f22; font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif; font-size: .72rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
+      .mistakes-checklist-section h2 { color: #173226; font-family: 'Playfair Display', Georgia, serif; font-size: clamp(2rem, 4vw, 3.15rem); font-weight: 700; letter-spacing: -.025em; line-height: 1.08; text-wrap: balance; }
+      .mistakes-checklist-section .lead-magnet-intro { color: #536158; font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif; font-size: 1rem; font-weight: 400; letter-spacing: .005em; line-height: 1.8; }
+      .mistakes-guide-badge { border: 1px solid rgba(245,214,138,.7); background: linear-gradient(145deg, #173226, #275016 62%, #9a6017); box-shadow: 0 18px 36px rgba(23,50,38,.2), inset 0 1px 0 rgba(255,255,255,.22); }
+      .mistakes-guide-badge i { color: #f5d68a; }
+      .mistakes-checklist-grid { gap: 1.15rem; }
+      .mistake-card { position: relative; overflow: hidden; border: 1px solid rgba(39,80,22,.13); border-radius: 18px; background: rgba(255,255,255,.78); box-shadow: 0 10px 26px rgba(23,50,38,.07), inset 0 1px 0 rgba(255,255,255,.8); transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+      .mistake-card::before { content: ''; position: absolute; inset: 0 0 auto; height: 2px; background: linear-gradient(90deg, transparent, #cc953e, transparent); opacity: .75; }
+      .mistake-card:hover { transform: translateY(-4px); border-color: rgba(204,149,62,.38); box-shadow: 0 18px 34px rgba(23,50,38,.13), inset 0 1px 0 rgba(255,255,255,.9); }
+      .mistake-card-top { margin-bottom: .9rem; }
+      .mistake-number { color: #a66f22; font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif; font-size: .7rem; font-weight: 800; letter-spacing: .18em; }
+      .mistake-card-top > i { display: grid; width: 2.35rem; height: 2.35rem; place-items: center; border-radius: 12px; background: rgba(39,80,22,.08); color: #275016; font-size: 1rem; }
+      .mistake-card h3 { color: #173226; font-family: 'Playfair Display', Georgia, serif; font-size: 1.12rem; font-weight: 700; letter-spacing: -.008em; line-height: 1.32; }
+      .mistake-card p { color: #536158; font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif; font-size: .86rem; font-weight: 400; line-height: 1.68; }
+      .mistakes-guide-action { border-color: rgba(39,80,22,.2); background: linear-gradient(105deg, rgba(39,80,22,.09), rgba(204,149,62,.11)); box-shadow: 0 8px 22px rgba(23,50,38,.06); }
+      .mistakes-guide-action strong { color: #173226; font-family: 'Playfair Display', Georgia, serif; font-size: 1.08rem; }
+      .mistakes-guide-action p, .mistakes-checklist-section .lead-magnet-note { color: #536158; font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif; }
+      @media (prefers-reduced-motion: reduce) { .mistake-card { transition: none; } .mistake-card:hover { transform: none; } }
+       
+      .mistakes-checklist-section { display: block !important; width: 100% !important; height: auto !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; }
+      .mistakes-checklist-section .lead-magnet-reading-guide { display: block !important; width: 100% !important; height: auto !important; min-height: 0 !important; max-height: none !important; overflow: visible !important; }
+      .mistakes-checklist-section .mistakes-guide-header { display: flex !important; flex-direction: row !important; align-items: flex-start !important; justify-content: space-between !important; gap: 2rem !important; width: 100% !important; min-height: 0 !important; }
+      .mistakes-checklist-section .mistakes-guide-header > div:first-child { display: block !important; flex: 1 1 auto !important; width: auto !important; min-width: 0 !important; }
+      .mistakes-checklist-section .mistakes-guide-badge { position: relative !important; inset: auto !important; display: grid !important; flex: 0 0 108px !important; width: 108px !important; height: 108px !important; min-width: 108px !important; max-width: 108px !important; min-height: 108px !important; max-height: 108px !important; margin: 0 !important; transform: none !important; }
+      .mistakes-checklist-section .mistakes-checklist-grid { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; grid-auto-rows: auto !important; align-items: stretch !important; gap: 1.15rem !important; width: 100% !important; height: auto !important; min-height: 0 !important; max-height: none !important; margin-top: 1.5rem !important; overflow: visible !important; }
+      .mistakes-checklist-section .mistake-card { display: block !important; position: relative !important; width: auto !important; min-width: 0 !important; height: auto !important; min-height: 0 !important; max-height: none !important; margin: 0 !important; padding: 1.15rem !important; overflow: visible !important; }
+      .mistakes-checklist-section .mistake-card-top { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; width: 100% !important; height: auto !important; min-height: 2.35rem !important; margin: 0 0 .9rem !important; overflow: visible !important; }
+      .mistakes-checklist-section .mistake-card-top > i { display: grid !important; flex: 0 0 2.35rem !important; width: 2.35rem !important; height: 2.35rem !important; min-width: 2.35rem !important; min-height: 2.35rem !important; place-items: center !important; }
+      .mistakes-checklist-section .mistake-card h3 { display: block !important; width: 100% !important; height: auto !important; max-height: none !important; margin: 0 0 .45rem !important; overflow: visible !important; white-space: normal !important; }
+      .mistakes-checklist-section .mistake-card p { display: block !important; width: 100% !important; height: auto !important; max-height: none !important; margin: 0 !important; overflow: visible !important; white-space: normal !important; }
+      .mistakes-checklist-section .mistakes-guide-action { display: flex !important; width: 100% !important; height: auto !important; min-height: 0 !important; max-height: none !important; margin-top: 1.25rem !important; overflow: visible !important; }
+      @media (max-width: 980px) { .mistakes-checklist-section .mistakes-checklist-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+      @media (max-width: 620px) {
+        .mistakes-checklist-section .mistakes-guide-header { gap: 1rem !important; }
+        .mistakes-checklist-section .mistakes-guide-badge { flex-basis: 76px !important; width: 76px !important; height: 76px !important; min-width: 76px !important; max-width: 76px !important; min-height: 76px !important; max-height: 76px !important; }
+        .mistakes-checklist-section .mistakes-checklist-grid { grid-template-columns: 1fr !important; }
+      }
+       
+      .mistakes-checklist-section .mistake-card h3 { font-size: clamp(1.18rem, 1.5vw, 1.38rem) !important; line-height: 1.35 !important; }
+      .mistakes-checklist-section .mistake-card p { font-size: clamp(.96rem, 1.15vw, 1.08rem) !important; line-height: 1.72 !important; }
+      .mistakes-checklist-section .mistake-number { font-size: .78rem !important; }
+      .mistakes-checklist-section .mistakes-guide-action { display: grid !important; grid-template-columns: 2.75rem minmax(0, 1fr) !important; align-items: start !important; column-gap: .9rem !important; width: 100% !important; min-height: 0 !important; height: auto !important; max-height: none !important; padding: 1.2rem 1.3rem !important; overflow: visible !important; }
+      .mistakes-checklist-section .mistakes-guide-action-icon { display: grid !important; grid-column: 1 !important; width: 2.75rem !important; height: 2.75rem !important; min-width: 2.75rem !important; min-height: 2.75rem !important; place-items: center !important; margin: 0 !important; }
+      .mistakes-checklist-section .mistakes-guide-action > div:last-child { grid-column: 2 !important; min-width: 0 !important; width: auto !important; height: auto !important; overflow: visible !important; }
+      .mistakes-checklist-section .mistakes-guide-action strong { display: block !important; margin: 0 0 .3rem !important; font-size: clamp(1.15rem, 1.5vw, 1.35rem) !important; line-height: 1.35 !important; }
+      .mistakes-checklist-section .mistakes-guide-action p { display: block !important; width: 100% !important; margin: 0 !important; font-size: clamp(1rem, 1.2vw, 1.12rem) !important; line-height: 1.72 !important; white-space: normal !important; overflow: visible !important; }
+      .mistakes-checklist-section .lead-magnet-note { display: flex !important; gap: .5rem !important; align-items: flex-start !important; width: 100% !important; margin-top: 1rem !important; font-size: clamp(.9rem, 1.05vw, 1rem) !important; line-height: 1.65 !important; }
+      .mistakes-checklist-section .lead-magnet-note i { flex: 0 0 auto !important; margin-top: .22rem !important; }
+      @media (max-width: 620px) {
+        .mistakes-checklist-section .mistakes-guide-action { grid-template-columns: 2.4rem minmax(0, 1fr) !important; column-gap: .7rem !important; padding: 1rem !important; }
+        .mistakes-checklist-section .mistakes-guide-action-icon { width: 2.4rem !important; height: 2.4rem !important; min-width: 2.4rem !important; min-height: 2.4rem !important; }
+      }
+       
+      .mistakes-checklist-section .mistakes-guide-action { display: flex !important; flex-direction: row !important; align-items: flex-start !important; gap: 1rem !important; width: 100% !important; height: auto !important; min-height: 0 !important; max-height: none !important; padding: 1.25rem 1.35rem !important; overflow: visible !important; }
+      .mistakes-checklist-section .mistakes-guide-action-icon { display: grid !important; flex: 0 0 2.8rem !important; width: 2.8rem !important; height: 2.8rem !important; min-width: 2.8rem !important; min-height: 2.8rem !important; place-items: center !important; margin: 0 !important; border-radius: 12px !important; background: #275016 !important; color: #f5d68a !important; line-height: 1 !important; }
+      .mistakes-checklist-section .mistakes-guide-action-icon i { display: block !important; width: auto !important; height: auto !important; margin: 0 !important; color: inherit !important; font-size: 1.15rem !important; line-height: 1 !important; }
+      .mistakes-checklist-section .mistakes-guide-action-content { display: block !important; flex: 1 1 auto !important; width: auto !important; min-width: 0 !important; height: auto !important; max-height: none !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+      .mistakes-checklist-section .mistakes-guide-action-content strong { display: block !important; margin: 0 0 .35rem !important; color: #173226 !important; font-family: 'Playfair Display', Georgia, serif !important; font-size: clamp(1.12rem, 1.5vw, 1.35rem) !important; line-height: 1.35 !important; }
+      .mistakes-checklist-section .mistakes-guide-action-content p { display: block !important; width: 100% !important; margin: 0 !important; color: #536158 !important; font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif !important; font-size: clamp(1rem, 1.2vw, 1.12rem) !important; line-height: 1.72 !important; white-space: normal !important; overflow: visible !important; }
+      @media (max-width: 620px) { .mistakes-checklist-section .mistakes-guide-action { gap: .75rem !important; padding: 1rem !important; } .mistakes-checklist-section .mistakes-guide-action-icon { flex-basis: 2.4rem !important; width: 2.4rem !important; height: 2.4rem !important; min-width: 2.4rem !important; min-height: 2.4rem !important; } .mistakes-checklist-section .mistakes-guide-action-icon i { font-size: 1rem !important; } }
+       
+      .mistakes-checklist-section .mistakes-guide-header { position: relative !important; z-index: 2 !important; overflow: visible !important; }
+      .mistakes-checklist-section .mistakes-guide-badge { position: relative !important; z-index: 10 !important; display: flex !important; flex: 0 0 108px !important; align-items: center !important; justify-content: center !important; flex-direction: column !important; visibility: visible !important; opacity: 1 !important; width: 108px !important; min-width: 108px !important; max-width: 108px !important; height: 108px !important; min-height: 108px !important; max-height: 108px !important; margin: 0 0 0 auto !important; padding: 0 !important; border: 1px solid #d9b968 !important; border-radius: 50% !important; background: linear-gradient(145deg, #173226 0%, #275016 58%, #9a6017 100%) !important; color: #f5d68a !important; box-shadow: 0 16px 32px rgba(23,50,38,.24), inset 0 1px 0 rgba(255,255,255,.28) !important; transform: none !important; }
+      .mistakes-checklist-section .mistakes-guide-badge i { display: block !important; visibility: visible !important; opacity: 1 !important; margin: 0 0 .35rem !important; color: #f5d68a !important; font-family: 'Font Awesome 6 Free' !important; font-size: 1.65rem !important; font-weight: 900 !important; line-height: 1 !important; }
+      .mistakes-checklist-section .mistakes-guide-badge span { display: block !important; visibility: visible !important; opacity: 1 !important; color: #fff8e8 !important; font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif !important; font-size: .68rem !important; font-weight: 800 !important; line-height: 1.15 !important; letter-spacing: .1em !important; text-align: center !important; text-transform: uppercase !important; }
+      @media (max-width: 620px) { .mistakes-checklist-section .mistakes-guide-badge { flex-basis: 82px !important; width: 82px !important; min-width: 82px !important; max-width: 82px !important; height: 82px !important; min-height: 82px !important; max-height: 82px !important; } .mistakes-checklist-section .mistakes-guide-badge i { font-size: 1.15rem !important; } .mistakes-checklist-section .mistakes-guide-badge span { font-size: .52rem !important; } }
 </style>
 
  
@@ -4039,6 +4020,7 @@
             <a href="#about" data-mobile-nav="about"><i class="fas fa-user" aria-hidden="true"></i><span>About</span></a>
         <a href="#services" data-mobile-nav="services"><i class="fas fa-briefcase" aria-hidden="true"></i><span>Services</span></a>
         <a href="#video-library" data-mobile-nav="video-library"><i class="fas fa-video" aria-hidden="true"></i><span>Guides</span></a>
+        <a href="#homebuyer-mistakes" data-mobile-nav="homebuyer-mistakes"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i><span>Mistakes</span></a>
         <a href="#contact-section" data-mobile-nav="contact-section"><i class="fas fa-envelope" aria-hidden="true"></i><span>Contact</span></a>
         <a href="#" class="mobile-nav-quiz" onclick="openQuizPopup(event)"><i class="fas fa-calendar-check" aria-hidden="true"></i><span>Book</span></a>
       </div>
@@ -4114,6 +4096,7 @@
             <a href="#services">Services</a>
             <a href="#faq">FAQs</a>
             <a href="#video-library">Guides</a>
+            <a class="nav-checklist-link" href="#homebuyer-mistakes"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> Mistakes Checklist</a>
             <a href="#contact-section">Contact</a>
             <a class="reference-header-cta" href="#" onclick="openQuizPopup(event)"><i class="fas fa-phone-volume" aria-hidden="true"></i><span>Book a Consultation</span></a>
           </nav>
@@ -4163,7 +4146,7 @@
               Serving first-time homebuyers, growing families, and OFWs in Cavite, Imus, Dasmariñas, General Trias, Bacoor, CALABARZON, Metro Manila, and across the Philippines.
             </div>
             <div class="trust-builders">
-              <div class="trust-title"><i class="fas fa-shield-halved" style="margin-right:8px;"></i> Why Trust Charlene?</div>
+              <div class="trust-title"><i class="fas fa-shield-heart" style="margin-right:8px;"></i> Why Trust Charlene?</div>
               <div class="trust-grid">
                 <div class="trust-item"><i class="fas fa-check-circle green-check"></i> 100+ Happy Families</div>
                 <div class="trust-item"><i class="fas fa-check-circle green-check"></i> 7+ Years of Experience</div>
@@ -4174,11 +4157,12 @@
               </div>
             </div>
             <div class="cta-buttons">
-              <a href="#" class="btn-primary" onclick="openQuizPopup(event)"><i class="fas fa-calendar-check"></i> Book a Consultation</a>
-              <a href="#" class="btn-primary homebuyer-guide-cta" onclick="openQuizPopup(event, 'guide')"><i class="fas fa-book-open"></i> Get The Free Homebuyer Real Estate Guide</a>
-              <a href="#faq" class="btn-secondary btn-video-library"><i class="fas fa-circle-question"></i> Read FAQs</a>
+              <a href="#" class="btn-primary hero-consultation-cta" onclick="openQuizPopup(event)" aria-label="Book a consultation with Charlene Dellosa">
+                <span class="hero-consultation-cta-icon"><i class="fas fa-calendar-check" aria-hidden="true"></i></span>
+                <span class="hero-consultation-cta-copy"><strong>Book a Consultation</strong><small>Get clear next steps for your property goals</small></span>
+                <i class="fas fa-arrow-right hero-consultation-cta-arrow" aria-hidden="true"></i>
+              </a>
               <div class="hero-proof" aria-label="Client assurances"><span><i class="fas fa-check-circle"></i> No-pressure guidance</span><span><i class="fas fa-lock"></i> Confidential consultation</span></div>
-              
             </div>
           </div>
         </div>
@@ -4193,7 +4177,7 @@
         </p>
         <div class="pain-points-grid">
           <article class="pain-point-card">
-            <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+            <i class="fas fa-screwdriver-wrench" aria-hidden="true"></i>
             <h3>Still searching, but unsure what truly fits?</h3>
             <p>Endless listings and conflicting information make it hard to compare locations, developers, prices, and payment terms with confidence.</p>
           </article>
@@ -4203,7 +4187,7 @@
             <p>The advertised price is only part of the picture. Financing, fees, monthly payments, and everyday affordability all matter before you decide.</p>
           </article>
           <article class="pain-point-card">
-            <i class="fas fa-file-circle-question" aria-hidden="true"></i>
+            <i class="fas fa-file-signature" aria-hidden="true"></i>
             <h3>Stressed by requirements and paperwork?</h3>
             <p>Reservations, documents, financing, and timelines can slow you down when no one clearly explains what is needed and what happens next.</p>
           </article>
@@ -4245,35 +4229,22 @@
                   <div class="trust-stat-item"><span class="number">98%</span><span class="label">Satisfied Clients</span></div>
                 </div>
                 <div class="pill-group">
-                  <span class="pill"><i class="fas fa-shield-halved"></i> TRUSTWORTHY</span>
+                  <span class="pill"><i class="fas fa-shield-heart"></i> TRUSTWORTHY</span>
                   <span class="pill"><i class="fas fa-heart"></i> DEDICATED</span>
                   <span class="pill"><i class="fas fa-smile"></i> STRESS-FREE</span>
                   <span class="pill"><i class="fas fa-chart-line"></i> RESULTS</span>
                 </div>
                 <div class="testimonial-box" id="mainTestimonial">
                   <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
-                  <div class="testimonial-content" id="testimonialContent">
-                    <div class="testimonial-row">
-                      <div class="testimonial-text">
-                        <p id="testimonialText">"Sobrang napadali ni Charlene ang paghahanap namin ng bahay. Hindi lang siya propesyonal, ramdam mo rin na tunay niyang inaalagaan ang bawat kliyente. Dahil sa kanya, natagpuan namin ang aming pangarap na tahanan!"</p>
-                      </div>
-                      <div class="testimonial-image-slot">
-                        <div class="testimonial-image-wrapper">
-                          <img class="testimonial-image" id="testimonialImage" loading="lazy" decoding="async" src="https://drive.google.com/thumbnail?id=1to92kxemMLTJvbiHYeXWlNod6WZXA7-R&amp;sz=w320" fetchpriority="low" alt="Photo from the Santos family testimonial" onerror="this.onerror=null; this.src='data:image/svg&#43;xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 900%22%3E%3Crect width=%22900%22 height=%22900%22 fill=%22%23063c24%22/%3E%3Ctext x=%22450%22 y=%22490%22 text-anchor=%22middle%22 font-family=%22Georgia,serif%22 font-size=%22180%22 font-weight=%22700%22 fill=%22%23f5d68a%22%3ECD%3C/text%3E%3C/svg%3E'; this.closest('.testimonial-image-wrapper').hidden=false;" />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="client-info" id="clientInfo">
-                      <div class="client-details">
-                        <span class="client-name" id="testimonialName">— Ang Pamilya Santos</span>
-                        <span class="client-location" id="testimonialLocation">Quezon City</span>
-                      </div>
-                      <div class="kaia-brand">
-                        <div class="kaia-icon">KAIA</div>
-                        <div class="kaia-text"><span class="kaia-main">#AngTunayNakayaMo</span><span class="kaia-sub">B28L7 · B28L9 · MSKALA</span></div>
-                        <span class="kaia-hashtag">✨ KAIA</span>
-                      </div>
-                    </div>
+                  <div class="testimonial-content testimonial-scroll" aria-label="Client testimonials">
+                    <article class="testimonial-card">
+                      <div class="testimonial-row"><div class="testimonial-text"><p>"Sobrang napadali ni Charlene ang paghahanap namin ng bahay. Hindi lang siya propesyonal, ramdam mo rin na tunay niyang inaalagaan ang bawat kliyente. Dahil sa kanya, natagpuan namin ang aming pangarap na tahanan!"</p></div><div class="testimonial-image-slot"><div class="testimonial-image-wrapper"><img class="testimonial-image" loading="lazy" decoding="async" src="https://drive.google.com/thumbnail?id=1to92kxemMLTJvbiHYeXWlNod6WZXA7-R&amp;sz=w320" fetchpriority="low" alt="Photo from the Santos family testimonial" /></div></div></div>
+                      <div class="client-info"><div class="client-details"><span class="client-name">— Ang Pamilya Santos</span><span class="client-location">Quezon City</span></div><div class="kaia-brand"><div class="kaia-icon">KAIA</div><div class="kaia-text"><span class="kaia-main">#AngTunayNakayaMo</span><span class="kaia-sub">B28L7 · B28L9 · MSKALA</span></div><span class="kaia-hashtag">✨ KAIA</span></div></div>
+                    </article>
+                    <article class="testimonial-card">
+                      <div class="testimonial-row"><div class="testimonial-text"><p>"Si Charlene ang pinakamahusay na agent na nakasama namin. Hindi lang siya eksperto sa properties, ramdam mo rin ang kanyang malasakit. Lubos naming ipinagkakatiwala sa kanya ang aming pangarap na tahanan!"</p></div><div class="testimonial-image-slot"><div class="testimonial-image-wrapper"><img class="testimonial-image" loading="lazy" decoding="async" src="https://drive.google.com/thumbnail?id=143T8pg0-3XWOc0i6hdWYV7TWy4TqOLk5&amp;sz=w320" fetchpriority="low" alt="Photo from the Villanueva family testimonial" /></div></div></div>
+                      <div class="client-info"><div class="client-details"><span class="client-name">— Ang Pamilya Villanueva</span><span class="client-location">Laguna</span></div><div class="kaia-brand"><div class="kaia-icon">KAIA</div><div class="kaia-text"><span class="kaia-main">#AngTunayNakayaMo</span><span class="kaia-sub">B28L7 · B28L9 · MSKALA</span></div><span class="kaia-hashtag">✨ KAIA</span></div></div>
+                    </article>
                   </div>
                 </div>
                 <div style="display:flex; align-items:center; gap:0.8rem; font-size:0.9rem; color:#4a4a4a; margin-top:1.5rem;">
@@ -4323,7 +4294,8 @@
               <h3>See How I Can Help With Your Property Journey</h3>
               <p>From property viewings to successful handovers, here are sample moments from the services I provide.</p>
             </div>
-            <div class="media-grid" data-autoplay="true" aria-label="Automatically rotating services gallery">
+            <p class="scroll-hint gallery-scroll-hint"><i class="fas fa-arrows-left-right" aria-hidden="true"></i> All six images are visible in the gallery</p>
+            <div class="media-grid" aria-label="Services gallery">
               
               <article class="media-card"><img src="https://drive.google.com/thumbnail?id=13meCUlDBZrDcPa5RSFgGAW1CYmF-kxyJ&amp;sz=w600" srcset="https://drive.google.com/thumbnail?id=13meCUlDBZrDcPa5RSFgGAW1CYmF-kxyJ&amp;sz=w600 600w, https://drive.google.com/thumbnail?id=13meCUlDBZrDcPa5RSFgGAW1CYmF-kxyJ&amp;sz=w1000 1000w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="Client property viewing"><div class="media-card-label"><strong><i class="fas fa-people-group"></i> Guided Viewings</strong><span>Finding the right fit together</span></div></article>
               <article class="media-card"><img src="https://drive.google.com/thumbnail?id=18LDXuTKC8tUJFnNWFSzAzpqP9EBPwV48&amp;sz=w600" srcset="https://drive.google.com/thumbnail?id=18LDXuTKC8tUJFnNWFSzAzpqP9EBPwV48&amp;sz=w600 600w, https://drive.google.com/thumbnail?id=18LDXuTKC8tUJFnNWFSzAzpqP9EBPwV48&amp;sz=w1000 1000w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="Modern house listing"><div class="media-card-label"><strong><i class="fas fa-house"></i> Property Listings</strong><span>Presenting homes at their best</span></div></article>
@@ -4331,11 +4303,6 @@
               <article class="media-card"><img src="https://drive.google.com/thumbnail?id=1liPapHqBzpX6UtAzZmgNPqH3R_XITHhT&amp;sz=w600" srcset="https://drive.google.com/thumbnail?id=1liPapHqBzpX6UtAzZmgNPqH3R_XITHhT&amp;sz=w600 600w, https://drive.google.com/thumbnail?id=1liPapHqBzpX6UtAzZmgNPqH3R_XITHhT&amp;sz=w1000 1000w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="Bright home interior"><div class="media-card-label"><strong><i class="fas fa-key"></i> Buying Assistance</strong><span>Support from search to keys</span></div></article>
               <article class="media-card"><img src="https://drive.google.com/thumbnail?id=1JEPJ0ixefMd1pnsRuDboGWRDPwkqKxM7&amp;sz=w600" srcset="https://drive.google.com/thumbnail?id=1JEPJ0ixefMd1pnsRuDboGWRDPwkqKxM7&amp;sz=w600 600w, https://drive.google.com/thumbnail?id=1JEPJ0ixefMd1pnsRuDboGWRDPwkqKxM7&amp;sz=w1000 1000w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="Family home"><div class="media-card-label"><strong><i class="fas fa-handshake"></i> Smooth Transactions</strong><span>Clear guidance at every step</span></div></article>
               <article class="media-card"><img src="https://drive.google.com/thumbnail?id=1e8D3cZtbDyjnsOt5aEBKLq6gp8XAZ2OR&amp;sz=w600" srcset="https://drive.google.com/thumbnail?id=1e8D3cZtbDyjnsOt5aEBKLq6gp8XAZ2OR&amp;sz=w600 600w, https://drive.google.com/thumbnail?id=1e8D3cZtbDyjnsOt5aEBKLq6gp8XAZ2OR&amp;sz=w1000 1000w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="Stylish house interior"><div class="media-card-label"><strong><i class="fas fa-chart-line"></i> Investment Guidance</strong><span>Smarter property decisions</span></div></article>
-            </div>
-            <div class="gallery-controls" aria-label="Gallery controls">
-              <button class="gallery-nav" type="button" data-gallery-direction="previous" aria-label="Previous gallery images"><i class="fas fa-chevron-left"></i></button>
-              <div class="gallery-dots" aria-label="Gallery slides"></div>
-              <button class="gallery-nav" type="button" data-gallery-direction="next" aria-label="Next gallery images"><i class="fas fa-chevron-right"></i></button>
             </div>
             <div class="video-showcase">
               <div class="video-showcase-header">
@@ -4422,54 +4389,30 @@
             </div>
           </div>
 
-          <div class="section-divider"><span>🏡 Calculator: Rent or Buy?</span></div>
-          <div class="landing-card reveal calculator-card" id="calculator" style="margin-top:0;">
-            <p class="calculator-help"><i class="fas fa-hand-pointer" aria-hidden="true"></i> Update the values, then tap Calculate to compare both options instantly.</p>
-            <div class="calculator-tabs" role="tablist" aria-label="Rent or buy comparison">
-              <button type="button" class="calculator-tab is-active" id="rentTab" role="tab" aria-selected="true" aria-controls="rentPanel" data-calc-tab="rent"><i class="fas fa-home" aria-hidden="true"></i><span>Rent</span></button>
-              <button type="button" class="calculator-tab" id="buyTab" role="tab" aria-selected="false" aria-controls="buyPanel" data-calc-tab="buy"><i class="fas fa-building" aria-hidden="true"></i><span>Buy</span></button>
-            </div>
-            <p class="calculator-swipe-hint" id="calculatorSwipeHint"><i class="fas fa-arrows-left-right" aria-hidden="true"></i> Swipe left or right to switch between Rent and Buy.</p>
-            <div class="calc-grid" id="calculatorPanels" data-active-panel="rent">
-              <div class="calc-box" id="rentPanel" role="tabpanel" aria-labelledby="rentTab">
-                <h4><i class="fas fa-home"></i> If You Rent</h4>
-                <label for="monthlyRent">Monthly Rent (₱)</label>
-                <input type="number" id="monthlyRent" value="15000" min="0" step="1000" inputmode="decimal" />
-                <label for="rentIncrease">Annual Rent Increase (%)</label>
-                <input type="number" id="rentIncrease" value="5" min="0" max="100" step="0.1" inputmode="decimal" />
-                <label for="rentYears">How Many Years Renting</label>
-                <input type="number" id="rentYears" value="5" min="1" max="50" step="1" inputmode="numeric" />
-                <div class="calc-result" id="rentResult" aria-live="polite">
-                  <span class="big-number rent" id="totalRent">₱900,000</span>
-                  <span class="label">Total Rent Paid</span>
+          <div class="section-divider"><span>🏡 Free Homebuyer Resource</span></div>
+          <section class="landing-card reveal first-time-buyer-lead mistakes-checklist-section" id="homebuyer-mistakes" aria-labelledby="homebuyer-mistakes-title" style="margin-top:0;">
+            <div class="lead-magnet-reading-guide">
+              <div class="mistakes-guide-header">
+                <div>
+                  <div class="section-kicker">A practical buyer guide</div>
+                  <h2 id="homebuyer-mistakes-title">Homebuyer Mistakes Checklist</h2>
+                  <p class="lead-magnet-intro">Buying a home is a major decision. Use this checklist to spot common mistakes early, ask better questions, and move forward with greater confidence.</p>
                 </div>
-                <button type="button" class="calc-btn" data-calc-action="calculate" aria-label="Calculate rent comparison"><i class="fas fa-calculator"></i> Calculate Rent</button>
+                <div class="mistakes-guide-badge" aria-hidden="true"><i class="fas fa-shield-heart"></i><span>Buy<br>smarter</span></div>
               </div>
-              <div class="calc-box" id="buyPanel" role="tabpanel" aria-labelledby="buyTab">
-                <h4><i class="fas fa-building"></i> If You Buy</h4>
-                <label for="purchasePrice">Property Price (₱)</label>
-                <input type="number" id="purchasePrice" value="3000000" min="0" step="10000" inputmode="decimal" />
-                <label for="downPayment">Down Payment (%)</label>
-                <input type="number" id="downPayment" value="20" min="0" max="100" step="1" inputmode="decimal" />
-                <label for="loanTerm">Loan Term (Years)</label>
-                <input type="number" id="loanTerm" value="15" min="1" max="50" step="1" inputmode="numeric" />
-                <label for="interestRate">Annual Interest Rate (%)</label>
-                <input type="number" id="interestRate" value="6" min="0" max="100" step="0.1" inputmode="decimal" />
-                <label for="appreciation">Annual Appreciation (%)</label>
-                <input type="number" id="appreciation" value="5" min="0" max="100" step="0.1" inputmode="decimal" />
-                <div class="calc-result" id="buyResult" aria-live="polite">
-                  <span class="big-number" id="totalBuyCost">₱3,600,000</span>
-                  <span class="label">Total Cost of Buying</span>
-                </div>
-                <button type="button" class="calc-btn" data-calc-action="calculate" aria-label="Calculate buying comparison"><i class="fas fa-calculator"></i> Calculate Buy</button>
+              <div class="mistakes-checklist-grid">
+                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">01</span><i class="fas fa-receipt" aria-hidden="true"></i></div><h3>Focusing only on the advertised price</h3><p>Remember to account for the down payment, taxes, loan fees, insurance, association dues, utilities, moving costs, repairs, and ongoing maintenance.</p></article>
+                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">02</span><i class="fas fa-coins" aria-hidden="true"></i></div><h3>Buying before checking financial readiness</h3><p>Do not assume you can afford a property based only on a sample monthly payment. Review your income, debts, savings, emergency fund, and financing eligibility first.</p></article>
+                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">03</span><i class="fas fa-road" aria-hidden="true"></i></div><h3>Choosing a location without testing daily life</h3><p>Check commute times, transportation, schools, healthcare, shops, safety, drainage, flood exposure, and nearby developments at different times of day.</p></article>
+                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">04</span><i class="fas fa-screwdriver-wrench" aria-hidden="true"></i></div><h3>Skipping a careful property inspection</h3><p>Look beyond finishes and staging. Ask about structural condition, leaks, plumbing, electrical systems, drainage, parking, storage, repairs, and what is included.</p></article>
+                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">05</span><i class="fas fa-file-signature" aria-hidden="true"></i></div><h3>Signing before understanding the documents</h3><p>Read the reservation, contract, fees, deadlines, refund terms, inclusions, restrictions, and turnover conditions. Ask for clarification before signing or paying.</p></article>
+                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">06</span><i class="fas fa-hourglass-end" aria-hidden="true"></i></div><h3>Rushing because of pressure or urgency</h3><p>A limited-time offer should not replace due diligence. Compare suitable options, verify important details, and take time to make a decision that fits your goals.</p></article>
               </div>
+              <div class="mistakes-guide-action"><div class="mistakes-guide-action-icon" aria-hidden="true"><i class="fas fa-circle-check"></i></div><div class="mistakes-guide-action-content"><strong>Before you make an offer</strong><p>Confirm your total budget, financing plan, property condition, documents, contract terms, and long-term suitability. If you are unsure, ask for professional guidance before committing.</p></div></div>
+              <p class="lead-magnet-note"><i class="fas fa-circle-info" aria-hidden="true"></i> This guide is for general information only. Financing, legal, tax, and document requirements may vary, so confirm details with the relevant professional or institution.</p>
             </div>
-            <div style="text-align:center; margin-top:1.5rem; padding:1rem; background:linear-gradient(135deg, rgba(204,149,62,0.05), rgba(39,80,22,0.05)); border-radius:16px; border:1px solid rgba(204,149,62,0.1);">
-              <h4 style="font-family:'Playfair Display', serif; font-size:1.2rem; color:#275016;">💡 Recommendation</h4>
-              <div id="verdictDisplay" aria-live="polite" style="font-size:1.1rem; font-weight:600; margin-top:0.3rem; color:#1a1a1a;">
-                Click the buttons above to compare
-              </div>
-            </div>
+          </section>
+
           </div>
 
 
@@ -4641,89 +4584,6 @@
           });
         });
 
-        
-        const galleryGrid = document.querySelector('.media-grid');
-        const galleryCards = galleryGrid ? Array.from(galleryGrid.querySelectorAll('.media-card')) : [];
-        const galleryDots = document.querySelector('.gallery-dots');
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-        const mobileGallery = window.matchMedia('(max-width: 768px)');
-        const GALLERY_INTERVAL = 5000;
-        let galleryStart = 0;
-        let galleryTimer = null;
-        let galleryPaused = false;
-
-        function cardsPerGallerySlide() { return 1; }
-        function renderGallery() {
-          if (!galleryGrid || !galleryCards.length) return;
-          const perSlide = cardsPerGallerySlide();
-          const slideCount = Math.ceil(galleryCards.length / perSlide);
-          galleryGrid.classList.add('gallery-ready');
-          galleryGrid.setAttribute('aria-live', 'polite');
-          galleryCards.forEach(card => card.classList.remove('is-visible'));
-          for (let i = 0; i < perSlide; i++) {
-            galleryCards[(galleryStart + i) % galleryCards.length].classList.add('is-visible');
-          }
-          if (galleryDots) {
-            galleryDots.innerHTML = '';
-            for (let i = 0; i < slideCount; i++) {
-              const dot = document.createElement('button');
-              dot.type = 'button';
-              dot.className = `gallery-dot${i === Math.floor(galleryStart / perSlide) ? ' is-active' : ''}`;
-              dot.setAttribute('aria-label', `Show gallery slide ${i + 1}`);
-              dot.addEventListener('click', () => {
-                galleryStart = i * perSlide;
-                renderGallery();
-                scheduleGalleryAutoPlay();
-              });
-              galleryDots.appendChild(dot);
-            }
-          }
-        }
-        function moveGallery(direction) {
-          const perSlide = cardsPerGallerySlide();
-          galleryStart = (galleryStart + direction * perSlide + galleryCards.length) % galleryCards.length;
-          renderGallery();
-        }
-        function scheduleGalleryAutoPlay() {
-          clearInterval(galleryTimer);
-          if (reduceMotion.matches || galleryPaused || document.hidden || galleryCards.length < 2) return;
-          galleryTimer = setInterval(() => {
-            if (!galleryPaused && !document.hidden) moveGallery(1);
-          }, GALLERY_INTERVAL);
-        }
-        function pauseGallery() {
-          galleryPaused = true;
-          clearInterval(galleryTimer);
-        }
-        function resumeGallery() {
-          galleryPaused = false;
-          scheduleGalleryAutoPlay();
-        }
-        if (galleryGrid && galleryCards.length) {
-          renderGallery();
-          scheduleGalleryAutoPlay();
-          document.querySelectorAll('[data-gallery-direction]').forEach(button => {
-            button.addEventListener('click', () => {
-              moveGallery(button.dataset.galleryDirection === 'next' ? 1 : -1);
-              scheduleGalleryAutoPlay();
-            });
-          });
-          galleryGrid.addEventListener('mouseenter', pauseGallery);
-          galleryGrid.addEventListener('mouseleave', resumeGallery);
-          galleryGrid.addEventListener('focusin', pauseGallery);
-          galleryGrid.addEventListener('focusout', event => {
-            if (!galleryGrid.contains(event.relatedTarget)) resumeGallery();
-          });
-          galleryGrid.addEventListener('touchstart', pauseGallery, { passive: true });
-          galleryGrid.addEventListener('touchend', () => setTimeout(resumeGallery, 3500), { passive: true });
-          mobileGallery.addEventListener('change', () => {
-            galleryStart = 0;
-            renderGallery();
-            scheduleGalleryAutoPlay();
-          });
-          reduceMotion.addEventListener('change', scheduleGalleryAutoPlay);
-          document.addEventListener('visibilitychange', scheduleGalleryAutoPlay);
-        }
         
         const scrollRoot = document.scrollingElement || document.documentElement;
         const getScrollY = () => window.scrollY || scrollRoot.scrollTop || 0;
@@ -5064,7 +4924,7 @@
               <div class="thank-you-details">
                 <div><i class="fas fa-envelope-open-text"></i><span>Your request has been submitted. A confirmation email will arrive shortly.</span></div>
                 <div><i class="fas fa-calendar-check"></i><span>Your preferred consultation time has been included in the request.</span></div>
-                <div><i class="fas fa-shield-halved"></i><span>${guidanceMessage}</span></div>
+                <div><i class="fas fa-shield-heart"></i><span>${guidanceMessage}</span></div>
               </div>
               ${guideMarkup}
               <button type="button" class="thank-you-close" onclick="closeQuizPopup()">Done</button>
@@ -5205,275 +5065,6 @@
         resetQuiz();
 
         
-        const calculatorNumber = (id, fallback, min, max) => {
-          const raw = Number.parseFloat(document.getElementById(id)?.value);
-          if (!Number.isFinite(raw)) return fallback;
-          return Math.min(max, Math.max(min, raw));
-        };
-        const formatPeso = (value) => '₱' + Math.round(Math.max(0, value)).toLocaleString('en-PH');
-        const flashCalculatorButton = (button) => {
-          if (!button) return;
-          button.classList.remove('is-updated');
-          requestAnimationFrame(() => {
-            button.classList.add('is-updated');
-            window.setTimeout(() => button.classList.remove('is-updated'), 180);
-          });
-        };
-        window.calculateRentVsBuy = function() {
-          const rent = calculatorNumber('monthlyRent', 15000, 0, 100000000);
-          const rentIncrease = calculatorNumber('rentIncrease', 5, 0, 100);
-          const rentYears = Math.round(calculatorNumber('rentYears', 5, 1, 50));
-          const price = calculatorNumber('purchasePrice', 3000000, 0, 1000000000);
-          const downPct = calculatorNumber('downPayment', 20, 0, 100);
-          const loanTerm = Math.round(calculatorNumber('loanTerm', 15, 1, 50));
-          const rate = calculatorNumber('interestRate', 6, 0, 100);
-
-          let totalRent = 0;
-          let currentRent = rent;
-          for (let i = 0; i < rentYears; i++) {
-            totalRent += currentRent * 12;
-            currentRent *= 1 + rentIncrease / 100;
-          }
-          document.getElementById('totalRent').textContent = formatPeso(totalRent);
-
-          const downPayment = price * (downPct / 100);
-          const loanAmount = Math.max(0, price - downPayment);
-          const monthlyRate = rate / 100 / 12;
-          const months = Math.max(1, loanTerm * 12);
-          const monthlyPayment = monthlyRate > 0
-            ? loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1)
-            : loanAmount / months;
-          const totalBuyCost = downPayment + monthlyPayment * months;
-          document.getElementById('totalBuyCost').textContent = formatPeso(totalBuyCost);
-
-          const verdictEl = document.getElementById('verdictDisplay');
-          if (rent > 0 && price > 0) {
-            const diff = totalBuyCost - totalRent;
-            if (diff < 0) {
-              verdictEl.innerHTML = `<span style="color:#275016;"><i class="fas fa-check-circle"></i> Buying is more affordable by ${formatPeso(Math.abs(diff))} over ${rentYears} years.</span>`;
-            } else if (diff > 0) {
-              verdictEl.innerHTML = `<span style="color:#cc953e;"><i class="fas fa-home"></i> Renting is more affordable by ${formatPeso(diff)} over ${rentYears} years.</span>`;
-            } else {
-              verdictEl.innerHTML = `<span style="color:#6a6a6a;"><i class="fas fa-equals"></i> Renting and buying cost the same over ${rentYears} years.</span>`;
-            }
-          } else {
-            verdictEl.textContent = 'Enter the values above and click calculate to compare.';
-          }
-        };
-        const calculatorButtons = document.querySelectorAll('[data-calc-action="calculate"]');
-        calculatorButtons.forEach((button) => {
-          let touchHandled = false;
-          const runCalculation = () => {
-            calculateRentVsBuy();
-            flashCalculatorButton(button);
-          };
-          button.addEventListener('pointerup', (event) => {
-            if (event.pointerType === 'touch' || event.pointerType === 'pen') {
-              touchHandled = true;
-              runCalculation();
-              window.setTimeout(() => { touchHandled = false; }, 700);
-            }
-          }, { passive: true });
-          button.addEventListener('click', (event) => {
-            if (touchHandled) {
-              event.preventDefault();
-              return;
-            }
-            runCalculation();
-          });
-        });
-
-        
-        const calculatorPanels = document.getElementById('calculatorPanels');
-        const calculatorTabButtons = Array.from(document.querySelectorAll('[data-calc-tab]'));
-        const rentPanel = document.getElementById('rentPanel');
-        const buyPanel = document.getElementById('buyPanel');
-        const calculatorSwipeHint = document.getElementById('calculatorSwipeHint');
-        let activeCalculatorPanel = 'rent';
-        let calculatorTouchStartX = 0;
-        let calculatorTouchStartY = 0;
-        let calculatorTouching = false;
-
-        function triggerCalculatorHaptic() {
-          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-          if (navigator.vibrate && typeof navigator.vibrate === 'function') navigator.vibrate(10);
-        }
-        function setCalculatorPanel(panel, direction, withFeedback) {
-          const previousPanel = activeCalculatorPanel;
-          activeCalculatorPanel = panel === 'buy' ? 'buy' : 'rent';
-          const activePanel = activeCalculatorPanel === 'buy' ? buyPanel : rentPanel;
-          const inactivePanel = activeCalculatorPanel === 'buy' ? rentPanel : buyPanel;
-          if (!activePanel || !inactivePanel) return;
-          activePanel.classList.add('is-active');
-          inactivePanel.classList.remove('is-active');
-          activePanel.setAttribute('aria-hidden', 'false');
-          inactivePanel.setAttribute('aria-hidden', 'true');
-          calculatorTabButtons.forEach((button) => {
-            const isActive = button.dataset.calcTab === activeCalculatorPanel;
-            button.classList.toggle('is-active', isActive);
-            button.setAttribute('aria-selected', String(isActive));
-            button.tabIndex = isActive ? 0 : -1;
-          });
-          if (calculatorPanels) {
-            calculatorPanels.dataset.activePanel = activeCalculatorPanel;
-            calculatorPanels.dataset.swipeDirection = direction || 'next';
-          }
-          if (calculatorSwipeHint) {
-            calculatorSwipeHint.innerHTML = activeCalculatorPanel === 'rent'
-              ? '<i class="fas fa-arrows-left-right" aria-hidden="true"></i> Swipe left to view Buy, or tap a tab.'
-              : '<i class="fas fa-arrows-left-right" aria-hidden="true"></i> Swipe right to view Rent, or tap a tab.';
-          }
-          if (withFeedback !== false && previousPanel !== activeCalculatorPanel) triggerCalculatorHaptic();
-        }
-
-        if (calculatorPanels && rentPanel && buyPanel) {
-          setCalculatorPanel('rent', 'next', false);
-          calculatorTabButtons.forEach((button, index) => {
-            button.addEventListener('click', () => {
-              setCalculatorPanel(button.dataset.calcTab, index === 0 ? 'previous' : 'next', true);
-            });
-            button.addEventListener('keydown', (event) => {
-              if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-              event.preventDefault();
-              const nextIndex = event.key === 'ArrowRight' ? (index + 1) % calculatorTabButtons.length : (index - 1 + calculatorTabButtons.length) % calculatorTabButtons.length;
-              const nextButton = calculatorTabButtons[nextIndex];
-              setCalculatorPanel(nextButton.dataset.calcTab, event.key === 'ArrowRight' ? 'next' : 'previous', true);
-              nextButton.focus();
-            });
-          });
-
-          calculatorPanels.addEventListener('touchstart', (event) => {
-            if (event.touches.length !== 1 || event.target.closest('input, button, label')) {
-              calculatorTouching = false;
-              return;
-            }
-            calculatorTouchStartX = event.touches[0].clientX;
-            calculatorTouchStartY = event.touches[0].clientY;
-            calculatorTouching = true;
-          }, { passive: true });
-          calculatorPanels.addEventListener('touchend', (event) => {
-            if (!calculatorTouching || !event.changedTouches.length) return;
-            calculatorTouching = false;
-            const touch = event.changedTouches[0];
-            const deltaX = touch.clientX - calculatorTouchStartX;
-            const deltaY = touch.clientY - calculatorTouchStartY;
-            const isHorizontalSwipe = Math.abs(deltaX) >= 56 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2;
-            if (!isHorizontalSwipe) return;
-            if (deltaX < 0 && activeCalculatorPanel === 'rent') setCalculatorPanel('buy', 'next', true);
-            if (deltaX > 0 && activeCalculatorPanel === 'buy') setCalculatorPanel('rent', 'previous', true);
-          }, { passive: true });
-        }
-
-        
-        const calculatorInputs = Array.from(document.querySelectorAll('#calculatorPanels input'));
-        let focusedCalculatorInput = null;
-        let calculatorViewportHandler = null;
-        function keepCalculatorInputVisible() {
-          if (!focusedCalculatorInput) return;
-          const viewport = window.visualViewport;
-          const viewportTop = viewport ? viewport.offsetTop : 0;
-          const viewportBottom = viewportTop + (viewport ? viewport.height : window.innerHeight);
-          const safeTop = viewportTop + 72;
-          const safeBottom = viewportBottom - 18;
-          const rect = focusedCalculatorInput.getBoundingClientRect();
-          let offset = 0;
-          if (rect.bottom > safeBottom) offset = rect.bottom - safeBottom;
-          else if (rect.top < safeTop) offset = rect.top - safeTop;
-          if (offset) window.scrollBy({ top: offset, left: 0, behavior: 'auto' });
-        }
-        calculatorInputs.forEach((input) => {
-          input.addEventListener('focus', () => {
-            focusedCalculatorInput = input;
-            document.documentElement.classList.add('calculator-input-focus');
-            document.body.classList.add('calculator-keyboard-open');
-            requestAnimationFrame(keepCalculatorInputVisible);
-            window.setTimeout(keepCalculatorInputVisible, 180);
-            if (window.visualViewport) {
-              calculatorViewportHandler = keepCalculatorInputVisible;
-              window.visualViewport.addEventListener('resize', calculatorViewportHandler, { passive: true });
-            }
-          });
-          input.addEventListener('blur', () => {
-            if (window.visualViewport && calculatorViewportHandler) {
-              window.visualViewport.removeEventListener('resize', calculatorViewportHandler);
-              calculatorViewportHandler = null;
-            }
-            focusedCalculatorInput = null;
-            document.documentElement.classList.remove('calculator-input-focus');
-            document.body.classList.remove('calculator-keyboard-open');
-          });
-          input.addEventListener('input', () => {
-            window.requestAnimationFrame(() => {
-              if (focusedCalculatorInput === input) keepCalculatorInputVisible();
-            });
-          });
-        });
-
-        
-        const testimonialImages = {"santos":"https://drive.google.com/thumbnail?id=1to92kxemMLTJvbiHYeXWlNod6WZXA7-R&sz=w320","villanueva":"https://drive.google.com/thumbnail?id=143T8pg0-3XWOc0i6hdWYV7TWy4TqOLk5&sz=w320"};
-        const testimonialData = [
-          { name:"— Ang Pamilya Santos", location:"Quezon City", text:'"Sobrang napadali ni Charlene ang paghahanap namin ng bahay. Hindi lang siya propesyonal, ramdam mo rin na tunay niyang inaalagaan ang bawat kliyente. Dahil sa kanya, natagpuan namin ang aming pangarap na tahanan!"', image: testimonialImages.santos },
-          { name:"— Ang Pamilya Villanueva", location:"Laguna", text:'"Si Charlene ang pinakamahusay na agent na nakasama namin. Hindi lang siya eksperto sa properties, ramdam mo rin ang kanyang malasakit. Lubos naming ipinagkakatiwala sa kanya ang aming pangarap na tahanan!"', image: testimonialImages.villanueva }
-        ];
-        let currentTestimonialIndex = 0, testimonialInterval, isTransitioning = false;
-        const testimonialContent = document.getElementById('testimonialContent');
-        const testimonialText = document.getElementById('testimonialText');
-        const testimonialName = document.getElementById('testimonialName');
-        const testimonialLocation = document.getElementById('testimonialLocation');
-        const testimonialImage = document.getElementById('testimonialImage');
-
-        function updateMainTestimonial(index) {
-          if (isTransitioning) return;
-          isTransitioning = true;
-          const data = testimonialData[index];
-          if (!data) return;
-          testimonialContent.classList.add('fade-out');
-          testimonialImage.classList.add('fade-out');
-          setTimeout(() => {
-            testimonialText.textContent = data.text;
-            testimonialName.textContent = data.name;
-            testimonialLocation.textContent = data.location;
-            if (data.image) {
-              testimonialImage.src = data.image;
-              testimonialImage.alt = 'Photo from the ' + data.name.replace(/^—\s*/, '') + ' testimonial';
-              testimonialImage.style.display = 'block';
-              testimonialImage.parentElement.hidden = false;
-            } else {
-              testimonialImage.removeAttribute('src');
-              testimonialImage.parentElement.hidden = true;
-            }
-            testimonialContent.classList.remove('fade-out');
-            testimonialContent.classList.add('fade-in');
-            testimonialImage.classList.remove('fade-out');
-            testimonialImage.classList.add('fade-in');
-            currentTestimonialIndex = index;
-            setTimeout(() => {
-              testimonialContent.classList.remove('fade-in');
-              testimonialImage.classList.remove('fade-in');
-              isTransitioning = false;
-            }, 600);
-          }, 600);
-        }
-        function nextTestimonial() {
-          if (isTransitioning) return;
-          const nextIndex = (currentTestimonialIndex + 1) % testimonialData.length;
-          updateMainTestimonial(nextIndex);
-        }
-        function startTestimonialAutoSlide() {
-          if (testimonialInterval) clearInterval(testimonialInterval);
-          testimonialInterval = setInterval(nextTestimonial, 7000);
-        }
-        setTimeout(() => {
-          testimonialContent.classList.add('fade-in');
-          testimonialImage.classList.add('fade-in');
-          setTimeout(() => {
-            testimonialContent.classList.remove('fade-in');
-            testimonialImage.classList.remove('fade-in');
-          }, 600);
-        }, 100);
-        startTestimonialAutoSlide();
-
-        
         const testimonials = [
           { name:"Maria Reyes", location:"📍 Cavite · 2 linggo na", initials:"MR", rating:5, text:'"Sobrang napadali ni Charlene ang paghahanap namin ng bahay! Hindi lang siya propesyonal, ramdam mo rin na tunay niyang inaalagaan ang bawat kliyente."' },
           { name:"Jose Santos", location:"📍 Laguna · 1 buwan na", initials:"JS", rating:5, text:'"Salamat kay Charlene sa pagtulong sa amin na mahanap ang aming unang bahay! Napaka-patient niya at hindi kami minadali sa pagdedesisyon."' },
@@ -5545,7 +5136,6 @@
 
         document.addEventListener('DOMContentLoaded', function() {
           setTimeout(showRandomPopup, 3000 + Math.random()*2000);
-          setTimeout(calculateRentVsBuy, 500);
           updateBackToTopVisibility();
         });
       })();
