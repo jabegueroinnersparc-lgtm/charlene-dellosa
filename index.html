@@ -5262,6 +5262,55 @@
     letter-spacing: -.01em;
   }
 }
+ 
+
+.location-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: .75rem;
+  width: 100%;
+}
+
+.location-grid .location-tag {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: .55rem .7rem;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.location-grid .location-tag i {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 768px) {
+  .location-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .55rem;
+  }
+
+  .location-grid .location-tag {
+    min-height: 42px;
+    padding: .5rem .45rem;
+    font-size: clamp(.7rem, 2.4vw, .84rem);
+  }
+}
+
+@media (max-width: 380px) {
+  .location-grid {
+    gap: .45rem;
+  }
+
+  .location-grid .location-tag {
+    padding-inline: .3rem;
+    font-size: .66rem;
+  }
+}
 </style>
 
  
