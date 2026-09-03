@@ -5211,6 +5211,57 @@
     animation: none !important;
   }
 }
+ 
+
+.pill-group {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: .75rem;
+  width: 100%;
+  margin: 1rem 0 1.5rem;
+}
+
+.pill-group .pill {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  justify-content: center;
+  padding: .5rem .65rem;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.pill-group .pill i {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 768px) {
+  .pill-group {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .55rem;
+  }
+
+  .pill-group .pill {
+    min-height: 40px;
+    padding: .45rem .45rem;
+    font-size: clamp(.66rem, 2.2vw, .78rem);
+    gap: .35rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .pill-group {
+    gap: .45rem;
+  }
+
+  .pill-group .pill {
+    padding-inline: .3rem;
+    font-size: .63rem;
+    letter-spacing: -.01em;
+  }
+}
 </style>
 
  
