@@ -153,6 +153,114 @@
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
        
+      :root {
+        --scroll-accent: #cc953e;
+        --scroll-accent-rgb: 204,149,62;
+        --scroll-progress: 0;
+      }
+      .scroll-accent-wash {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: .78;
+        background:
+          radial-gradient(circle at 91% calc(18% + (var(--scroll-progress) * 58%)), rgba(var(--scroll-accent-rgb), .16), transparent 24%),
+          radial-gradient(circle at 5% calc(72% - (var(--scroll-progress) * 34%)), rgba(6,60,36,.075), transparent 27%);
+        transition: background .55s cubic-bezier(.23,1,.32,1);
+        mix-blend-mode: multiply;
+      }
+      .scroll-accent-rail {
+        position: fixed;
+        top: 50%;
+        right: clamp(12px, 2vw, 28px);
+        z-index: 100;
+        width: 6px;
+        height: 150px;
+        border: 1px solid rgba(var(--scroll-accent-rgb), .22);
+        border-radius: 999px;
+        background: rgba(6,60,36,.08);
+        box-shadow: 0 8px 24px rgba(6,60,36,.08);
+        opacity: 0;
+        transform: translateY(-50%) scaleY(.9);
+        transition: opacity .28s ease, transform .28s cubic-bezier(.23,1,.32,1), border-color .45s ease;
+      }
+      .scroll-accent-rail.is-visible { opacity: 1; transform: translateY(-50%) scaleY(1); }
+      .scroll-accent-rail::before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        border: 2px solid var(--scroll-accent);
+        border-radius: 50%;
+        background: #fbf8f2;
+        box-shadow: 0 0 0 5px rgba(var(--scroll-accent-rgb), .12), 0 3px 10px rgba(6,60,36,.16);
+        transform: translateX(-50%);
+        transition: border-color .45s ease, box-shadow .45s ease;
+      }
+      .scroll-accent-rail::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: -8px;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--scroll-accent);
+        transform: translateX(-50%);
+        transition: background .45s ease;
+      }
+      .scroll-accent-progress {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        border-radius: inherit;
+      }
+      .scroll-accent-progress::before {
+        content: '';
+        position: absolute;
+        inset: auto 0 0;
+        height: calc(var(--scroll-progress) * 100%);
+        border-radius: inherit;
+        background: linear-gradient(180deg, var(--scroll-accent), #f5d68a);
+        box-shadow: 0 0 16px rgba(var(--scroll-accent-rgb), .42);
+        transition: height .18s ease, background .45s ease, box-shadow .45s ease;
+      }
+      .scroll-accent-rail-label {
+        position: absolute;
+        right: 18px;
+        top: 50%;
+        width: max-content;
+        padding: .36rem .58rem;
+        border: 1px solid rgba(var(--scroll-accent-rgb), .18);
+        border-radius: 999px;
+        background: rgba(255,255,255,.82);
+        color: #275016;
+        font-size: .58rem;
+        font-weight: 700;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        opacity: 0;
+        transform: translate(4px, -50%);
+        transition: opacity .25s ease, transform .25s ease, color .45s ease, border-color .45s ease;
+        backdrop-filter: blur(12px);
+      }
+      .scroll-accent-rail:hover .scroll-accent-rail-label,
+      .scroll-accent-rail:focus-within .scroll-accent-rail-label { opacity: 1; transform: translate(0, -50%); }
+      @media (max-width: 768px) {
+        .scroll-accent-rail { top: auto; right: 12px; bottom: 82px; width: 5px; height: 96px; }
+        .scroll-accent-rail-label { display: none; }
+        .scroll-accent-wash { opacity: .58; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .scroll-accent-wash, .scroll-accent-rail, .scroll-accent-rail::before, .scroll-accent-rail::after,
+        .scroll-accent-progress::before, .scroll-accent-rail-label { transition: none !important; }
+      }
+
+       
       :root { --loader-green: #063c24; --loader-emerald: #275016; --loader-gold: #cc953e; --loader-cream: #fbf8f2; }
       html.is-loading, html.is-loading body { overflow: hidden; }
       #pageLoader {
@@ -4007,6 +4115,488 @@
       @media (max-width: 900px) { .pain-point-image-wrap { height: 160px; } }
       @media (max-width: 560px) { .pain-point-image-wrap { height: 190px; } }
       @media (prefers-reduced-motion: reduce) { .pain-point-image { transition: none; } .pain-point-card:hover .pain-point-image { transform: none; } }
+ 
+
+:root {
+  --pastel-cream: #fffaf4;
+  --pastel-blush: #fff1f1;
+  --pastel-peach: #fff4e8;
+  --pastel-sage: #eef7ef;
+  --pastel-blue: #eef6fb;
+  --pastel-lilac: #f5f0fb;
+  --pastel-ink: #173226;
+  --pastel-muted: #5d625d;
+  --pastel-line: rgba(6, 60, 36, .10);
+  --pastel-shadow: 0 18px 45px rgba(39, 80, 22, .08);
+}
+
+ 
+.main-content {
+  background:
+    radial-gradient(circle at 4% 12%, rgba(255, 224, 219, .55), transparent 24%),
+    radial-gradient(circle at 96% 58%, rgba(222, 240, 229, .60), transparent 28%),
+    #faf8f5;
+}
+
+ 
+.landing-card,
+.footer-section {
+  background: linear-gradient(145deg, rgba(255,255,255,.96), var(--pastel-cream));
+  border: 1px solid var(--pastel-line);
+  box-shadow: var(--pastel-shadow);
+}
+
+.landing-card {
+  overflow: hidden;
+}
+
+ 
+.landing-card::before,
+.footer-section::before {
+  content: '';
+  position: absolute;
+  top: -74px;
+  right: -58px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(247, 214, 183, .24);
+  pointer-events: none;
+}
+
+ 
+.service-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 210px;
+  background: var(--pastel-sage);
+  border: 1px solid rgba(39, 80, 22, .10);
+  box-shadow: 0 10px 28px rgba(39, 80, 22, .055);
+}
+
+.service-card:nth-child(2n) {
+  background: var(--pastel-peach);
+  border-color: rgba(204, 149, 62, .14);
+}
+
+.service-card:nth-child(3n) {
+  background: var(--pastel-blue);
+  border-color: rgba(71, 130, 160, .12);
+}
+
+.service-card:nth-child(4n) {
+  background: var(--pastel-lilac);
+  border-color: rgba(120, 93, 160, .12);
+}
+
+.service-card::after {
+  content: '';
+  position: absolute;
+  right: -26px;
+  bottom: -34px;
+  width: 105px;
+  height: 105px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.42);
+  pointer-events: none;
+}
+
+.service-card i {
+  position: relative;
+  z-index: 1;
+  display: inline-grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1rem;
+  border-radius: 18px;
+  background: rgba(255,255,255,.66);
+  box-shadow: 0 7px 16px rgba(39, 80, 22, .07);
+  color: #b47b2b;
+}
+
+.service-card h4,
+.service-card p {
+  position: relative;
+  z-index: 1;
+}
+
+.service-card:hover {
+  transform: translateY(-7px);
+  border-color: rgba(39, 80, 22, .22);
+  box-shadow: 0 18px 36px rgba(39, 80, 22, .12);
+}
+
+ 
+.trust-stats {
+  background: linear-gradient(135deg, #fff5e9 0%, #f0f8f0 100%);
+  border: 1px solid rgba(39, 80, 22, .10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.75);
+}
+
+.trust-stat-item {
+  border-radius: 14px;
+  padding: .8rem .5rem;
+}
+
+.trust-stat-item:nth-child(2) { background: rgba(255,255,255,.40); }
+.trust-stat-item:nth-child(3) { background: rgba(255,231,223,.36); }
+
+ 
+.location-tag {
+  background: #f1f8f1;
+  border-color: rgba(39, 80, 22, .12);
+  color: var(--pastel-ink);
+}
+
+.location-tag:nth-child(3n) {
+  background: #fff3ea;
+  border-color: rgba(204, 149, 62, .15);
+}
+
+.location-tag:nth-child(4n) {
+  background: #f0f6fb;
+  border-color: rgba(71, 130, 160, .13);
+}
+
+.location-tag:hover {
+  background: #fffdf9;
+  border-color: #cc953e;
+  box-shadow: 0 8px 18px rgba(204,149,62,.12);
+}
+
+ 
+.calc-box {
+  background: linear-gradient(145deg, #f1f8f1, #fbfdf9);
+  border-color: rgba(39, 80, 22, .10);
+}
+
+.calc-box:nth-child(2n) {
+  background: linear-gradient(145deg, #fff4e9, #fffdf9);
+  border-color: rgba(204, 149, 62, .13);
+}
+
+.calc-box input {
+  background: rgba(255,255,255,.82);
+  border-color: rgba(39, 80, 22, .14);
+}
+
+ 
+.faq-list details {
+  background: #fffaf4;
+  border-color: rgba(204, 149, 62, .16);
+  box-shadow: 0 6px 18px rgba(39, 80, 22, .035);
+  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+.faq-list details:nth-child(2n) { background: #f2f8f2; }
+
+.faq-list details[open] {
+  background: #fff4e8;
+  border-color: rgba(204, 149, 62, .32);
+  box-shadow: 0 10px 24px rgba(204, 149, 62, .09);
+}
+
+ 
+.testimonial-box {
+  background: linear-gradient(135deg, #fff4f2 0%, #fffaf4 55%, #eef7ef 100%);
+  border-left-color: #d99b8d;
+  border-right-color: #7ca986;
+  box-shadow: 0 16px 34px rgba(39, 80, 22, .08);
+}
+
+ 
+.pill { background: #fff4e8; border-color: rgba(204,149,62,.17); }
+.pill:nth-child(2n) { background: #eef7ef; border-color: rgba(39,80,22,.14); }
+.pill:nth-child(3n) { background: #f4f0fb; border-color: rgba(120,93,160,.14); }
+
+ 
+.service-card:focus-within,
+.location-tag:focus-visible,
+.faq-list details:focus-within {
+  outline: 3px solid rgba(204,149,62,.34);
+  outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+  .service-card { min-height: 0; }
+  .landing-card::before,
+  .footer-section::before { opacity: .55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-card,
+  .faq-list details { transition: none; }
+}
+ 
+
+ 
+.hero-particles { display: none; }
+
+.badge-ring {
+  opacity: .58;
+  animation-duration: 48s;
+}
+
+.floating-badges .badge {
+  background: rgba(23, 50, 38, .72);
+  border-color: rgba(255,255,255,.34);
+}
+
+ 
+.floating-badges .badge:nth-child(3) { display: none; }
+
+.trust-builders {
+  background: rgba(23, 50, 38, .78);
+  border-left: 3px solid #f5d68a;
+  border-right: 0;
+  box-shadow: 0 12px 28px rgba(6,60,36,.17);
+}
+
+.hero-text {
+  text-shadow: none;
+}
+
+.hero-text .subtitle {
+  max-width: 620px;
+  line-height: 1.75;
+}
+
+.hero-consultation-cta {
+  min-height: 64px;
+  padding: .85rem 1.25rem;
+  gap: .75rem;
+}
+
+.hero-consultation-cta-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.hero-consultation-cta-copy small {
+  margin-top: .18rem;
+  font-size: .68rem;
+  font-weight: 400;
+  opacity: .88;
+  letter-spacing: 0;
+}
+
+.hero-proof {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .55rem 1rem;
+  margin-left: .15rem;
+  color: #275016;
+  font-size: .72rem;
+  font-weight: 600;
+}
+
+.hero-proof span {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+}
+
+.hero-proof i { color: #b47b2b; }
+
+@media (max-width: 768px) {
+  .floating-badges .badge:nth-child(3) { display: none; }
+  .hero-proof { justify-content: center; margin-top: .2rem; }
+  .hero-consultation-cta { width: 100%; }
+}
+
+ 
+.service-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 245px;
+  padding: 1.65rem 1.35rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.service-card::before {
+  content: 'PROPERTY SUPPORT';
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  margin-bottom: .8rem;
+  padding: .25rem .62rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,.58);
+  color: #6a735f;
+  font-size: .58rem;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+
+.service-card:nth-child(2)::before { content: 'SELL WITH CONFIDENCE'; }
+.service-card:nth-child(3)::before { content: 'GROW YOUR FUTURE'; }
+.service-card:nth-child(4)::before { content: 'PEACE OF MIND'; }
+
+.service-card i {
+  flex: 0 0 auto;
+  margin-bottom: .9rem;
+}
+
+.service-card h4 {
+  min-height: 2.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: .6rem;
+  line-height: 1.35;
+}
+
+.service-card p {
+  max-width: 245px;
+  margin: 0;
+  line-height: 1.65;
+}
+
+.service-card::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 46px;
+  height: 4px;
+  border-radius: 999px 999px 0 0;
+  background: #cc953e;
+  transform: translateX(-50%);
+  opacity: .72;
+}
+
+.service-card:hover::after { width: 76px; opacity: 1; }
+
+ 
+#client-path {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, .92fr);
+  gap: 2.4rem;
+  align-items: center;
+  background:
+    radial-gradient(circle at 92% 8%, rgba(255, 219, 205, .72), transparent 29%),
+    radial-gradient(circle at 4% 96%, rgba(207, 235, 213, .62), transparent 34%),
+    linear-gradient(135deg, #fffaf4 0%, #eef7ef 100%);
+  border: 1px solid rgba(39,80,22,.14);
+  box-shadow: 0 22px 50px rgba(39,80,22,.11);
+}
+
+#client-path::before {
+  content: 'A CALMER WAY TO START';
+  position: absolute;
+  top: 1.15rem;
+  right: 1.6rem;
+  color: rgba(39,80,22,.48);
+  font-size: .6rem;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+#client-path > div:first-child {
+  position: relative;
+  z-index: 1;
+  padding: .7rem 0;
+}
+
+#client-path h3 {
+  max-width: 520px;
+  margin: .45rem 0 .75rem;
+  color: #063c24;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 3vw, 2.55rem);
+  line-height: 1.12;
+}
+
+#client-path > div:first-child > p {
+  max-width: 560px;
+  color: #4d5b50;
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+
+#client-path .btn-primary {
+  box-shadow: 0 12px 26px rgba(204,149,62,.24);
+}
+
+.path-steps {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: .75rem;
+  padding: 1rem;
+  border: 1px solid rgba(39,80,22,.10);
+  border-radius: 1.35rem;
+  background: rgba(255,255,255,.58);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+}
+
+.path-step {
+  display: flex;
+  align-items: flex-start;
+  gap: .8rem;
+  padding: .75rem;
+  border-radius: 1rem;
+  background: rgba(255,255,255,.48);
+}
+
+.path-step:nth-child(2) { background: rgba(255,244,232,.58); }
+.path-step:nth-child(3) { background: rgba(238,246,251,.58); }
+
+.step-number {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #275016;
+  color: #fff;
+  font-weight: 800;
+  font-size: .8rem;
+  box-shadow: 0 5px 12px rgba(39,80,22,.18);
+}
+
+.path-step:nth-child(2) .step-number { background: #cc953e; }
+.path-step:nth-child(3) .step-number { background: #6c9bb2; }
+
+.path-step strong {
+  display: block;
+  color: #173226;
+  font-size: .92rem;
+}
+
+.path-step small {
+  display: block;
+  margin-top: .18rem;
+  color: #68736b;
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  #client-path { grid-template-columns: 1fr; gap: 1.4rem; }
+  #client-path::before { position: static; display: block; margin-bottom: -.55rem; }
+}
+
+@media (max-width: 560px) {
+  #client-path { padding: 1.45rem 1.1rem; }
+  #client-path h3 { font-size: 1.85rem; }
+  #client-path > div:first-child > p { font-size: .95rem; }
+  .service-card { min-height: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-ring { animation: none; }
+}
 </style>
 
  
@@ -4486,6 +5076,12 @@
       <i class="fas fa-arrow-up" aria-hidden="true"></i><span>Top</span>
     </button>
 
+    <div class="scroll-accent-wash" aria-hidden="true"></div>
+    <div class="scroll-accent-rail" id="scrollAccentRail" aria-hidden="true">
+      <div class="scroll-accent-progress"></div>
+      <span class="scroll-accent-rail-label" id="scrollAccentLabel">Welcome</span>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
     <script>
       (function(){
@@ -4616,13 +5212,46 @@
         const heroBg = document.querySelector('.hero-bg-layer');
         const particles = document.querySelector('.hero-particles');
         const profileImg = document.querySelector('.profile-image-wrapper');
+        const accentRail = document.getElementById('scrollAccentRail');
+        const accentLabel = document.getElementById('scrollAccentLabel');
+        const accentSections = [
+          { selector: '.hero', color: '#cc953e', rgb: '204,149,62', label: 'Welcome' },
+          { selector: '#services', color: '#275016', rgb: '39,80,22', label: 'Services' },
+          { selector: '#calculator', color: '#cc953e', rgb: '204,149,62', label: 'Plan ahead' },
+          { selector: '#homebuyer-mistakes', color: '#9a6017', rgb: '154,96,23', label: 'Buyer guide' },
+          { selector: '#faq', color: '#063c24', rgb: '6,60,36', label: 'Helpful answers' },
+          { selector: '#contact-section', color: '#cc953e', rgb: '204,149,62', label: 'Let’s connect' }
+        ].map(item => ({ ...item, element: document.querySelector(item.selector) })).filter(item => item.element);
+        let activeAccent = '';
+        function updateScrollAccent(scrollY = getScrollY()) {
+          const pageHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+          const maxScroll = Math.max(1, pageHeight - window.innerHeight);
+          const progress = Math.min(1, Math.max(0, scrollY / maxScroll));
+          document.documentElement.style.setProperty('--scroll-progress', progress.toFixed(4));
+          if (accentRail) accentRail.classList.toggle('is-visible', scrollY > 80);
+          if (!accentSections.length) return;
+          const focusLine = window.innerHeight * .34;
+          const current = accentSections.reduce((best, item) => {
+            const distance = Math.abs(item.element.getBoundingClientRect().top - focusLine);
+            return !best || distance < best.distance ? { ...item, distance } : best;
+          }, null);
+          if (current && current.selector !== activeAccent) {
+            activeAccent = current.selector;
+            document.documentElement.style.setProperty('--scroll-accent', current.color);
+            document.documentElement.style.setProperty('--scroll-accent-rgb', current.rgb);
+            if (accentLabel) accentLabel.textContent = current.label;
+          }
+        }
         let ticking = false;
+        updateScrollAccent();
+        window.addEventListener('resize', () => updateScrollAccent(), { passive: true });
         window.addEventListener('scroll', function() {
           if(!ticking) {
             window.requestAnimationFrame(function() {
               const scrollY = getScrollY();
               if(particles) particles.style.transform = `translateZ(-0.5px) scale(1.5) translateY(${scrollY * 0.15}px)`;
               if(profileImg && scrollY < window.innerHeight) profileImg.style.transform = `translateY(${scrollY * -0.12}px)`;
+              updateScrollAccent(scrollY);
               ticking = false;
             });
             ticking = true;
