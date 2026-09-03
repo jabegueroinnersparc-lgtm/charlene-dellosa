@@ -5034,6 +5034,64 @@
     grid-template-columns: minmax(0, 1.45fr) minmax(320px, .85fr);
   }
 }
+ 
+
+@media (min-width: 1024px) {
+  #mainTestimonial .testimonial-card {
+    opacity: 0;
+    transform: translateX(-28px);
+    transition: opacity .72s ease, transform .72s cubic-bezier(.2,.8,.2,1),
+                box-shadow .3s ease, border-color .3s ease;
+    will-change: opacity, transform;
+  }
+
+  #mainTestimonial .testimonial-card:nth-child(2) {
+    transform: translateX(28px);
+  }
+
+  #mainTestimonial .testimonial-card.is-testimonial-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  #mainTestimonial .testimonial-card.is-testimonial-visible:hover {
+    transform: translateY(-4px);
+  }
+
+  #mainTestimonial .testimonial-card .testimonial-row {
+    grid-template-columns: minmax(0, 1.15fr) minmax(350px, 1fr) !important;
+    gap: clamp(2rem, 4vw, 4.2rem);
+  }
+
+  #mainTestimonial .testimonial-card .testimonial-image-wrapper {
+    width: 100% !important;
+    max-width: 440px;
+    margin-inline: auto;
+  }
+
+  #mainTestimonial .testimonial-card .testimonial-text p {
+    max-width: 62ch;
+  }
+}
+
+@media (min-width: 1400px) {
+  #mainTestimonial .testimonial-card .testimonial-row {
+    grid-template-columns: minmax(0, 1.2fr) minmax(410px, 1fr) !important;
+    gap: 4.8rem;
+  }
+
+  #mainTestimonial .testimonial-card .testimonial-image-wrapper {
+    max-width: 500px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #mainTestimonial .testimonial-card {
+    opacity: 1;
+    transform: none;
+    transition: none !important;
+  }
+}
 </style>
 
  
@@ -6343,6 +6401,46 @@
     if (mobileQuery.addEventListener) mobileQuery.addEventListener('change', updateMobileNav);
     else if (mobileQuery.addListener) mobileQuery.addListener(updateMobileNav);
     updateMobileNav();
+  }());
+</script>
+<script>
+  (function () {
+    const testimonialCards = document.querySelectorAll('#mainTestimonial .testimonial-card');
+    if (!testimonialCards.length) return;
+
+    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+    const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function showAllCards() {
+      testimonialCards.forEach(card => card.classList.add('is-testimonial-visible'));
+    }
+
+    if (!desktopQuery.matches || reduceMotionQuery.matches || !('IntersectionObserver' in window)) {
+      showAllCards();
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries, instance) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-testimonial-visible');
+        instance.unobserve(entry.target);
+      });
+    }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+
+    testimonialCards.forEach(card => observer.observe(card));
+
+    const handleModeChange = () => {
+      if (!desktopQuery.matches || reduceMotionQuery.matches) {
+        observer.disconnect();
+        showAllCards();
+      }
+    };
+
+    if (desktopQuery.addEventListener) desktopQuery.addEventListener('change', handleModeChange);
+    else if (desktopQuery.addListener) desktopQuery.addListener(handleModeChange);
+    if (reduceMotionQuery.addEventListener) reduceMotionQuery.addEventListener('change', handleModeChange);
+    else if (reduceMotionQuery.addListener) reduceMotionQuery.addListener(handleModeChange);
   }());
 </script>
   </body>
