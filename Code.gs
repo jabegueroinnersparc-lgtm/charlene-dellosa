@@ -79,11 +79,6 @@ const QUIZ_SPREADSHEET_NAME = 'Charlene Dellosa · Quiz Questions';
 const QUIZ_SPREADSHEET_ID = '';
 const QUIZ_CACHE_SECONDS = 60;
 
-// Services Gallery image rows. Edit the IMAGES column in this sheet only.
-const IMAGE_GALLERY_SHEET_NAME = 'Image Gallery';
-const IMAGE_GALLERY_CACHE_SECONDS = 60;
-
-
 function doGet(e) {
   if (e && e.parameter && e.parameter.sitemap === '1') {
     return ContentService
@@ -93,10 +88,6 @@ function doGet(e) {
 
   if (e && e.parameter && e.parameter.unsubscribe) {
     return handleUnsubscribe_(e.parameter.unsubscribe, e.parameter.confirm, e.parameter.cancel);
-  }
-  // The website's gallery requests JSON with ?images=1.
-  if (e && e.parameter && e.parameter.images === '1') {
-    return getGalleryImagesResponse_(e);
   }
   const template = HtmlService.createTemplateFromFile('Index');
   // Read image IDs from the Image Settings sheet so visual updates do not require code edits.
@@ -338,120 +329,6 @@ function repairQuizQuestionsColumnA() {
   activeRange.setDataValidation(SpreadsheetApp.newDataValidation().requireCheckbox().build());
   cacheQuizQuestions();
   return { ok: true, message: 'Quiz Questions Column A repaired and converted to checkboxes.', rows: lastRow - 1 };
-}
-
-/**
- * Returns the Services Gallery rows as JSON for Index.html.
- * Expected columns in the Image Gallery tab:
- * IMAGE_KEY | IMAGES | IMAGE_ALT | ACTIVE
- */
-function getGalleryImagesResponse_(e) {
-  const activeOnly = String(e.parameter.activeOnly || '').toLowerCase() === 'true';
-  const cache = CacheService.getScriptCache();
-  const cacheKey = 'websiteGalleryImages_' + (activeOnly ? 'active' : 'all');
-  const cached = cache.get(cacheKey);
-  if (cached) return jsonResponse_(JSON.parse(cached));
-
-  const properties = PropertiesService.getScriptProperties();
-  const spreadsheetId = properties.getProperty('IMAGE_SETTINGS_SPREADSHEET_ID') ||
-    properties.getProperty('LINK_LIBRARY_SPREADSHEET_ID');
-  if (!spreadsheetId) return jsonResponse_({ success: true, data: [] });
-
-  try {
-    const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
-    const sheet = spreadsheet.getSheetByName(IMAGE_GALLERY_SHEET_NAME);
-    if (!sheet || sheet.getLastRow() < 2) return jsonResponse_({ success: true, data: [] });
-
-    const values = sheet.getDataRange().getDisplayValues();
-    const headers = values[0].map(function(value) { return String(value).trim().toUpperCase(); });
-    const keyIndex = headers.indexOf('IMAGE_KEY');
-    const imageIndex = headers.indexOf('IMAGES');
-    const altIndex = headers.indexOf('IMAGE_ALT');
-    const activeIndex = headers.indexOf('ACTIVE');
-    if (keyIndex === -1 || imageIndex === -1) {
-      throw new Error('Image Gallery must contain IMAGE_KEY and IMAGES headers.');
-    }
-
-    const data = values.slice(1).map(function(row) {
-      return {
-        IMAGE_KEY: String(row[keyIndex] || '').trim(),
-        IMAGES: normalizeGalleryImageUrl_(row[imageIndex]),
-        IMAGE_ALT: altIndex === -1 ? '' : String(row[altIndex] || '').trim(),
-        ACTIVE: activeIndex === -1 ? true : toGalleryBoolean_(row[activeIndex])
-      };
-    }).filter(function(row) {
-      return row.IMAGE_KEY && row.IMAGES && (!activeOnly || row.ACTIVE);
-    });
-
-    const result = { success: true, data: data };
-    cache.put(cacheKey, JSON.stringify(result), IMAGE_GALLERY_CACHE_SECONDS);
-    return jsonResponse_(result);
-  } catch (error) {
-    console.error('Gallery image endpoint error: ' + error.message);
-    return jsonResponse_({ success: false, error: error.message });
-  }
-}
-
-function normalizeGalleryImageUrl_(value) {
-  const url = String(value || '').trim();
-  if (!url) return '';
-  const fileMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (fileMatch) return 'https://drive.google.com/uc?export=view&id=' + fileMatch[1];
-  const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (url.indexOf('drive.google.com') !== -1 && idMatch) {
-    return 'https://drive.google.com/uc?export=view&id=' + idMatch[1];
-  }
-  return /^https?:\/\//i.test(url) ? url : '';
-}
-
-function toGalleryBoolean_(value) {
-  return ['true', 'yes', '1', 'active'].indexOf(String(value || '').trim().toLowerCase()) !== -1;
-}
-
-function jsonResponse_(body) {
-  return ContentService.createTextOutput(JSON.stringify(body))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-/** Creates the Image Gallery tab in the existing link-library spreadsheet. */
-function setupImageGallerySheet() {
-  const properties = PropertiesService.getScriptProperties();
-  const spreadsheetId = properties.getProperty('IMAGE_SETTINGS_SPREADSHEET_ID') ||
-    properties.getProperty('LINK_LIBRARY_SPREADSHEET_ID');
-  if (!spreadsheetId) throw new Error('Run setupLinkLibrary() or setupImageSettingsSheet() first.');
-
-  const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
-  const sheet = spreadsheet.getSheetByName(IMAGE_GALLERY_SHEET_NAME) || spreadsheet.insertSheet(IMAGE_GALLERY_SHEET_NAME);
-  const headers = ['IMAGE_KEY', 'IMAGES', 'IMAGE_ALT', 'ACTIVE'];
-  const starterRows = [
-    ['gallery-1', '', 'Client property viewing', true],
-    ['gallery-2', '', 'Modern house listing', true],
-    ['gallery-3', '', 'House exterior', true],
-    ['gallery-4', '', 'Bright home interior', true],
-    ['gallery-5', '', 'Family home', true],
-    ['gallery-6', '', 'Stylish house interior', true]
-  ];
-
-  if (sheet.getLastRow() === 0) {
-    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
-    sheet.getRange(2, 1, starterRows.length, headers.length).setValues(starterRows);
-  } else {
-    const currentHeaders = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), headers.length)).getDisplayValues()[0];
-    headers.forEach(function(header, index) {
-      if (String(currentHeaders[index] || '').trim().toUpperCase() !== header) {
-        sheet.getRange(1, index + 1).setValue(header);
-      }
-    });
-  }
-  sheet.setFrozenRows(1);
-  sheet.getRange(1, 1, 1, headers.length).setBackground('#063c24').setFontColor('#ffffff').setFontWeight('bold');
-  sheet.setColumnWidth(1, 130);
-  sheet.setColumnWidth(2, 520);
-  sheet.setColumnWidth(3, 260);
-  sheet.setColumnWidth(4, 90);
-  CacheService.getScriptCache().remove('websiteGalleryImages_active');
-  CacheService.getScriptCache().remove('websiteGalleryImages_all');
-  return { spreadsheetId: spreadsheet.getId(), spreadsheetUrl: spreadsheet.getUrl(), sheetName: IMAGE_GALLERY_SHEET_NAME };
 }
 
 function getImageSettings_() {
@@ -1744,6 +1621,5 @@ function deleteLatestTestLead() {
   sheet.deleteRow(lastRow);
   Logger.log('Deleted test row ' + lastRow + '.');
 }
-
 
 
