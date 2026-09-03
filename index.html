@@ -3147,7 +3147,6 @@
         max-width: 1450px;
         margin: 0 auto;
       }
-      .hero .profile-section { display: none; }
       .hero .hero-text {
         position: relative;
         width: min(100%, 700px);
@@ -4007,6 +4006,27 @@
       @media (max-width: 900px) { .pain-point-image-wrap { height: 160px; } }
       @media (max-width: 560px) { .pain-point-image-wrap { height: 190px; } }
       @media (prefers-reduced-motion: reduce) { .pain-point-image { transition: none; } .pain-point-card:hover .pain-point-image { transform: none; } }
+
+       
+      @media (max-width: 560px) {
+        .testimonial-card {
+          justify-content: flex-start;
+          min-height: 0;
+        }
+        .testimonial-card .testimonial-row {
+          flex: 0 0 auto;
+          gap: .75rem;
+        }
+        .testimonial-card .testimonial-text {
+          flex: 0 0 auto;
+        }
+        .testimonial-card .testimonial-image-slot {
+          margin: 0 auto;
+        }
+        .testimonial-card .client-info {
+          margin-top: .75rem;
+        }
+      }
 </style>
 
  
