@@ -4939,6 +4939,38 @@
 @media (prefers-reduced-motion: reduce) {
   .mobile-nav { transition: none !important; }
 }
+ 
+
+@media (max-width: 768px) {
+   
+  .mobile-nav:not(.is-scroll-hidden) {
+    border-bottom: 1px solid rgba(245, 214, 138, .58) !important;
+    box-shadow:
+      0 8px 22px rgba(6, 60, 36, .22),
+      0 2px 0 rgba(245, 214, 138, .22),
+      0 0 26px rgba(245, 214, 138, .10);
+  }
+
+  .mobile-nav:not(.is-scroll-hidden)::after {
+    content: '';
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, #f5d68a, transparent);
+    opacity: .7;
+    pointer-events: none;
+  }
+}
+
+ 
+.testimonial-card .testimonial-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
 </style>
 
  
@@ -5196,11 +5228,11 @@
                   <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
                   <div class="testimonial-content testimonial-scroll" aria-label="Client testimonials">
                     <article class="testimonial-card">
-                      <div class="testimonial-row"><div class="testimonial-text"><p>"Sobrang napadali ni Charlene ang paghahanap namin ng bahay. Hindi lang siya propesyonal, ramdam mo rin na tunay niyang inaalagaan ang bawat kliyente. Dahil sa kanya, natagpuan namin ang aming pangarap na tahanan!"</p></div><div class="testimonial-image-slot"><div class="testimonial-image-wrapper"><img class="testimonial-image" loading="lazy" decoding="async" src="https://drive.google.com/thumbnail?id=1to92kxemMLTJvbiHYeXWlNod6WZXA7-R&amp;sz=w320" fetchpriority="low" alt="Photo from the Santos family testimonial" /></div></div></div>
+                      <div class="testimonial-row"><div class="testimonial-text"><p>"Sobrang napadali ni Charlene ang paghahanap namin ng bahay. Hindi lang siya propesyonal, ramdam mo rin na tunay niyang inaalagaan ang bawat kliyente. Dahil sa kanya, natagpuan namin ang aming pangarap na tahanan!"</p></div><div class="testimonial-image-slot"><div class="testimonial-image-wrapper"><img class="testimonial-image" loading="lazy" decoding="async" sizes="(max-width: 768px) calc(100vw - 3rem), 320px" src="https://drive.google.com/thumbnail?id=1to92kxemMLTJvbiHYeXWlNod6WZXA7-R&amp;sz=w320" fetchpriority="low" alt="Photo from the Santos family testimonial" /></div></div></div>
                       <div class="client-info"><div class="client-details"><span class="client-name">— Ang Pamilya Santos</span><span class="client-location">Quezon City</span></div><div class="kaia-brand"><div class="kaia-icon">KAIA</div><div class="kaia-text"><span class="kaia-main">#AngTunayNakayaMo</span><span class="kaia-sub">B28L7 · B28L9 · MSKALA</span></div><span class="kaia-hashtag">✨ KAIA</span></div></div>
                     </article>
                     <article class="testimonial-card">
-                      <div class="testimonial-row"><div class="testimonial-text"><p>"Si Charlene ang pinakamahusay na agent na nakasama namin. Hindi lang siya eksperto sa properties, ramdam mo rin ang kanyang malasakit. Lubos naming ipinagkakatiwala sa kanya ang aming pangarap na tahanan!"</p></div><div class="testimonial-image-slot"><div class="testimonial-image-wrapper"><img class="testimonial-image" loading="lazy" decoding="async" src="https://drive.google.com/thumbnail?id=143T8pg0-3XWOc0i6hdWYV7TWy4TqOLk5&amp;sz=w320" fetchpriority="low" alt="Photo from the Villanueva family testimonial" /></div></div></div>
+                      <div class="testimonial-row"><div class="testimonial-text"><p>"Si Charlene ang pinakamahusay na agent na nakasama namin. Hindi lang siya eksperto sa properties, ramdam mo rin ang kanyang malasakit. Lubos naming ipinagkakatiwala sa kanya ang aming pangarap na tahanan!"</p></div><div class="testimonial-image-slot"><div class="testimonial-image-wrapper"><img class="testimonial-image" loading="lazy" decoding="async" sizes="(max-width: 768px) calc(100vw - 3rem), 320px" src="https://drive.google.com/thumbnail?id=143T8pg0-3XWOc0i6hdWYV7TWy4TqOLk5&amp;sz=w320" fetchpriority="low" alt="Photo from the Villanueva family testimonial" /></div></div></div>
                       <div class="client-info"><div class="client-details"><span class="client-name">— Ang Pamilya Villanueva</span><span class="client-location">Laguna</span></div><div class="kaia-brand"><div class="kaia-icon">KAIA</div><div class="kaia-text"><span class="kaia-main">#AngTunayNakayaMo</span><span class="kaia-sub">B28L7 · B28L9 · MSKALA</span></div><span class="kaia-hashtag">✨ KAIA</span></div></div>
                     </article>
                   </div>
