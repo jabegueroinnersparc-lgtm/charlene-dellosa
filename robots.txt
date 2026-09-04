@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://charlene-dellosa.vercel.app/
+Sitemap: https://charlene-dellosa.vercel.app/sitemap.xml
