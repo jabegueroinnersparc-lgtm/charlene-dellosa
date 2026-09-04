@@ -1622,4 +1622,12 @@ function deleteLatestTestLead() {
   Logger.log('Deleted test row ' + lastRow + '.');
 }
 
+// SEO: do not serve the public landing page from the Apps Script endpoint.
+function doGet(e) {
+  return ContentService
+    .createTextOutput(
+      'This endpoint is no longer the public website. Visit https://charlene-dellosa.vercel.app/'
+     )
+    .setMimeType(ContentService.MimeType.TEXT);
+}
 
