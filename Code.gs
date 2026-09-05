@@ -711,6 +711,7 @@ function sendQuizNotification(payload) {
       subject: clientSubject,
       body: clientText,
       htmlBody: buildClientHtml_(name, mobile, consultationDate, leadType, answers, leadId),
+      // Send exactly one PDF: the configured first-assessment guide.
       attachments: [getQuizGuide_()],
       replyTo: AGENT_EMAIL,
       inlineImages: getEmailBrandLogo_(),
@@ -796,14 +797,13 @@ function buildClientHtml_(name, mobile, consultationDate, leadType, answers, lea
   }).join('');
   const profile = getLeadProfile_(leadType);
   const unsubscribeUrl = getUnsubscribeUrl_(leadId);
-  const guideDownloadUrl = getQuizGuideDownloadUrl_();
-  const guideSection = guideDownloadUrl
-    ? '<div style="margin:24px 0;padding:20px;background:' + BRAND.cream + ';border:1px solid ' + BRAND.line + ';border-radius:10px;text-align:center;">' +
-        '<div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:8px;">Your property guide</div>' +
-        '<p style="margin:0 0 16px;color:' + BRAND.ink + ';font-size:16px;line-height:1.7;">A copy of the guide is attached to this email. You can also download it using the button below.</p>' +
-        '<a href="' + escapeHtml_(guideDownloadUrl) + '" target="_blank" rel="noopener" style="display:inline-block;background:' + BRAND.gold + ';color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;padding:14px 22px;border-radius:24px;">Download Your Property Guide</a>' +
-      '</div>'
-    : '';
+  // The guide is sent only as one PDF attachment.
+  // No download link is included, preventing the client from seeing a second PDF path.
+  const guideSection =
+    '<div style="margin:24px 0;padding:20px;background:' + BRAND.cream + ';border:1px solid ' + BRAND.line + ';border-radius:10px;text-align:center;">' +
+      '<div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:8px;">Your property guide</div>' +
+      '<p style="margin:0;color:' + BRAND.ink + ';font-size:16px;line-height:1.7;">Your property guide is attached to this email as one PDF file.</p>' +
+    '</div>';
   return emailShell_(
     profile.previewTitle,
     '<div style="background:' + BRAND.deepGreen + ';padding:30px;color:#ffffff;text-align:center;">' +
@@ -1483,7 +1483,6 @@ function buildAgentText_(name, email, mobile, consultationDate, submittedAt, ans
 
 function buildClientText_(name, mobile, consultationDate, leadType, answers, leadId) {
   const profile = getLeadProfile_(leadType);
-  const guideDownloadUrl = getQuizGuideDownloadUrl_();
   const answerText = (answers || []).map(function(item, index) {
     return (index + 1) + '. ' + item.question + '\n   Answer: ' + (item.answer || 'No answer');
   }).join('\n\n');
@@ -1493,7 +1492,7 @@ function buildClientText_(name, mobile, consultationDate, leadType, answers, lea
     'Mobile: ' + mobile,
     'Preferred consultation: ' + consultationDate, '',
     'YOUR SUBMITTED QUIZ ANSWERS', answerText || 'No answers were recorded.', '',
-    'Your property guide is attached to this email.' + (guideDownloadUrl ? ' Download it here: ' + guideDownloadUrl : ''), '',
+    'Your property guide is attached to this email as one PDF file.', '',
     'To stop property guidance emails, use this unsubscribe link: ' + getUnsubscribeUrl_(leadId), '',
     profile.clientPromise,
     'Recommended next step: ' + profile.nextStep,
