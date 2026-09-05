@@ -5589,6 +5589,26 @@
         filter: drop-shadow(0 16px 12px rgba(0,0,0,.42));
         backface-visibility: hidden;
       }
+      .page-loader-text-logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: .12em;
+        aspect-ratio: 1;
+        padding: 12%;
+        border: 2px solid rgba(251,248,242,.92);
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 25%, #cc953e 0%, #a66f25 42%, #275016 100%);
+        color: #fff;
+        font: 700 clamp(.64rem, 2.2vw, .92rem)/1.08 Georgia, serif;
+        letter-spacing: .025em;
+        text-align: center;
+        text-transform: uppercase;
+        box-shadow: 0 0 0 7px rgba(245,214,138,.10), 0 16px 30px rgba(0,0,0,.34), inset 0 1px 14px rgba(255,255,255,.24);
+        transform: translateZ(18px);
+      }
+      .page-loader-text-logo span:last-child { color: #f5d68a; font-size: .82em; letter-spacing: .08em; }
       .page-loader-reflection {
         position: absolute;
         left: 50%;
@@ -5652,6 +5672,7 @@
         .page-loader-mark-wrap { width: clamp(164px, 54vw, 205px); height: clamp(164px, 54vw, 205px); }
         .page-loader-mark-3d { width: 82%; height: 82%; }
         .page-loader-logo { transform: translateZ(12px); }
+        .page-loader-text-logo { padding: 13%; font-size: clamp(.56rem, 3.1vw, .78rem); }
         .page-loader-name { font-size: clamp(1.45rem, 8vw, 2rem); }
         .page-loader-role { letter-spacing: .12em; font-size: .62rem; }
         .page-loader-status { width: min(82vw, 250px); margin-top: 1.15rem; font-size: .68rem; }
@@ -5689,7 +5710,11 @@
           <span class="page-loader-ring"></span>
           <span class="page-loader-ring"></span>
           <div class="page-loader-mark-3d">
-            <img class="page-loader-logo" src="https://drive.google.com/thumbnail?id=1Yxxlyw7bw7Jn7b4hD6nz0UGMCGZOjFcq&amp;sz=w1000" alt="Charlene Dellosa Properties logo" width="180" height="180" onerror="this.onerror=null; this.src='/favicon-brand-180.png';" />
+            <div class="page-loader-logo page-loader-text-logo" role="img" aria-label="The Dynamic Property Specialist">
+              <span>The Dynamic</span>
+              <span>Property</span>
+              <span>Specialist</span>
+            </div>
             <span class="page-loader-reflection"></span>
           </div>
         </div>
@@ -6948,7 +6973,7 @@
         var progressBar = document.getElementById('pageLoaderProgressBar');
         var progressPercent = document.getElementById('pageLoaderProgressPercent');
         var statusText = document.getElementById('pageLoaderStatusText');
-        var loaderLogo = document.querySelector('.page-loader-logo');
+        var loaderLogo = document.querySelector('img.page-loader-logo');
         var particleCanvas = document.getElementById('pageLoaderParticles');
         if (!loader) return;
 
