@@ -7048,40 +7048,53 @@
         var soundContext = null;
         var soundMaster = null;
         var soundEnabled = false;
+        var soundStarting = false;
         var soundCleanup = function () {};
 
          
         function startAmbientSound() {
-          if (soundEnabled) return;
+          if (soundEnabled || soundStarting) return;
           var AudioContext = window.AudioContext || window.webkitAudioContext;
           if (!AudioContext) return;
-          soundContext = soundContext || new AudioContext();
-          if (soundContext.state === 'suspended') soundContext.resume();
-          var now = soundContext.currentTime;
-          soundMaster = soundContext.createGain();
-          soundMaster.gain.setValueAtTime(.0001, now);
-          soundMaster.gain.exponentialRampToValueAtTime(.035, now + .8);
-          soundMaster.connect(soundContext.destination);
-          [196, 293.66, 392].forEach(function (frequency, index) {
-            var oscillator = soundContext.createOscillator();
-            var voiceGain = soundContext.createGain();
-            oscillator.type = index === 1 ? 'triangle' : 'sine';
-            oscillator.frequency.value = frequency;
-            voiceGain.gain.value = index === 2 ? .12 : .18;
-            oscillator.connect(voiceGain);
-            voiceGain.connect(soundMaster);
-            oscillator.start(now);
+          soundStarting = true;
+          try { soundContext = soundContext || new AudioContext(); } catch (error) { soundStarting = false; return; }
+          var resume = soundContext.state === 'suspended' ? soundContext.resume() : Promise.resolve();
+          resume.then(function () {
+            if (!soundContext || soundContext.state !== 'running') throw new Error('Audio autoplay was blocked');
+            var now = soundContext.currentTime;
+            soundMaster = soundContext.createGain();
+            soundMaster.gain.setValueAtTime(.0001, now);
+            soundMaster.gain.exponentialRampToValueAtTime(.035, now + .8);
+            soundMaster.connect(soundContext.destination);
+            [196, 293.66, 392].forEach(function (frequency, index) {
+              var oscillator = soundContext.createOscillator();
+              var voiceGain = soundContext.createGain();
+              oscillator.type = index === 1 ? 'triangle' : 'sine';
+              oscillator.frequency.value = frequency;
+              voiceGain.gain.value = index === 2 ? .12 : .18;
+              oscillator.connect(voiceGain);
+              voiceGain.connect(soundMaster);
+              oscillator.start(now);
+            });
+            soundStarting = false;
+            soundEnabled = true;
+            window.removeEventListener('pointerdown', startSoundFromGesture);
+            window.removeEventListener('keydown', startSoundFromGesture);
+            if (soundToggle) {
+              soundToggle.setAttribute('aria-pressed', 'true');
+              soundToggle.setAttribute('aria-label', 'Disable ambient loading sound');
+              soundToggle.querySelector('.loader-sound-label').textContent = 'Sound on';
+            }
+          }).catch(function () {
+            soundStarting = false;
+            if (soundToggle) soundToggle.querySelector('.loader-sound-label').textContent = 'Tap for sound';
           });
-          soundEnabled = true;
-          if (soundToggle) {
-            soundToggle.setAttribute('aria-pressed', 'true');
-            soundToggle.setAttribute('aria-label', 'Disable ambient loading sound');
-            soundToggle.querySelector('.loader-sound-label').textContent = 'Sound on';
-          }
         }
 
         function stopAmbientSound() {
-          if (!soundContext || !soundMaster) return;
+          window.removeEventListener('pointerdown', startSoundFromGesture);
+          window.removeEventListener('keydown', startSoundFromGesture);
+          if (!soundContext || !soundMaster) { soundStarting = false; return; }
           var now = soundContext.currentTime;
           soundMaster.gain.cancelScheduledValues(now);
           soundMaster.gain.setValueAtTime(Math.max(soundMaster.gain.value, .0001), now);
@@ -7106,6 +7119,15 @@
           });
           soundCleanup = stopAmbientSound;
         }
+
+         
+        window.setTimeout(startAmbientSound, 80);
+        function startSoundFromGesture(event) {
+          if (soundToggle && soundToggle.contains(event.target)) return;
+          if (!soundEnabled) startAmbientSound();
+        }
+        window.addEventListener('pointerdown', startSoundFromGesture, { passive: true });
+        window.addEventListener('keydown', startSoundFromGesture);
 
          
         if (particleCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
