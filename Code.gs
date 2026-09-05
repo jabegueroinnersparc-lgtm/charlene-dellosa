@@ -1527,7 +1527,7 @@ function isValidMobile_(mobile) {
  * Replace TEST_CLIENT_EMAIL with an inbox you control before running.
  */
 function testDummyQuizSubmission() {
-  const TEST_CLIENT_EMAIL = 'your-test-email@example.com';
+  const TEST_CLIENT_EMAIL = 'jabeguero.innersparc@gmail.com';
 
   if (TEST_CLIENT_EMAIL === 'your-test-email@example.com') {
     throw new Error('Replace TEST_CLIENT_EMAIL with an inbox you control before running this test.');
