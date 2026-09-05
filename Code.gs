@@ -917,13 +917,20 @@ function getLeadHeaderMap_(sheet) {
   return map;
 }
 
-const NURTURE_CONSENT_VERSION = '2026-08-25-v1';
-// Keep FAST_TEST_MODE true only while validating the automation with a controlled inbox.
-// Set it to false before production use to restore Days 1, 3, 5, 7, 10, 14, 18, 23, and 30.
+const NURTURE_CONSENT_VERSION = '2026-08-25-v2';
+// Set true only while validating with controlled test leads and inboxes.
 const FAST_TEST_MODE = false;
-const NORMAL_NURTURE_OFFSETS_HOURS = [24, 72, 120, 168, 216, 264, 312, 360, 408, 456, 504, 552, 600, 648, 696, 720];
-const FAST_TEST_NURTURE_OFFSETS_HOURS = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-const NURTURE_OFFSETS_HOURS = FAST_TEST_MODE ? FAST_TEST_NURTURE_OFFSETS_HOURS : NORMAL_NURTURE_OFFSETS_HOURS;
+// One nurture email at approximately 24-hour intervals: Days 1 through 30.
+const NORMAL_NURTURE_OFFSETS_HOURS = Array.from({ length: 30 }, function(_, index) {
+  return (index + 1) * 24;
+});
+// Controlled-inbox testing only. Do not use with real leads.
+const FAST_TEST_NURTURE_OFFSETS_HOURS = Array.from({ length: 30 }, function() {
+  return 0;
+});
+const NURTURE_OFFSETS_HOURS = FAST_TEST_MODE
+  ? FAST_TEST_NURTURE_OFFSETS_HOURS
+  : NORMAL_NURTURE_OFFSETS_HOURS;
 
 function ensureLeadHeaders_(sheet) {
   const required = [
@@ -1212,175 +1219,148 @@ function answerValue_(answers, index, fallback) {
 
 function getNurtureCopy_(step, leadType, name, answers, leadId) {
   const firstName = String(name || '').trim().split(/\s+/)[0] || 'there';
-  const budget = answerValue_(answers, 2, 'your preferred budget range');
-  const location = answerValue_(answers, 3, 'your preferred area');
-  const propertyType = answerValue_(answers, 4, 'your preferred property type');
-  const timeline = answerValue_(answers, 5, 'your current timeline');
   const segment = ['buyer', 'seller', 'investor'].indexOf(leadType) >= 0 ? leadType : 'buyer';
+  const safeStep = Math.max(1, Math.min(30, Number(step) || 1));
 
-  const subjects = {
-    1: firstName + ', welcome — let’s make your property plan clearer',
-    2: 'A simple local market starting point',
-    3: 'The practical checklist that makes the next step easier',
-    4: 'Finding the right community fit',
-    5: 'What the property process can look like',
-    6: 'A thoughtful result starts with a thoughtful plan',
-    7: 'You do not need every answer before you begin',
-    8: 'What is the one priority on your mind right now?',
-    9: 'A useful shortlist, valuation, or comparison starts here',
-    10: 'The money and marketing questions worth asking early',
-    11: 'The people who can help make the process smoother',
-    12: 'A quick recap of the decisions that matter most',
-    13: 'Would a focused conversation be useful?',
-    14: 'What happens after you decide to take the next step?',
-    15: 'A timely property decision should still feel like your decision',
-    16: 'Closing the loop on your property consultation'
-  };
-  const previews = {
-    1: 'A warm welcome and a clear expectation for the days ahead.',
-    2: 'Use the market as context—not pressure—for your next decision.',
-    3: 'A short checklist can make a consultation much more productive.',
-    4: 'The right location should fit your everyday life and long-term plan.',
-    5: 'Understanding the process makes each decision easier to evaluate.',
-    6: 'Good outcomes usually begin with clear priorities and steady guidance.',
-    7: 'You can explore your options before committing to a decision.',
-    8: 'One honest answer is enough to make the next conversation more useful.',
-    9: 'Turn your priorities into something practical you can review.',
-    10: 'Ask the right financial, marketing, and risk questions early.',
-    11: 'You do not have to navigate every specialist question alone.',
-    12: 'Keep the useful parts and ignore the unnecessary noise.',
-    13: 'If you are ready, the next step can be simple and focused.',
-    14: 'A clear next step removes much of the uncertainty.',
-    15: 'Market movement is context; it should never replace good judgment.',
-    16: 'I will step back, and you are welcome to reconnect whenever you are ready.'
-  };
+  const subjects = [
+    'A simple first step for your property plan',
+    'What matters most to you right now?',
+    'A practical way to narrow your options',
+    'The location question worth answering first',
+    'How to think about your budget comfortably',
+    'Three details that make a property search easier',
+    'You do not need to decide today',
+    'A quick property-planning check-in',
+    'How to compare properties more clearly',
+    'The hidden questions behind the asking price',
+    'What to look for in a community',
+    'A simple checklist for your next conversation',
+    'When is the right time to take the next step?',
+    'What a focused consultation can cover',
+    'A calmer way to review property choices',
+    'The details people often miss',
+    'What would make your decision feel easier?',
+    'A useful question about timing',
+    'How to avoid comparing the wrong things',
+    'Your property goals can change—and that is okay',
+    'A quick progress check',
+    'What should happen before you make an offer?',
+    'How to prepare for a property conversation',
+    'The difference between interest and readiness',
+    'One question to ask before moving forward',
+    'Would a shortlist, review, or second opinion help?',
+    'Let us make your next step more specific',
+    'Your plan does not have to be perfect',
+    'A final planning question before I step back',
+    'I will close this daily series for now'
+  ];
 
-  const segmentText = {
+  const previews = [
+    'A short, no-pressure starting point based on what you shared.',
+    'The best next step depends on the decision in front of you.',
+    'A few clear filters can save time and reduce noise.',
+    'Lifestyle fit is just as important as the property itself.',
+    'A comfortable budget includes more than the advertised price.',
+    'Small details can make a consultation much more useful.',
+    'Exploring first is a valid and sensible stage of the process.',
+    'Tell me the one issue you would like to understand better.',
+    'Use the same criteria so the comparison stays fair.',
+    'Look beyond the headline number before judging an opportunity.',
+    'Think about the everyday experience, not only the address.',
+    'Bring the information you already have; perfection is unnecessary.',
+    'Timing should fit your circumstances, not someone else’s urgency.',
+    'A focused conversation can answer questions without pressure.',
+    'Clarity comes from priorities and verified information.',
+    'A few overlooked details can affect the next decision.',
+    'One honest answer can improve the quality of your plan.',
+    'Separate what needs action now from what can wait.',
+    'Compare like with like before drawing conclusions.',
+    'Your goals are allowed to become clearer as you learn more.',
+    'A short review can show what is clear and what is still missing.',
+    'Preparation makes important decisions easier to evaluate.',
+    'Here is how to make a conversation more focused.',
+    'Interest is useful; readiness requires a little more clarity.',
+    'One good question can prevent an avoidable surprise.',
+    'Choose the kind of help that would be most useful to you.',
+    'A specific next step is easier than a vague intention.',
+    'You can move carefully and still make progress.',
+    'Tell me what remains unanswered, if anything.',
+    'I will reduce the frequency, but you are welcome to reconnect.'
+  ];
+
+  const segmentDetails = {
     buyer: {
-      priority: 'Are you mainly trying to narrow down the right area, property type, budget, or timing?',
-      checklist: 'Your preferred areas, target property type, comfortable budget range, must-have features, and realistic move timeline.',
-      uncertainty: 'We can compare a few suitable directions without forcing a decision before you are ready.',
-      process: 'We can narrow the search around your real priorities instead of sending you an endless list of unrelated properties.',
-      objective: 'I can help you turn your answers into a shortlist.'
+      focus: 'your preferred area, property type, budget comfort, must-have features, and timing',
+      action: 'Reply with your preferred area, property type, or one must-have feature.',
+      offer: 'I can help you turn those priorities into a practical shortlist.',
+      process: 'For a buyer, that may include refining the search, reviewing financing readiness, evaluating the property, considering due diligence, and preparing for closing.'
     },
     seller: {
-      priority: 'Are you mainly thinking about price positioning, preparing the property, finding suitable buyers, or deciding when to move?',
-      checklist: 'Property location, approximate size and type, current condition, occupancy status, timing preference, and any details a future buyer should know.',
-      uncertainty: 'We can discuss preparation and positioning before you commit to a launch timeline.',
-      process: 'We can discuss how the property may be presented, positioned, and prepared for the next stage.',
-      objective: 'I can help you organize the preparation and positioning questions before you decide on a next step.'
+      focus: 'your property location, condition, timing, likely buyer, and positioning',
+      action: 'Reply with the property location and your main preparation or positioning question.',
+      offer: 'I can help you organize the preparation and positioning questions before you commit to a launch plan.',
+      process: 'For a seller, that may include preparing the property, reviewing positioning, presenting it clearly, attracting suitable buyers, evaluating offers, and coordinating closing steps.'
     },
     investor: {
-      priority: 'Are you mainly evaluating income potential, long-term growth, diversification, or learning what may fit your situation?',
-      checklist: 'Preferred market, property type, broad budget range, investment objective, intended holding period, and questions about income, costs, or risk.',
-      uncertainty: 'We can separate the goal, assumptions, costs, and risks before discussing a specific opportunity.',
-      process: 'We can define the questions and information needed for a more disciplined discussion before you decide whether an opportunity deserves further attention.',
-      objective: 'I can help you structure the questions you want answered before evaluating an opportunity.'
+      focus: 'your objective, preferred market, budget, holding period, costs, and risk questions',
+      action: 'Reply with your main objective: income, long-term growth, diversification, or exploration.',
+      offer: 'I can help you structure the questions to answer before evaluating a specific opportunity.',
+      process: 'For an investor, that may include clarifying the objective, testing assumptions, reviewing costs and risks, identifying information gaps, and defining decision criteria.'
     }
   }[segment];
 
-  let intro = '';
-  let detail = '';
-  let cta = '';
+  const messages = [
+    ['Thank you again for sharing your property goals.', 'The most useful starting point is to clarify ' + segmentDetails.focus + '. You do not need every answer yet.', segmentDetails.action],
+    ['Different people need different kinds of guidance at this stage.', 'Some people need help with location, budget, timing, preparation, or simply understanding what is realistic.', 'Reply with the one topic that matters most today.'],
+    ['A simple filter can make the process less overwhelming.', 'Choose your top three priorities and use them consistently when reviewing properties or opportunities.', 'Reply with your top three priorities, even if they are approximate.'],
+    ['The right location should support your daily life as well as your long-term plan.', 'Consider commute, access to services, neighborhood feel, future flexibility, and the people who will use the property.', 'Reply with one location or lifestyle priority that should not be compromised.'],
+    ['Budget is more useful when it describes comfort, not only maximum capacity.', 'Think about the purchase price together with fees, financing terms, reserves, maintenance, and improvement costs. This is general planning guidance, not financial advice.', 'Reply with your comfortable range or the cost question you would like to examine.'],
+    ['A useful property conversation does not require a perfect information pack.', 'The details you already know—' + segmentDetails.focus + '—are enough to identify the next questions.', segmentDetails.action],
+    ['You can learn before you commit.', 'Asking about pricing, preparation, financing, neighborhoods, or timing should make your choices clearer, not create pressure to act.', 'Reply with the concern that is making you hesitate, and I will address it directly.'],
+    ['I would like to keep these notes relevant to your situation.', 'Your biggest question may be price, location, financing, preparation, timing, income potential, or simply what is realistic.', 'Reply with one word: price, location, financing, preparation, timing, or exploring.'],
+    ['Comparisons become easier when the criteria stay consistent.', 'Review location, usable space, condition, total cost, likely trade-offs, and how well each option supports your original goal.', segmentDetails.offer],
+    [segment === 'seller' ? 'A strong marketing plan begins before the property is published.' : segment === 'investor' ? 'A disciplined evaluation begins with the numbers behind the headline.' : 'The advertised price is only one part of the budget.', segment === 'seller' ? 'Presentation, photography, positioning, timing, audience, and offer strategy should work together.' : segment === 'investor' ? 'Ask what income, costs, vacancy, taxes, financing, and downside assumptions are included.' : 'Remember fees, reserves, financing terms, and improvement costs when considering affordability.', 'Reply with the financial or marketing question you want to understand first.'],
+    ['A property is also an everyday environment.', 'Look at access, services, commute, community feel, noise, convenience, and how the area may fit your future plans.', 'Reply with the community feature that matters most to you.'],
+    ['Before your next conversation, write down three things: your goal, your biggest uncertainty, and the next decision you may need to make.', 'That short note is often more useful than collecting a large amount of unrelated information.', 'Reply with your biggest uncertainty if you would like a focused starting point.'],
+    ['There is no universal “right time” to move forward.', 'The right timing depends on your priorities, preparation, finances, family circumstances, and the information still missing.', 'Reply with sooner, later, or still exploring, and I will respect your timing.'],
+    ['A focused consultation can be smaller than people expect.', segmentDetails.process, 'Reply with the question you would want the consultation to answer.'],
+    ['Good property decisions usually become clearer when priorities are written down.', 'Separate must-haves, preferences, deal-breakers, and items you are willing to compromise on.', 'Reply with one must-have and one preference.'],
+    ['Important decisions often turn on details that are easy to overlook.', 'Check condition, documents, total costs, timing, access, restrictions, and what information still needs verification. Obtain independent professional advice where appropriate.', 'Reply with the detail you are least certain about.'],
+    ['A plan does not need to be final to be useful.', segmentDetails.offer, 'Reply with what would make your decision feel easier this week.'],
+    ['Separate urgent decisions from decisions that can wait.', 'If timing is flexible, use the extra time to prepare. If timing is urgent, focus first on the information that could materially change your choice.', 'Reply with your current timeline.'],
+    ['Avoid comparing options using different standards.', 'Choose a short list of criteria, score each option honestly, and record the trade-offs instead of relying only on first impressions.', 'Reply with two options you are comparing, and I will suggest a fair comparison framework.'],
+    ['It is normal for your priorities to become clearer as you learn.', 'A change in budget, location, timing, or property type is useful information for the next step.', 'Reply with the priority that has changed most since you started exploring.'],
+    ['Here is a useful progress check: what is clear, what is uncertain, and what decision comes next?', 'You do not need to solve everything at once. One answered question can create meaningful progress.', 'Reply with clear, uncertain, or next step.'],
+    ['Before making an offer or committing to a major next step, identify the information you still need.', 'That may include property condition, documents, total costs, financing, timeline, or professional review.', 'Reply with the item you would want checked first.'],
+    ['A focused conversation works best when it has a clear purpose.', 'We can use it to review a shortlist, discuss preparation, structure investment questions, or identify the next practical action.', 'Reply with shortlist, preparation, investment questions, or next step.'],
+    ['Being interested does not mean you must be ready today.', 'Readiness usually means you understand your goal, constraints, unanswered questions, and the decision you are actually considering.', 'Reply with interested or ready, and I will tailor the next suggestion.'],
+    ['Before moving forward, ask: “What would make me regret this decision later?”', 'The answer may reveal a missing document, cost, comparison, professional opinion, or timing consideration.', 'Reply with the risk or surprise you most want to avoid.'],
+    ['The most useful next step depends on what you need.', 'It may be a shortlist, property review, valuation discussion, preparation plan, investment framework, or short question-and-answer conversation.', 'Reply with the option that would help most.'],
+    ['A specific next step is easier to act on than a general intention.', 'If you would like to continue, we can agree on one narrow purpose for the next conversation and keep it practical.', 'Reply with schedule, shortlist, review, or question.'],
+    ['You can move carefully and still make progress.', 'A well-considered decision is deliberate about the information and trade-offs that matter.', 'Reply with the decision you are considering, even if it is still preliminary.'],
+    ['Before I close this daily series, is there one important question we have not addressed?', 'I would rather answer one relevant question than send more general information that does not help.', 'Reply with your unanswered question, or simply say not yet.'],
+    ['This is my final scheduled message in this daily series, so I will step back and avoid filling your inbox unnecessarily.', 'If your plans become clearer, you are welcome to reconnect. I can help with a focused property conversation when the timing feels right.', 'Reply whenever you are ready, or contact me directly at +63 916 999 4124 or dellosacharlene1317@gmail.com.']
+  ];
 
-  /* 30 DAYS AUTOMATION */
-
-  switch (step) {
-    case 1:
-      intro = 'Welcome, and thank you for sharing your property goals. Over the next 30 days, I will send a few short, practical notes to help you think through the process without pressure.';
-      detail = 'You do not need to make a decision today. I will keep the conversation focused on your priorities, your timing, and the information that helps you feel comfortable moving forward.';
-      cta = 'Reply with the one property question you would most like to clarify.';
-      break;
-    case 2:
-      intro = 'A local market overview is useful when it gives you context rather than urgency.';
-      detail = 'For buyers, that means looking at available choices and price patterns. For sellers, it means understanding competing homes and buyer expectations. For investors, it means separating market facts from assumptions.';
-      cta = 'Reply with your preferred area and I can tell you which market signals are most relevant.';
-      break;
-    case 3:
-      intro = 'A little preparation can make the next property conversation much easier.';
-      detail = 'Buyers can note preferred areas, property type, budget comfort, must-haves, and timing. Sellers can gather basic property details, condition notes, and timing preferences. Investors can outline the market, objective, budget, holding period, and questions about costs.';
-      cta = 'Reply with whatever details you already know; a perfect checklist is not required.';
-      break;
-    case 4:
-      intro = 'A property can look attractive on paper and still not fit your everyday life or long-term plan.';
-      detail = 'Consider commute, schools or services, community feel, future flexibility, and the type of neighborhood experience you want. I can help you compare those practical considerations with the property details.';
-      cta = 'Reply with one neighborhood or lifestyle priority that matters most to you.';
-      break;
-    case 5:
-      intro = 'The process becomes less intimidating when you know what usually happens next.';
-      detail = segment === 'seller' ? 'A seller journey may include preparing the property, setting a realistic position, marketing it clearly, reviewing offers, negotiating terms, and coordinating the closing steps.' : segment === 'investor' ? 'An investment conversation should clarify the objective, assumptions, costs, risks, information gaps, and decision criteria before focusing on a specific opportunity.' : 'A buyer journey may include refining the search, reviewing financing, evaluating a property, making an offer, completing due diligence, and preparing for closing.';
-      cta = 'Reply with the stage you would like me to explain in plain language.';
-      break;
-    case 6:
-      intro = 'The strongest property outcomes usually begin with clear priorities rather than a rushed decision.';
-      detail = 'Every client has a different starting point. My role is to listen, organize the relevant information, and help you compare realistic options. The goal is a process that feels informed and personal.';
-      cta = 'Reply if you would like to hear how I have helped someone with a situation similar to yours.';
-      break;
-    case 7:
-      intro = 'A common concern is that asking questions will create pressure to act. It should not.';
-      detail = 'You can learn about pricing, preparation, financing, neighborhoods, or timing before committing to anything. A useful first conversation should make your choices clearer, not narrower.';
-      cta = 'Reply with the concern that is holding you back, and I will address it directly.';
-      break;
-    case 8:
-      intro = 'I would like to make these messages more useful to you rather than send information that misses the point.';
-      detail = 'Your main priority may be price, location, financing, preparation, timing, income potential, or simply understanding what is realistic.';
-      cta = 'Reply with one word: price, location, financing, preparation, timing, or exploring.';
-      break;
-    case 9:
-      intro = 'Tangible information can make a property plan easier to discuss.';
-      detail = segmentText.objective + ' For investor conversations, this is a planning framework, not a promise of profit or a substitute for independent due diligence.';
-      cta = 'Reply with shortlist, valuation, or comparison, and I will prepare the most useful starting point.';
-      break;
-    case 10:
-      intro = segment === 'seller' ? 'A thoughtful marketing plan starts before a property is publicly presented.' : segment === 'investor' ? 'A disciplined evaluation starts by asking what the numbers include and what they leave out.' : 'Financing questions are easier to manage when they are addressed early and without judgment.';
-      detail = segment === 'seller' ? 'Positioning, presentation, photography, launch timing, audience, and offer strategy should work together.' : segment === 'investor' ? 'Clarify expected income, recurring costs, vacancy assumptions, taxes, financing, and downside scenarios before relying on a headline figure.' : 'A comfortable budget should account for more than the advertised price, including fees, reserves, financing terms, and the cost of making the property your own.';
-      cta = 'Reply with the financial or marketing question you want to understand first.';
-      break;
-    case 11:
-      intro = 'A property decision often involves more than one specialist, and the right support can reduce avoidable uncertainty.';
-      detail = 'Depending on your situation, that may include a lender, inspector, appraiser, contractor, stager, photographer, or closing professional. I can help you understand when each conversation becomes relevant.';
-      cta = 'Reply with the specialist you would like me to explain first.';
-      break;
-    case 12:
-      intro = 'Here is the short version of what we have covered so far.';
-      detail = 'Start with your purpose, identify the decisions that matter most, gather the information you know, compare options consistently, and move at a pace that fits your circumstances.';
-      cta = 'Reply with the point that was most useful, or tell me what still feels unclear.';
-      break;
-    case 13:
-      intro = 'If you are ready, we can make the next conversation focused instead of time-consuming.';
-      detail = segment === 'seller' ? 'We can discuss the property, preferred timing, preparation priorities, and questions to answer before a marketing plan is finalized.' : segment === 'investor' ? 'We can discuss your objective, assumptions, risk questions, and the information you want before evaluating a particular opportunity.' : 'We can discuss preferred areas, property type, budget comfort, financing questions, and the next search step.';
-      cta = 'Reply with schedule and I will send the available consultation options.';
-      break;
-    case 14:
-      intro = 'Taking the next step does not mean you have to commit to the entire property journey.';
-      detail = 'It may simply mean a short consultation, a focused property review, a valuation discussion, or a list of questions to investigate. We will agree on the purpose before going further.';
-      cta = 'Reply with the kind of conversation that would feel most comfortable.';
-      break;
-    case 15:
-      intro = 'Markets change, but a good decision should still be based on your priorities and verified information.';
-      detail = 'If your timing is urgent, we can focus on the decisions that need attention first. If your timing is flexible, we can use the extra time to prepare carefully and avoid unnecessary compromises.';
-      cta = 'Reply with sooner, later, or still exploring, and I will respect your timing.';
-      break;
-    case 16:
-    default:
-      intro = 'This is my final scheduled message in this series, so I will step back and avoid filling your inbox unnecessarily.';
-      detail = 'If you would like to continue, reply with your preferred next step and I will respond personally. You are welcome to reconnect whenever your property plans become clearer.';
-      cta = 'Reply whenever you are ready, or contact me directly at +63 916 999 4124 or dellosacharlene1317@gmail.com.';
-      break;
-  }
+  const subject = subjects[safeStep - 1];
+  const preview = previews[safeStep - 1];
+  const message = messages[safeStep - 1];
+  const intro = message[0];
+  const detail = message[1];
+  const cta = message[2];
+  const unsubscribeUrl = getUnsubscribeUrl_(leadId);
 
   const body = [
     'Hi ' + firstName + ',', '', intro, '', detail, '', cta, '',
     'Warm regards,', AGENT_NAME, 'Dynamic Property Specialist', '',
     'To stop property guidance emails, use the unsubscribe link in the HTML version of this message.'
-  ].join('\n');
+  ].join('\\n');
 
-  const unsubscribeUrl = getUnsubscribeUrl_(leadId);
-  const html = emailShell_(subjects[step],
+  const html = emailShell_(subject,
     '<div style="background:' + BRAND.deepGreen + ';padding:28px 30px;color:#ffffff;">' +
-      '<div style="font-size:14px;letter-spacing:1.4px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">Property guidance</div>' +
-      '<h1 class="email-title" style="margin:8px 0 0;font-family:Georgia,serif;font-size:27px;line-height:1.25;color:#ffffff;">' + escapeHtml_(subjects[step]) + '</h1>' +
-      '<div style="margin-top:10px;color:#e9f1eb;font-size:12px;line-height:1.5;">' + escapeHtml_(previews[step]) + '</div>' +
+      '<div style="font-size:14px;letter-spacing:1.4px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">Property guidance · Day ' + safeStep + ' of 30</div>' +
+      '<h1 class="email-title" style="margin:8px 0 0;font-family:Georgia,serif;font-size:27px;line-height:1.25;color:#ffffff;">' + escapeHtml_(subject) + '</h1>' +
+      '<div style="margin-top:10px;color:#e9f1eb;font-size:12px;line-height:1.5;">' + escapeHtml_(preview) + '</div>' +
     '</div>' +
     '<div class="email-pad" style="padding:30px;">' +
       '<p style="font-size:17px;line-height:1.8;color:' + BRAND.ink + ';margin:0 0 16px;">Hi <strong>' + escapeHtml_(firstName) + '</strong>,</p>' +
@@ -1389,7 +1369,7 @@ function getNurtureCopy_(step, leadType, name, answers, leadId) {
       '<p style="font-size:17px;line-height:1.8;color:' + BRAND.ink + ';margin:18px 0;">' + escapeHtml_(cta) + '</p>' +
       '<div style="text-align:center;margin:24px 0 0;"><a href="mailto:' + AGENT_EMAIL + '" style="display:inline-block;background:' + BRAND.gold + ';color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;padding:15px 24px;border-radius:24px;">Reply to Charlene</a></div>' +
     '</div>' +
-    footerHtml_('A helpful follow-up from Charlene Dellosa') +
+    footerHtml_('A helpful daily note from Charlene Dellosa') +
     '<div style="padding:4px 30px 28px;background:' + BRAND.cream + ';text-align:center;color:' + BRAND.muted + ';font-size:11px;line-height:1.6;">' +
       '<div style="margin-bottom:12px;">You are receiving this because you requested property guidance.</div>' +
       '<a href="' + escapeHtml_(unsubscribeUrl) + '" style="display:inline-block;background:#ffffff;color:' + BRAND.emerald + ';border:1px solid ' + BRAND.emerald + ';border-radius:24px;padding:11px 20px;font-size:12px;font-weight:700;text-decoration:none;">Unsubscribe from property guidance</a>' +
@@ -1397,7 +1377,7 @@ function getNurtureCopy_(step, leadType, name, answers, leadId) {
     '</div>'
   );
 
-  return { subject: subjects[step], body: body, htmlBody: html };
+  return { subject: subject, body: body, htmlBody: html };
 }
 
 function getUnsubscribeUrl_(leadId) {
@@ -1621,5 +1601,6 @@ function deleteLatestTestLead() {
   sheet.deleteRow(lastRow);
   Logger.log('Deleted test row ' + lastRow + '.');
 }
+
 
 
