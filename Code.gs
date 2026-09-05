@@ -15,7 +15,7 @@ const EMAIL_BRAND_LOGO_FILE_ID = '1lWJhR0FoVgLXC_AKiKhdDJCxA_kOYWDz';
 // Upload the PDF guide to Google Drive, then paste its file ID here.
 // Set the Drive file to Anyone with the link -> Viewer so the button works
 // for clients who are not signed in to Google.
-const QUIZ_GUIDE_FILE_ID = '1anQyAFcTOTLcbJ38ZzoGkQkprNtT86Q7';
+const QUIZ_GUIDE_FILE_ID = '17CsjLVE3DV7lOH80Kn6qDHWPgnkZyNLA';
 const QUIZ_GUIDE_FILE_NAME = 'Charlene Dellosa Properties Guide.pdf';
 
 function getQuizGuide_() {
@@ -1617,3 +1617,7 @@ function deleteLatestTestLead() {
   sheet.deleteRow(lastRow);
   Logger.log('Deleted test row ' + lastRow + '.');
 }
+
+
+
+
