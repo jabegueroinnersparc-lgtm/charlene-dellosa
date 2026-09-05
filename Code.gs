@@ -935,15 +935,16 @@ function getLeadHeaderMap_(sheet) {
 
 const NURTURE_CONSENT_VERSION = '2026-08-25-v2';
 // Set true only while validating with controlled test leads and inboxes.
-const FAST_TEST_MODE = false;
+const FAST_TEST_MODE = true;
 // One nurture email at approximately 24-hour intervals: Days 1 through 30.
 const NORMAL_NURTURE_OFFSETS_HOURS = Array.from({ length: 30 }, function(_, index) {
   return (index + 1) * 24;
 });
-// Controlled-inbox testing only. Do not use with real leads.
-const FAST_TEST_NURTURE_OFFSETS_HOURS = Array.from({ length: 30 }, function() {
-  return 0;
+// Testing only: first email is immediately due, then one email per minute.
+const FAST_TEST_NURTURE_OFFSETS_HOURS = Array.from({ length: 30 }, function(_, index) {
+  return index / 60;
 });
+
 const NURTURE_OFFSETS_HOURS = FAST_TEST_MODE
   ? FAST_TEST_NURTURE_OFFSETS_HOURS
   : NORMAL_NURTURE_OFFSETS_HOURS;
@@ -1044,7 +1045,7 @@ function ensureFollowUpTrigger_() {
     return trigger.getHandlerFunction() === 'processLeadFollowUps';
   });
   if (!exists) {
-    ScriptApp.newTrigger('processLeadFollowUps').timeBased().everyMinutes(15).create();
+    ScriptApp.newTrigger('processLeadFollowUps').timeBased().everyMinutes(1).create();
   }
 }
 
@@ -1057,7 +1058,7 @@ function installFollowUpAutomation() {
     }
   });
   ensureFollowUpTrigger_();
-  return '30-day nurture automation is installed with a 15-minute trigger.';
+  return 'Fast-test nurture automation is installed with a 1-minute trigger.';
 }
 
 function hasClientReplied_(email, submittedAt) {
@@ -1617,6 +1618,11 @@ function deleteLatestTestLead() {
   Logger.log('Deleted test row ' + lastRow + '.');
 }
 
+function authorizeAutomation_() {
+  ScriptApp.getProjectTriggers();
+  MailApp.getRemainingDailyQuota();
+  SpreadsheetApp.openById(LEADS_SPREADSHEET_ID).getName();
+}
 
 
 
