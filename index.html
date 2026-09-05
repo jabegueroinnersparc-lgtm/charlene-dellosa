@@ -5394,7 +5394,7 @@
   }
 }
 
-      /* OFW testimonial enhancement */
+       
       .testimonial-card.ofw-testimonial .testimonial-image-wrapper {
         isolation: isolate;
         background: #063c24;
@@ -6501,10 +6501,10 @@
           const requestBody = JSON.stringify(payload);
 
           try {
-            // Google Apps Script web-app responses may redirect to a
-            // googleusercontent.com URL. A normal CORS fetch can report an
-            // error after the POST has already been processed and saved.
-            // sendBeacon is the reliable cross-origin delivery mechanism here.
+            
+            
+            
+            
             let queued = false;
             if (navigator.sendBeacon) {
               const blob = new Blob(
@@ -6526,9 +6526,9 @@
               });
             }
 
-            // A queued beacon/no-cors request cannot expose the Apps Script
-            // response to the browser. Do not show a false failure after the
-            // request has been accepted for delivery.
+            
+            
+            
             btn.classList.remove('is-sending');
             btn.classList.add('is-done');
             btn.innerHTML = '<i class=\"fas fa-check\"></i> Sent';
