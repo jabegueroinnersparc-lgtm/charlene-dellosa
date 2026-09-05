@@ -5393,6 +5393,51 @@
     transition: none !important;
   }
 }
+
+       
+      .testimonial-card.ofw-testimonial .testimonial-image-wrapper {
+        isolation: isolate;
+        background: #063c24;
+      }
+      .testimonial-card.ofw-testimonial .testimonial-image-wrapper::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(180deg, rgba(6,60,36,.04) 22%, rgba(6,60,36,.9) 100%);
+        pointer-events: none;
+      }
+      .testimonial-card.ofw-testimonial .testimonial-image-overlay {
+        position: absolute;
+        z-index: 2;
+        left: clamp(.8rem, 2vw, 1.15rem);
+        right: clamp(.8rem, 2vw, 1.15rem);
+        bottom: clamp(.8rem, 2vw, 1.1rem);
+        color: #fff;
+        text-shadow: 0 2px 14px rgba(0,0,0,.35);
+      }
+      .testimonial-card.ofw-testimonial .testimonial-image-overlay strong {
+        display: block;
+        margin-bottom: .25rem;
+        color: #f5d68a;
+        font-size: clamp(.66rem, 1vw, .78rem);
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+      .testimonial-card.ofw-testimonial .testimonial-image-overlay span {
+        display: block;
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(.98rem, 1.6vw, 1.3rem);
+        line-height: 1.25;
+      }
+      .testimonial-card.ofw-testimonial .testimonial-image {
+        object-position: center 35%;
+      }
+      @media (max-width: 768px) {
+        .testimonial-card.ofw-testimonial .testimonial-image-overlay span { font-size: 1rem; }
+      }
+
 </style>
 
  
@@ -5656,6 +5701,10 @@
                     <article class="testimonial-card">
                       <div class="testimonial-row"><div class="testimonial-text"><p>"Si Charlene ang pinakamahusay na agent na nakasama namin. Hindi lang siya eksperto sa properties, ramdam mo rin ang kanyang malasakit. Lubos naming ipinagkakatiwala sa kanya ang aming pangarap na tahanan!"</p></div><div class="testimonial-image-slot"><div class="testimonial-image-wrapper"><img class="testimonial-image" loading="lazy" decoding="async" sizes="(max-width: 768px) calc(100vw - 3rem), 320px" src="https://drive.google.com/thumbnail?id=143T8pg0-3XWOc0i6hdWYV7TWy4TqOLk5&amp;sz=w320" fetchpriority="low" alt="Photo from the Villanueva family testimonial" /></div></div></div>
                       <div class="client-info"><div class="client-details"><span class="client-name">— Ang Pamilya Villanueva</span><span class="client-location">Laguna</span></div><div class="kaia-brand"><div class="kaia-icon">KAIA</div><div class="kaia-text"><span class="kaia-main">#AngTunayNakayaMo</span><span class="kaia-sub">B28L7 · B28L9 · MSKALA</span></div><span class="kaia-hashtag">✨ KAIA</span></div></div>
+                    </article>
+                    <article class="testimonial-card ofw-testimonial">
+                      <div class="testimonial-row"><div class="testimonial-text"><p>"Maraming salamat po, Ma'am Charlene, sa pagtulong sa aming makahanap ng pangarap na bahay. Bilang OFW mula sa Japan, malaking tulong ang inyong malasakit at gabay sa bawat hakbang."</p></div><div class="testimonial-image-slot"><div class="testimonial-image-wrapper"><img class="testimonial-image" loading="lazy" decoding="async" sizes="(max-width: 768px) calc(100vw - 3rem), 520px" src="https://drive.google.com/thumbnail?id=1g2XX0OmXVOSO3Dl5PvsnIR2f_J0DqZr0&amp;sz=w1200" fetchpriority="low" alt="Photo from Ma'am Charlene's Japan-based OFW client testimonial" /><div class="testimonial-image-overlay"><strong>From Japan, with gratitude</strong><span>Maraming salamat po, Ma'am Charlene.</span></div></div></div></div>
+                      <div class="client-info"><div class="client-details"><span class="client-name">— OFW Client from Japan</span><span class="client-location">Japan · Dream-home journey</span></div><div class="kaia-brand"><div class="kaia-icon">KAIA</div><div class="kaia-text"><span class="kaia-main">#AngTunayNakayaMo</span><span class="kaia-sub">B28L7 · B28L9 · MSKALA</span></div><span class="kaia-hashtag">✨ KAIA</span></div></div>
                     </article>
                   </div>
                 </div>
