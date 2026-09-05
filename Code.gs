@@ -114,7 +114,6 @@ function doGet(e) {
     .setTitle('Real Estate Agent in Cavite & Metro Manila | Charlene Dellosa Properties')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
-    .addMetaTag('robots', 'noindex, nofollow')
     .setFaviconUrl('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/favicon.ico');
 }
 
