@@ -5722,7 +5722,7 @@
         <div class="page-loader-role">The Dynamic Property Specialist</div>
         <div class="page-loader-status">
           <span id="pageLoaderStatusText">Preparing your property journey</span>
-          <span class="page-loader-progress-meta"><span>Loading experience</span><strong id="pageLoaderProgressPercent" class="page-loader-progress-percent">0%</strong></span>
+          <span class="page-loader-progress-meta"><span>Loading experience</span><strong id="pageLoaderProgressPercent" class="page-loader-progress-percent">1%</strong></span>
           <span class="page-loader-progress" aria-hidden="true"><span id="pageLoaderProgressBar" class="page-loader-progress-bar"></span></span>
         </div>
       </div>
@@ -6980,7 +6980,7 @@
         var startedAt = Date.now();
         var minimumDisplayMs = 2100;
         var fallbackMs = 9000;
-        var progress = 12;
+        var progress = 1;
         var finished = false;
         var particleFrame = 0;
         var particleCleanup = function () {};
@@ -7088,22 +7088,25 @@
         }
 
         function getReadinessProgress() {
-          var images = Array.prototype.slice.call(document.images);
-          var loadedImages = images.filter(function (image) {
+           
+          var criticalImages = Array.prototype.slice.call(document.images).filter(function (image) {
+            return image.loading !== 'lazy' && !image.closest('[hidden]');
+          });
+          var loadedImages = criticalImages.filter(function (image) {
             return image.complete && image.naturalWidth > 0;
           }).length;
-          var imageProgress = images.length ? (loadedImages / images.length) : 1;
-          var documentProgress = document.readyState === 'complete' ? 1 : (document.readyState === 'interactive' ? .72 : .38);
-          return 12 + Math.max(imageProgress, documentProgress) * 82;
+          var imageProgress = criticalImages.length ? (loadedImages / criticalImages.length) : 1;
+          var documentProgress = document.readyState === 'complete' ? .98 : (document.readyState === 'interactive' ? .68 : .04);
+          return 1 + Math.max(imageProgress, documentProgress) * 98;
         }
 
          
         var progressTimer = window.setInterval(function () {
           if (finished) return;
-          var elapsedProgress = 12 + Math.min(1, (Date.now() - startedAt) / minimumDisplayMs) * 82;
+          var elapsedProgress = 1 + Math.min(1, (Date.now() - startedAt) / minimumDisplayMs) * 96;
           renderProgress(Math.max(elapsedProgress, getReadinessProgress()));
         }, 50);
-        renderProgress(Math.max(12, getReadinessProgress()));
+        renderProgress(Math.max(1, getReadinessProgress()));
 
         function finishLoading() {
           if (finished) return;
