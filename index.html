@@ -5601,7 +5601,9 @@
       .page-loader-ring:last-of-type { inset: 10%; border-color: rgba(204,149,62,.34); animation: loader-ring-x 3.8s ease-in-out infinite reverse; }
       .page-loader-status { flex-direction: column; gap: .7rem; width: min(76vw, 240px); }
       .page-loader-status::before { display: none; }
-      .page-loader-progress { display: block; width: 100%; height: 4px; overflow: hidden; border-radius: 999px; background: rgba(251,248,242,.16); }
+      .page-loader-progress-meta { display: flex; align-items: center; justify-content: space-between; width: 100%; color: rgba(251,248,242,.72); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; }
+      .page-loader-progress-percent { color: #f5d68a; font-size: clamp(1.1rem, 4vw, 1.45rem); font-weight: 800; letter-spacing: .03em; font-variant-numeric: tabular-nums; }
+      .page-loader-progress { display: block; width: 100%; height: 6px; overflow: hidden; border: 1px solid rgba(245,214,138,.25); border-radius: 999px; background: rgba(251,248,242,.16); box-shadow: inset 0 1px 3px rgba(0,0,0,.16); }
       .page-loader-progress-bar { display: block; width: 0%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #cc953e, #f5d68a); box-shadow: 0 0 14px rgba(245,214,138,.62); transition: width .25s ease-out; }
       #pageLoader.is-exiting { opacity: 0; visibility: hidden; pointer-events: none; }
       @keyframes loader-logo-flip { 0%,100% { transform: rotateY(0deg) rotateX(0deg) scale(1); } 45% { transform: rotateY(180deg) rotateX(8deg) scale(1.04); } 70% { transform: rotateY(300deg) rotateX(-4deg) scale(.98); } }
@@ -5617,7 +5619,10 @@
         .page-loader-logo { transform: translateZ(12px); }
         .page-loader-name { font-size: clamp(1.45rem, 8vw, 2rem); }
         .page-loader-role { letter-spacing: .12em; font-size: .62rem; }
-        .page-loader-status { width: min(78vw, 230px); margin-top: 1.15rem; font-size: .68rem; }
+        .page-loader-status { width: min(82vw, 250px); margin-top: 1.15rem; font-size: .68rem; }
+        .page-loader-progress-meta { font-size: .56rem; }
+        .page-loader-progress-percent { font-size: 1.12rem; }
+        .page-loader-progress { height: 5px; }
       }
       @media (prefers-reduced-motion: reduce) {
         #pageLoader::before, .page-loader-mark-3d, .page-loader-reflection, .page-loader-ring { animation: none !important; }
@@ -5655,6 +5660,7 @@
         <div class="page-loader-role">The Dynamic Property Specialist</div>
         <div class="page-loader-status">
           <span id="pageLoaderStatusText">Preparing your property journey</span>
+          <span class="page-loader-progress-meta"><span>Loading experience</span><strong id="pageLoaderProgressPercent" class="page-loader-progress-percent">0%</strong></span>
           <span class="page-loader-progress" aria-hidden="true"><span id="pageLoaderProgressBar" class="page-loader-progress-bar"></span></span>
         </div>
       </div>
@@ -6903,6 +6909,7 @@
         'use strict';
         var loader = document.getElementById('pageLoader');
         var progressBar = document.getElementById('pageLoaderProgressBar');
+        var progressPercent = document.getElementById('pageLoaderProgressPercent');
         var statusText = document.getElementById('pageLoaderStatusText');
         var loaderLogo = document.querySelector('.page-loader-logo');
         if (!loader) return;
@@ -6910,7 +6917,7 @@
         var startedAt = Date.now();
         var minimumDisplayMs = 2100;
         var fallbackMs = 9000;
-        var progress = 8;
+        var progress = 0;
         var finished = false;
 
          
@@ -6920,11 +6927,21 @@
           }
         }, 1200);
 
+        function renderProgress(value) {
+          progress = Math.round(Math.max(0, Math.min(100, value)));
+          if (progressBar) progressBar.style.width = progress + '%';
+          if (progressPercent) progressPercent.textContent = progress + '%';
+          if (statusText && progress < 35) statusText.textContent = 'Preparing your property journey';
+          else if (statusText && progress < 75) statusText.textContent = 'Bringing your experience to life';
+          else if (statusText && progress < 100) statusText.textContent = 'Almost ready';
+        }
+
+         
         var progressTimer = window.setInterval(function () {
           if (finished) return;
-          progress = Math.min(progress + Math.random() * 7, 92);
-          if (progressBar) progressBar.style.width = progress + '%';
-        }, 260);
+          renderProgress(((Date.now() - startedAt) / minimumDisplayMs) * 94);
+        }, 50);
+        renderProgress(0);
 
         function finishLoading() {
           if (finished) return;
@@ -6933,7 +6950,7 @@
           var wait = Math.max(0, minimumDisplayMs - (Date.now() - startedAt));
 
           window.setTimeout(function () {
-            if (progressBar) progressBar.style.width = '100%';
+            renderProgress(100);
             if (statusText) statusText.textContent = 'Welcome';
             loader.classList.add('is-exiting');
             document.documentElement.classList.remove('is-loading');
