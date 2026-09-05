@@ -1617,7 +1617,3 @@ function deleteLatestTestLead() {
   sheet.deleteRow(lastRow);
   Logger.log('Deleted test row ' + lastRow + '.');
 }
-
-
-
-
