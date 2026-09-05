@@ -611,21 +611,6 @@ function sendQuizNotification(payload) {
   const nurtureConsent = payload.nurtureConsent === true;
   const nurtureConsentVersion = cleanText_(payload.nurtureConsentVersion, 80) || NURTURE_CONSENT_VERSION;
   const submissionId = cleanText_(payload.submissionId, 120);
-  const submissionCacheKey = submissionId ? 'quiz-submission-' + submissionId : '';
-  const submissionLock = LockService.getScriptLock();
-  if (submissionCacheKey) {
-    submissionLock.waitLock(5000);
-    try {
-      if (CacheService.getScriptCache().get(submissionCacheKey)) {
-        console.log('Duplicate quiz submission ignored: ' + submissionId);
-        return { ok: true, duplicate: true };
-      }
-      // Covers duplicate beacon/fallback requests for six hours.
-      CacheService.getScriptCache().put(submissionCacheKey, 'processed', 21600);
-    } finally {
-      submissionLock.releaseLock();
-    }
-  }
   const answers = Array.isArray(payload.answers) ? payload.answers.slice(0, 20).map(function(item) {
     return {
       question: cleanText_(item && item.question, 500),
@@ -638,6 +623,21 @@ function sendQuizNotification(payload) {
   if (!isValidMobile_(mobile)) throw new Error('Please provide a valid mobile number.');
   if (!consultationDate) throw new Error('Please select a preferred consultation date and time.');
   if (!privacyConsent) throw new Error('Please confirm the privacy notice before submitting your request.');
+
+  // Check duplicates only after validation. A failed or invalid request must remain retryable.
+  const submissionCacheKey = submissionId ? 'quiz-submission-' + submissionId : '';
+  const submissionLock = LockService.getScriptLock();
+  if (submissionCacheKey) {
+    submissionLock.waitLock(5000);
+    try {
+      if (CacheService.getScriptCache().get(submissionCacheKey)) {
+        console.log('Duplicate quiz submission ignored: ' + submissionId);
+        return { ok: true, duplicate: true };
+      }
+    } finally {
+      submissionLock.releaseLock();
+    }
+  }
 
   const consentAt = new Date();
   const submittedAt = Utilities.formatDate(consentAt, Session.getScriptTimeZone(), 'MMMM d, yyyy · h:mm a');
@@ -678,10 +678,17 @@ function sendQuizNotification(payload) {
     throw new Error('Lead saving failed: ' + saveMessage);
   }
 
+  // Mark only after the lead is safely saved, so failed requests can be retried.
+  if (submissionCacheKey) {
+    CacheService.getScriptCache().put(submissionCacheKey, 'processed', 21600);
+  }
+
   // Email delivery is best-effort after the lead has been safely recorded.
   // The browser does not wait for this function because the frontend uses
   // sendBeacon()/keepalive for the public submission request.
-  let emailError = '';
+  let agentEmailError = '';
+  let clientEmailError = '';
+
   try {
     MailApp.sendEmail({
       to: AGENT_EMAIL,
@@ -692,7 +699,12 @@ function sendQuizNotification(payload) {
       inlineImages: getEmailBrandLogo_(),
       name: SENDER_NAME
     });
+  } catch (mailError) {
+    agentEmailError = String(mailError && mailError.message ? mailError.message : mailError);
+    console.error('Agent notification failed for lead ' + leadId + ': ' + agentEmailError);
+  }
 
+  try {
     MailApp.sendEmail({
       to: email,
       subject: clientSubject,
@@ -704,17 +716,21 @@ function sendQuizNotification(payload) {
       name: SENDER_NAME
     });
   } catch (mailError) {
-    emailError = String(mailError && mailError.message ? mailError.message : mailError);
-    console.error('sendQuizNotification email error for lead ' + leadId + ': ' + emailError);
+    clientEmailError = String(mailError && mailError.message ? mailError.message : mailError);
+    console.error('Client confirmation failed for lead ' + leadId + ': ' + clientEmailError);
   }
 
-  console.log('sendQuizNotification completed for lead ' + leadId + (emailError ? ' with email warning.' : ' successfully.'));
+  if (agentEmailError) {
+    throw new Error('Lead was saved, but the agent notification could not be sent: ' + agentEmailError);
+  }
+
+  console.log('sendQuizNotification completed for lead ' + leadId + (clientEmailError ? ' with client-email warning.' : ' successfully.'));
   return {
     ok: true,
     leadId: leadId,
     leadType: leadType,
-    emailQueued: !emailError,
-    emailWarning: emailError || undefined
+    emailQueued: true,
+    clientEmailWarning: clientEmailError || undefined
   };
 }
 
@@ -1601,6 +1617,7 @@ function deleteLatestTestLead() {
   sheet.deleteRow(lastRow);
   Logger.log('Deleted test row ' + lastRow + '.');
 }
+
 
 
 
