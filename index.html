@@ -5551,39 +5551,6 @@
       }
       .page-loader-inner { position: relative; z-index: 2; width: min(90vw, 420px); }
       #pageLoaderParticles { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; opacity: .9; }
-      .loader-sound-toggle {
-        position: absolute;
-        right: clamp(1rem, 4vw, 2.5rem);
-        bottom: clamp(1rem, 4vw, 2.5rem);
-        z-index: 4;
-        display: inline-flex;
-        align-items: center;
-        gap: .42rem;
-        min-height: 2.35rem;
-        padding: .5rem .72rem;
-        border: 1px solid rgba(245,214,138,.36);
-        border-radius: 999px;
-        background: rgba(6,60,36,.42);
-        color: rgba(251,248,242,.86);
-        font: 700 .62rem/1 Inter, sans-serif;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        cursor: pointer;
-        backdrop-filter: blur(10px);
-        transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease;
-      }
-      .loader-sound-toggle:hover, .loader-sound-toggle:focus-visible, .loader-sound-toggle[aria-pressed="true"] {
-        border-color: #f5d68a;
-        background: rgba(204,149,62,.28);
-        color: #f5d68a;
-      }
-      .loader-sound-toggle:focus-visible { outline: 2px solid #f5d68a; outline-offset: 3px; }
-      .loader-sound-toggle:active { transform: scale(.96); }
-      .loader-sound-toggle > span:first-child { font-size: 1rem; line-height: 1; }
-      @media (max-width: 480px) {
-        .loader-sound-toggle { right: 1rem; bottom: 1rem; min-height: 2.15rem; padding: .42rem .58rem; }
-        .loader-sound-label { font-size: .54rem; }
-      }
       .page-loader-mark-wrap {
         width: clamp(154px, 34vw, 220px);
         height: clamp(154px, 34vw, 220px);
@@ -5760,9 +5727,6 @@
     <script>document.documentElement.classList.add('is-loading');</script>
     <div id="pageLoader" role="status" aria-live="polite" aria-label="Loading Charlene Dellosa Properties">
       <canvas id="pageLoaderParticles" aria-hidden="true"></canvas>
-      <button id="loaderSoundToggle" class="loader-sound-toggle" type="button" aria-pressed="false" aria-label="Enable ambient loading sound">
-        <span aria-hidden="true">♪</span><span class="loader-sound-label">Sound off</span>
-      </button>
       <div class="page-loader-inner">
         <div class="page-loader-mark-wrap" aria-hidden="true">
           <span class="page-loader-ring"></span>
@@ -7035,7 +6999,6 @@
         var particleCanvas = document.getElementById('pageLoaderParticles');
         var markWrap = document.querySelector('.page-loader-mark-wrap');
         var textLogo = document.querySelector('.page-loader-text-logo');
-        var soundToggle = document.getElementById('loaderSoundToggle');
         if (!loader) return;
 
         var startedAt = Date.now();
@@ -7080,14 +7043,8 @@
             soundEnabled = true;
             window.removeEventListener('pointerdown', startSoundFromGesture);
             window.removeEventListener('keydown', startSoundFromGesture);
-            if (soundToggle) {
-              soundToggle.setAttribute('aria-pressed', 'true');
-              soundToggle.setAttribute('aria-label', 'Disable ambient loading sound');
-              soundToggle.querySelector('.loader-sound-label').textContent = 'Sound on';
-            }
           }).catch(function () {
             soundStarting = false;
-            if (soundToggle) soundToggle.querySelector('.loader-sound-label').textContent = 'Tap for sound';
           });
         }
 
@@ -7105,25 +7062,14 @@
             soundMaster = null;
           }, 420);
           soundEnabled = false;
-          if (soundToggle) {
-            soundToggle.setAttribute('aria-pressed', 'false');
-            soundToggle.setAttribute('aria-label', 'Enable ambient loading sound');
-            soundToggle.querySelector('.loader-sound-label').textContent = 'Sound off';
-          }
         }
 
-        if (soundToggle) {
-          soundToggle.addEventListener('click', function () {
-            if (soundEnabled) stopAmbientSound();
-            else startAmbientSound();
-          });
-          soundCleanup = stopAmbientSound;
-        }
+        soundCleanup = stopAmbientSound;
 
          
-        window.setTimeout(startAmbientSound, 80);
+        if (window.requestIdleCallback) window.requestIdleCallback(startAmbientSound, { timeout: 900 });
+        else window.setTimeout(startAmbientSound, 180);
         function startSoundFromGesture(event) {
-          if (soundToggle && soundToggle.contains(event.target)) return;
           if (!soundEnabled) startAmbientSound();
         }
         window.addEventListener('pointerdown', startSoundFromGesture, { passive: true });
