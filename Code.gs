@@ -935,10 +935,10 @@ function getLeadHeaderMap_(sheet) {
 
 const NURTURE_CONSENT_VERSION = '2026-08-25-v2';
 // Set true only while validating with controlled test leads and inboxes.
-const FAST_TEST_MODE = true;
+const FAST_TEST_MODE = false;
 // Testing only: prevents the sender account from being detected as a client reply.
 // This automatically disables when FAST_TEST_MODE is false.
-const IGNORE_SENDER_ACCOUNT_DURING_TEST = true;
+const IGNORE_SENDER_ACCOUNT_DURING_TEST = false;
 
 // One nurture email at approximately 24-hour intervals: Days 1 through 30.
 const NORMAL_NURTURE_OFFSETS_HOURS = Array.from({ length: 30 }, function(_, index) {
