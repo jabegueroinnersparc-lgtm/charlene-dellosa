@@ -3863,7 +3863,7 @@
       #gallery .media-grid::-webkit-scrollbar { width: 9px; }
       #gallery .media-grid::-webkit-scrollbar-track { border-radius: 999px; background: rgba(204,149,62,.1); }
       #gallery .media-grid::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: linear-gradient(180deg, #cc953e, #9a6017); background-clip: padding-box; }
-      #gallery .media-card { position: relative; scroll-snap-align: start; min-width: 0; background: rgba(255,255,255,.78); border: 1px solid rgba(204,149,62,.2); border-radius: 1.1rem; box-shadow: 0 12px 28px rgba(18,55,42,.08); overflow: hidden; }
+      #gallery .media-card { position: relative; perspective: 900px; scroll-snap-align: start; min-width: 0; background: rgba(255,255,255,.78); border: 1px solid rgba(204,149,62,.2); border-radius: 1.1rem; box-shadow: 0 12px 28px rgba(18,55,42,.08); overflow: hidden; }
       #gallery .media-card { opacity: 1; transform: none; transition: opacity .55s cubic-bezier(.23,1,.32,1), transform .55s cubic-bezier(.23,1,.32,1), border-color .25s ease, box-shadow .25s ease; }
       #gallery .media-grid.gallery-animations-ready .media-card { opacity: 0; transform: translateY(24px) scale(.98); }
       #gallery .media-card:nth-child(2) { transition-delay: 70ms; }
@@ -3873,7 +3873,7 @@
       #gallery .media-card:nth-child(6) { transition-delay: 350ms; }
       #gallery .media-grid.gallery-animations-ready .media-card.is-gallery-visible { opacity: 1; transform: translateY(0) scale(1); }
       #gallery .media-card.is-gallery-active { border-color: rgba(204,149,62,.88); box-shadow: 0 18px 36px rgba(154,96,23,.18), 0 0 0 3px rgba(204,149,62,.12); }
-      #gallery .media-card img { width: 100%; height: auto; aspect-ratio: 1 / 1; display: block; object-fit: contain; background: #f6f0e6; opacity: 1; transition: opacity .35s ease, transform .45s cubic-bezier(.23,1,.32,1); }
+      #gallery .media-card img { width: 100%; height: auto; aspect-ratio: 1 / 1; display: block; object-fit: contain; background: #f6f0e6; opacity: 1; transform: translate3d(0,0,0) scale(1.01); transform-origin: center; transform-style: preserve-3d; will-change: transform; transition: opacity .35s ease, transform .24s cubic-bezier(.23,1,.32,1); }
       #gallery .media-card.is-image-loading::before { content: ''; position: absolute; z-index: 1; inset: 0 0 auto; aspect-ratio: 1 / 1; background: linear-gradient(110deg, #eee7da 8%, #faf7f0 18%, #eee7da 33%); background-size: 200% 100%; animation: gallery-image-shimmer 1.35s linear infinite; }
       #gallery .media-card.is-image-loading img { opacity: 0; }
       #gallery .media-card.is-image-loaded img { opacity: 1; }
@@ -3885,7 +3885,7 @@
       @keyframes gallery-image-shimmer { from { background-position: 180% 0; } to { background-position: -20% 0; } }
       @media (max-width: 900px) { #gallery .media-grid { max-height: 62vh; } }
       @media (max-width: 560px) { #gallery .media-grid { grid-template-columns: 1fr; max-height: 68vh; padding-right: .45rem; } }
-      @media (prefers-reduced-motion: reduce) { #gallery .media-grid { scroll-behavior: auto; } #gallery .gallery-scroll-note i { animation: none; } #gallery .media-card, #gallery .media-card img { opacity: 1; transform: none; transition: none !important; } #gallery .media-card.is-image-loading::before { animation: none; } }
+      @media (prefers-reduced-motion: reduce) { #gallery .media-grid { scroll-behavior: auto; } #gallery .gallery-scroll-note i { animation: none; } #gallery .media-card, #gallery .media-card img { opacity: 1; transform: none !important; transition: none !important; } #gallery .media-card.is-image-loading::before { animation: none; } }
       @media (max-width: 900px) {
         #client-path { gap: 1.35rem; padding: 1.15rem; }
         #client-path .client-path-copy { padding: .15rem; }
@@ -6419,6 +6419,7 @@
         const serviceGalleryCards = serviceGallery ? Array.from(serviceGallery.querySelectorAll('.media-card')) : [];
         if (serviceGallery && serviceGalleryCards.length) {
           const reducedGalleryMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
           serviceGalleryCards.forEach((card) => {
             const image = card.querySelector('img');
             if (!image) return;
@@ -6431,6 +6432,20 @@
             image.addEventListener('load', () => finishImageLoad(false), { once: true });
             image.addEventListener('error', () => finishImageLoad(true), { once: true });
             if (image.complete) finishImageLoad(image.naturalWidth === 0);
+            if (finePointer && !reducedGalleryMotion) {
+              card.addEventListener('pointermove', (event) => {
+                if (event.pointerType !== 'mouse') return;
+                const bounds = card.getBoundingClientRect();
+                const x = (event.clientX - bounds.left) / bounds.width - .5;
+                const y = (event.clientY - bounds.top) / bounds.height - .5;
+                const moveX = Math.max(-4, Math.min(4, x * 8));
+                const moveY = Math.max(-4, Math.min(4, y * 8));
+                image.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotateX(${(-y * 2).toFixed(2)}deg) rotateY(${(x * 2).toFixed(2)}deg) scale(1.025)`;
+              });
+              card.addEventListener('pointerleave', () => {
+                image.style.transform = '';
+              });
+            }
           });
           const revealGalleryCard = (card) => card.classList.add('is-gallery-visible');
           if (reducedGalleryMotion || !('IntersectionObserver' in window)) {
@@ -6460,6 +6475,16 @@
               if (distance < closestDistance) { closestDistance = distance; closestCard = card; }
             });
             serviceGalleryCards.forEach((card) => card.classList.toggle('is-gallery-active', card === closestCard));
+            if (!reducedGalleryMotion && !finePointer) {
+              serviceGalleryCards.forEach((card) => {
+                const image = card.querySelector('img');
+                if (!image) return;
+                const bounds = card.getBoundingClientRect();
+                const distance = (bounds.top + bounds.height / 2) - galleryCenter;
+                const parallaxY = Math.max(-8, Math.min(8, -distance * .035));
+                image.style.transform = `translate3d(0, ${parallaxY}px, 0) scale(1.015)`;
+              });
+            }
           };
           const scheduleActiveGalleryCard = () => {
             if (galleryActiveFrame) return;
