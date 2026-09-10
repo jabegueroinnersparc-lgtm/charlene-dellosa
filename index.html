@@ -5074,7 +5074,7 @@
   }
 
   .mobile-nav.is-scroll-hidden {
-    transform: translateY(calc(-100% - env(safe-area-inset-top) - 8px));
+    transform: translate3d(0, calc(-100% - env(safe-area-inset-top) - 8px), 0);
     opacity: 0;
     pointer-events: none;
     box-shadow: none;
@@ -7491,22 +7491,21 @@
 
     const mobileQuery = window.matchMedia('(max-width: 768px)');
     const scrollRoot = document.scrollingElement || document.documentElement;
-    let lastY = Math.max(0, window.scrollY || scrollRoot.scrollTop || 0);
-    let ticking = false;
-    const threshold = 5;
+    const getScrollY = () => Math.max(0, window.pageYOffset || window.scrollY || scrollRoot.scrollTop || document.documentElement.scrollTop || document.body.scrollTop || 0);
+    let lastY = getScrollY();
+    const threshold = 3;
 
     function updateMobileNav() {
-      ticking = false;
       if (!mobileQuery.matches) {
         mobileNav.classList.remove('is-scroll-hidden');
-        lastY = Math.max(0, window.scrollY || scrollRoot.scrollTop || 0);
+        lastY = getScrollY();
         return;
       }
 
-      const currentY = Math.max(0, window.scrollY || scrollRoot.scrollTop || 0);
+      const currentY = getScrollY();
       const delta = currentY - lastY;
 
-      if (currentY <= 24 || delta < -threshold) {
+      if (currentY <= 16 || delta < -threshold) {
         mobileNav.classList.remove('is-scroll-hidden');
       } else if (delta > threshold) {
         mobileNav.classList.add('is-scroll-hidden');
@@ -7515,12 +7514,7 @@
       lastY = currentY;
     }
 
-    function onScroll() {
-      if (!ticking) {
-        ticking = true;
-        window.requestAnimationFrame(updateMobileNav);
-      }
-    }
+    function onScroll() { updateMobileNav(); }
 
     window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('scroll', onScroll, { passive: true, capture: true });
