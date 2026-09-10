@@ -3789,10 +3789,21 @@
         border-color: rgba(204,149,62,.26);
         color: #063c24;
       }
-      #client-path .client-path-copy { min-width: 0; padding: clamp(.5rem, 1.5vw, 1.25rem); }
-      #client-path h3 { color: #063c24; max-width: 16ch; }
-      #client-path p { color: #4b5d52; max-width: 52ch; line-height: 1.7; }
+      #client-path .client-path-copy { min-width: 0; align-self: center; padding: clamp(.25rem, 1vw, .75rem); }
+      #client-path h3 { color: #063c24; max-width: 18ch; margin-bottom: .7rem; }
+      #client-path p { color: #4b5d52; max-width: 52ch; line-height: 1.62; }
       #client-path .section-kicker { color: #9a6017; }
+      #client-path .client-path-copy-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin-top: 1.35rem; }
+      #client-path .client-path-copy-actions a { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: .55rem; padding: .85rem 1.15rem; border-radius: 999px; font-family: 'Inter', sans-serif; font-size: .84rem; font-weight: 800; line-height: 1.15; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+      #client-path .client-path-copy-actions a:hover { transform: translateY(-2px); }
+      #client-path .client-path-primary-cta { background: #cc953e; color: #fff; box-shadow: 0 10px 22px rgba(204,149,62,.28); }
+      #client-path .client-path-primary-cta:hover { background: #b77e2d; box-shadow: 0 14px 28px rgba(204,149,62,.34); }
+      #client-path .client-path-secondary-cta { border: 1px solid rgba(6,60,36,.22); background: rgba(255,255,255,.72); color: #063c24; }
+      #client-path .client-path-secondary-cta:hover { background: #fff; box-shadow: 0 10px 22px rgba(18,55,42,.1); }
+      #client-path .client-path-copy-actions a:focus-visible,
+      #client-path .client-path-quick-chat:focus-visible { outline: 3px solid rgba(204,149,62,.55); outline-offset: 3px; }
+      #client-path .client-path-quick-chat { display: inline-flex; align-items: center; gap: .4rem; margin-top: .7rem; color: #69776e; font-size: .76rem; font-weight: 700; text-decoration: none; }
+      #client-path .client-path-quick-chat:hover { color: #9a6017; }
       #client-path .path-step {
         background: rgba(255,255,255,.72);
         border-color: rgba(6,60,36,.12);
@@ -3801,13 +3812,17 @@
       #client-path .path-step strong { color: #063c24; }
       #client-path .path-step small { color: #607168; }
       #client-path .step-number { background: #cc953e; color: #ffffff; box-shadow: 0 0 0 4px rgba(204,149,62,.14); }
-      #client-path .path-steps { margin-top: clamp(1.5rem, 3vw, 2.2rem); }
-      #client-path .client-path-visual { position: relative; min-height: 360px; display: grid; grid-template-rows: minmax(0, 1fr) auto; overflow: hidden; padding: .75rem; border: 1px solid rgba(204,149,62,.28); border-radius: 1.5rem; background: linear-gradient(145deg, #063c24 0%, #174a31 58%, #275016 100%); box-shadow: 0 18px 38px rgba(6,60,36,.18), inset 0 1px 0 rgba(255,255,255,.14); }
+      #client-path .path-steps { margin-top: clamp(1.15rem, 2.2vw, 1.65rem); gap: .6rem; }
+      #client-path .path-step { padding: .82rem .9rem; }
+      #client-path .path-step .step-number { min-width: 2.15rem; height: 2.15rem; display: inline-flex; align-items: center; justify-content: center; font-size: .72rem; letter-spacing: .03em; }
+      #client-path .client-path-trust { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem .65rem; margin-top: 1.05rem; color: #718077; font-size: .68rem; font-weight: 700; letter-spacing: .03em; }
+      #client-path .client-path-trust i { width: 3px; height: 3px; border-radius: 50%; background: #cc953e; }
+      #client-path .client-path-visual { position: relative; min-height: 440px; display: grid; grid-template-rows: minmax(0, 1fr) auto; overflow: hidden; padding: .65rem; border: 1px solid rgba(204,149,62,.28); border-radius: 1.5rem; background: linear-gradient(145deg, #063c24 0%, #174a31 58%, #275016 100%); box-shadow: 0 18px 38px rgba(6,60,36,.18), inset 0 1px 0 rgba(255,255,255,.14); }
       #client-path .client-path-visual::before { content: ''; position: absolute; width: 180px; height: 180px; top: -90px; right: -55px; border: 1px solid rgba(245,214,138,.28); border-radius: 50%; box-shadow: 0 0 0 18px rgba(245,214,138,.05), 0 0 0 36px rgba(245,214,138,.035); pointer-events: none; }
       #client-path .client-path-visual::after { content: ''; position: absolute; inset: .75rem; border-radius: 1.05rem; border: 1px solid rgba(255,255,255,.16); pointer-events: none; }
       #client-path .client-path-visual img { position: relative; z-index: 1; width: 100%; height: 100%; min-height: 0; display: block; object-fit: contain; object-position: center; padding: .45rem; border-radius: 1rem; background: rgba(255,255,255,.96); box-shadow: 0 12px 24px rgba(0,0,0,.16); }
-      #client-path .client-path-visual-caption { position: relative; z-index: 2; display: flex; align-items: center; gap: .55rem; padding: .85rem .35rem .25rem; color: #fff; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-      #client-path .client-path-visual-caption i { color: #f5d68a; }
+      #client-path .client-path-visual-caption { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: .55rem; padding: .75rem .35rem .2rem; color: rgba(255,255,255,.82); font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+      #client-path .client-path-guide-badge { display: inline-flex; padding: .32rem .5rem; border-radius: 999px; background: #f5d68a; color: #063c24; font-size: .58rem; letter-spacing: .1em; white-space: nowrap; }
       #client-path .client-path-visual-actions { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; padding: .7rem .25rem .15rem; }
       #client-path .client-path-visual-actions a { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: .45rem; padding: .7rem .75rem; border-radius: 999px; font-family: 'Inter', sans-serif; font-size: .72rem; font-weight: 800; line-height: 1.15; letter-spacing: .02em; text-align: center; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
       #client-path .client-path-visual-actions a:hover { transform: translateY(-2px); }
@@ -3818,10 +3833,12 @@
       #client-path .client-path-consult-cta:hover { background: rgba(255,255,255,.2); box-shadow: 0 10px 22px rgba(0,0,0,.14); }
       @media (max-width: 900px) {
         #client-path { grid-template-columns: 1fr; }
-        #client-path .client-path-visual { min-height: 320px; }
+        #client-path .client-path-visual { min-height: 380px; }
         #client-path h3 { max-width: 24ch; }
       }
       @media (max-width: 420px) {
+        #client-path .client-path-copy-actions { align-items: stretch; flex-direction: column; }
+        #client-path .client-path-copy-actions a { width: 100%; }
         #client-path .client-path-visual-actions { grid-template-columns: 1fr; }
       }
       #services {
@@ -6041,18 +6058,23 @@
           <div class="landing-card reveal client-path" id="client-path">
             <div class="client-path-copy">
               <div class="section-kicker">A simple next step</div>
-              <h3>Let’s make your property decision feel easier.</h3>
-              <p>Tell me what you are looking for, and I will help you compare practical options, understand the next steps, and move forward at a comfortable pace.</p>
-              <a href="#" class="btn-primary" onclick="openQuizPopup(event)" style="margin-top:1.1rem;"><i class="fas fa-comments"></i> Start With a Quick Chat</a>
-              <div class="path-steps" aria-label="How the consultation works">
-                <div class="path-step"><span class="step-number">1</span><div><strong>Share your goal</strong><small>Buying, selling, investing, or simply exploring.</small></div></div>
-                <div class="path-step"><span class="step-number">2</span><div><strong>Get tailored options</strong><small>Receive guidance based on your budget and priorities.</small></div></div>
-                <div class="path-step"><span class="step-number">3</span><div><strong>Move with confidence</strong><small>Understand the process before you commit.</small></div></div>
+              <h3>Make Your Next Property Move With Confidence.</h3>
+              <p>Get a practical homebuying guide, explore suitable property options, and take your next step with clear, personalized support.</p>
+              <div class="client-path-copy-actions">
+                <a class="client-path-primary-cta" href="https://drive.google.com/uc?export=download&amp;id=1yo6j2i9wKGH4FnwRFiyI3H2Y8Z0vZEQl" target="_blank" rel="noopener"><i class="fas fa-download" aria-hidden="true"></i><span>Get Your Free Homebuyer Guide</span></a>
+                <a class="client-path-secondary-cta" href="#" onclick="openQuizPopup(event)"><i class="fas fa-calendar-check" aria-hidden="true"></i><span>Book a Consultation</span></a>
               </div>
+              <a class="client-path-quick-chat" href="#" onclick="openQuizPopup(event)"><i class="fas fa-comments" aria-hidden="true"></i> Prefer to start with a quick chat?</a>
+              <div class="path-steps" aria-label="How the consultation works">
+                <div class="path-step"><span class="step-number">01</span><div><strong>Tell Me What You Need</strong><small>Share your goals, budget, and preferred location.</small></div></div>
+                <div class="path-step"><span class="step-number">02</span><div><strong>Explore Your Options</strong><small>Review practical property choices with guidance.</small></div></div>
+                <div class="path-step"><span class="step-number">03</span><div><strong>Move With Confidence</strong><small>Understand the next step before you commit.</small></div></div>
+              </div>
+              <div class="client-path-trust"><span>Personalized guidance</span><i></i><span>Property options</span><i></i><span>Homebuying support</span></div>
             </div>
             <div class="client-path-visual">
               <img src="https://drive.google.com/thumbnail?id=1yo6j2i9wKGH4FnwRFiyI3H2Y8Z0vZEQl&amp;sz=w1600" alt="Free homebuyer real estate guide" loading="lazy" />
-              <div class="client-path-visual-caption"><i class="fas fa-sparkles"></i><span>Guidance for your next move</span></div>
+              <div class="client-path-visual-caption"><span class="client-path-guide-badge">FREE PDF GUIDE</span><span>Homebuying support, made clearer</span></div>
               <div class="client-path-visual-actions">
                 <a class="client-path-guide-cta" href="https://drive.google.com/uc?export=download&amp;id=1yo6j2i9wKGH4FnwRFiyI3H2Y8Z0vZEQl" target="_blank" rel="noopener"><i class="fas fa-download" aria-hidden="true"></i><span>Get the Free Guide</span></a>
                 <a class="client-path-consult-cta" href="#" onclick="openQuizPopup(event)"><i class="fas fa-calendar-check" aria-hidden="true"></i><span>Book a Consultation</span></a>
