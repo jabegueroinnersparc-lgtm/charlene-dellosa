@@ -7493,7 +7493,7 @@
     const scrollRoot = document.scrollingElement || document.documentElement;
     let lastY = Math.max(0, window.scrollY || scrollRoot.scrollTop || 0);
     let ticking = false;
-    const threshold = 8;
+    const threshold = 5;
 
     function updateMobileNav() {
       ticking = false;
@@ -7523,6 +7523,7 @@
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('scroll', onScroll, { passive: true, capture: true });
     window.addEventListener('resize', updateMobileNav, { passive: true });
     if (mobileQuery.addEventListener) mobileQuery.addEventListener('change', updateMobileNav);
     else if (mobileQuery.addListener) mobileQuery.addListener(updateMobileNav);
