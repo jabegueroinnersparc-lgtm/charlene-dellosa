@@ -3857,6 +3857,19 @@
       #gallery {
         background: linear-gradient(135deg, #f8efe0 0%, #fffdf9 58%, #eef4ee 100%) !important;
       }
+      #gallery .gallery-scroll-note { display: flex; align-items: center; justify-content: center; gap: .45rem; margin: .15rem 0 .85rem; color: #9a6017; font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+      #gallery .gallery-scroll-note i { color: #cc953e; animation: gallery-scroll-nudge 1.8s ease-in-out infinite; }
+      #gallery .media-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; width: 100%; max-height: min(68vh, 700px); overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scroll-behavior: smooth; scroll-snap-type: y proximity; padding: .45rem .6rem 1.1rem .2rem; scrollbar-width: thin; scrollbar-color: rgba(154,96,23,.7) rgba(204,149,62,.12); border-top: 1px solid rgba(204,149,62,.14); border-bottom: 1px solid rgba(204,149,62,.14); }
+      #gallery .media-grid::-webkit-scrollbar { width: 9px; }
+      #gallery .media-grid::-webkit-scrollbar-track { border-radius: 999px; background: rgba(204,149,62,.1); }
+      #gallery .media-grid::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: linear-gradient(180deg, #cc953e, #9a6017); background-clip: padding-box; }
+      #gallery .media-card { scroll-snap-align: start; min-width: 0; background: rgba(255,255,255,.78); border: 1px solid rgba(204,149,62,.2); border-radius: 1.1rem; box-shadow: 0 12px 28px rgba(18,55,42,.08); overflow: hidden; }
+      #gallery .media-card img { width: 100%; height: auto; aspect-ratio: 1 / 1; display: block; object-fit: contain; background: #f6f0e6; }
+      #gallery .media-card-label { min-height: 4.2rem; padding: .8rem .9rem .9rem; background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(251,248,242,.88)); }
+      @keyframes gallery-scroll-nudge { 0%, 100% { transform: translateY(0); opacity: .72; } 50% { transform: translateY(4px); opacity: 1; } }
+      @media (max-width: 900px) { #gallery .media-grid { max-height: 62vh; } }
+      @media (max-width: 560px) { #gallery .media-grid { grid-template-columns: 1fr; max-height: 68vh; padding-right: .45rem; } }
+      @media (prefers-reduced-motion: reduce) { #gallery .media-grid { scroll-behavior: auto; } #gallery .gallery-scroll-note i { animation: none; } }
       #gallery .media-card,
       #video-library .guide-video-card {
         border-color: rgba(204,149,62,.22);
@@ -6099,6 +6112,7 @@
               <h3>See How I Can Help With Your Property Journey</h3>
               <p>From property viewings to successful handovers, here are sample moments from the services I provide.</p>
             </div>
+            <div class="gallery-scroll-note"><i class="fas fa-arrow-down" aria-hidden="true"></i><span>Scroll to explore all services</span></div>
             <div class="media-grid" aria-label="Services gallery">
               
               <article class="media-card"><img src="https://drive.google.com/thumbnail?id=13meCUlDBZrDcPa5RSFgGAW1CYmF-kxyJ&amp;sz=w600" srcset="https://drive.google.com/thumbnail?id=13meCUlDBZrDcPa5RSFgGAW1CYmF-kxyJ&amp;sz=w600 600w, https://drive.google.com/thumbnail?id=13meCUlDBZrDcPa5RSFgGAW1CYmF-kxyJ&amp;sz=w1000 1000w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="Client property viewing"><div class="media-card-label"><strong><i class="fas fa-people-group"></i> Guided Viewings</strong><span>Finding the right fit together</span></div></article>
