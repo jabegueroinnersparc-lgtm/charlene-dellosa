@@ -80,6 +80,17 @@ const QUIZ_SPREADSHEET_ID = '';
 const QUIZ_CACHE_SECONDS = 60;
 
 function doGet(e) {
+  // Public configuration endpoint for external frontends such as Vercel.
+  // Example: https://script.google.com/macros/s/DEPLOYMENT_ID/exec?config=quiz
+  if (e && e.parameter && e.parameter.config === 'quiz') {
+    return jsonResponse_({
+      ok: true,
+      endpoint: PUBLIC_WEB_APP_URL,
+      privacyNoticeVersion: PRIVACY_NOTICE_VERSION,
+      nurtureConsentVersion: NURTURE_CONSENT_VERSION
+    });
+  }
+
   if (e && e.parameter && e.parameter.sitemap === '1') {
     return ContentService
       .createTextOutput(buildSitemapXml_())
@@ -1718,6 +1729,7 @@ function authorizeAutomation_() {
   MailApp.getRemainingDailyQuota();
   SpreadsheetApp.openById(LEADS_SPREADSHEET_ID).getName();
 }
+
 
 
 
