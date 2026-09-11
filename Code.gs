@@ -1655,9 +1655,3 @@ function authorizeAutomation_() {
   MailApp.getRemainingDailyQuota();
   SpreadsheetApp.openById(LEADS_SPREADSHEET_ID).getName();
 }
-
-
-
-
-
-
