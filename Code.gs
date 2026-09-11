@@ -8,7 +8,25 @@ const TESTIMONIAL_SANTOS_FILE_ID = '1to92kxemMLTJvbiHYeXWlNod6WZXA7-R';
 const TESTIMONIAL_VILLANUEVA_FILE_ID = '143T8pg0-3XWOc0i6hdWYV7TWy4TqOLk5';
 
 // Landing-page palette: emerald, dark green, gold, pale gold, cream, and neutral ink.
+// Internal notification recipients: both team members receive lead alerts.
 const AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
+const SECOND_AGENT_EMAIL = 'dellosacharlene1317@gmail.com';
+
+// Buyer-facing emails use Charlene's address as the reply destination.
+// This applies to the first buyer confirmation and all 30-day nurture emails.
+const AGENT_REPLY_EMAIL = 'dellosacharlene1317@gmail.com';
+
+function getAgentRecipients_() {
+  return [AGENT_EMAIL, SECOND_AGENT_EMAIL]
+    .map(function(email) { return String(email || '').trim(); })
+    .filter(function(email) { return email !== ''; })
+    .filter(function(email, index, list) { return list.indexOf(email) === index; })
+    .join(',');
+}
+
+function getAgentReplyEmail_() {
+  return String(AGENT_REPLY_EMAIL || AGENT_EMAIL).trim() || AGENT_EMAIL;
+}
 const AGENT_NAME = 'Charlene Dellosa';
 const SENDER_NAME = 'Charlene Dellosa Properties · Dynamic Property Specialist';
 const EMAIL_BRAND_LOGO_FILE_ID = '1lWJhR0FoVgLXC_AKiKhdDJCxA_kOYWDz';
@@ -691,7 +709,7 @@ function sendQuizNotification(payload) {
 
   try {
     MailApp.sendEmail({
-      to: AGENT_EMAIL,
+      to: getAgentRecipients_(),
       subject: subject,
       body: agentText,
       htmlBody: buildAgentHtml_(name, email, mobile, consultationDate, submittedAt, answerRows, nurtureConsent, nurtureConsentVersion),
@@ -712,7 +730,7 @@ function sendQuizNotification(payload) {
       htmlBody: buildClientHtml_(name, mobile, consultationDate, leadType, answers, leadId),
       // Send exactly one PDF: the configured first-assessment guide.
       attachments: [getQuizGuide_()],
-      replyTo: AGENT_EMAIL,
+      replyTo: getAgentReplyEmail_(),
       inlineImages: getEmailBrandLogo_(),
       name: SENDER_NAME
     });
@@ -1137,11 +1155,11 @@ function sendReplyStopAlert_(name, email, leadType, submittedAt, stoppedAt, step
 
   try {
     MailApp.sendEmail({
-      to: AGENT_EMAIL,
+      to: getAgentRecipients_(),
       subject: subject,
       body: body,
       htmlBody: htmlBody,
-      replyTo: safeEmail || AGENT_EMAIL,
+      replyTo: safeEmail || getAgentReplyEmail_(),
       inlineImages: getEmailBrandLogo_(),
       name: SENDER_NAME
     });
@@ -1205,7 +1223,7 @@ function processLeadFollowUps() {
         subject: copy.subject,
         body: copy.body,
         htmlBody: copy.htmlBody,
-        replyTo: AGENT_EMAIL,
+        replyTo: getAgentReplyEmail_(),
         inlineImages: getEmailBrandLogo_(),
       name: SENDER_NAME
       });
@@ -1637,6 +1655,8 @@ function authorizeAutomation_() {
   MailApp.getRemainingDailyQuota();
   SpreadsheetApp.openById(LEADS_SPREADSHEET_ID).getName();
 }
+
+
 
 
 
