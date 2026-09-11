@@ -119,17 +119,81 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    const raw = e && e.postData && e.postData.contents ? e.postData.contents : '{}';
-    const payload = JSON.parse(raw);
+    const payload = readQuizPostPayload_(e);
     const result = sendQuizNotification(payload);
-    return ContentService
-      .createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
+    return jsonResponse_({
+      ok: true,
+      leadId: result.leadId || '',
+      duplicate: result.duplicate === true,
+      emailQueued: result.emailQueued === true,
+      clientEmailWarning: result.clientEmailWarning || ''
+    });
   } catch (error) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ ok: false, error: String(error && error.message ? error.message : error) }))
-      .setMimeType(ContentService.MimeType.JSON);
+    console.error('doPost failed: ' + (error && error.stack ? error.stack : error));
+    return jsonResponse_({
+      ok: false,
+      error: String(error && error.message ? error.message : error)
+    });
   }
+}
+
+/**
+ * Accept JSON, a JSON string in a payload field, or ordinary form fields.
+ * This supports fetch(), sendBeacon(), URL-encoded forms, and FormData.
+ */
+function readQuizPostPayload_(e) {
+  e = e || {};
+  const parameters = e.parameter || {};
+  const raw = e.postData && e.postData.contents ? String(e.postData.contents) : '';
+  let payload = null;
+
+  if (raw) {
+    try {
+      payload = JSON.parse(raw);
+    } catch (jsonError) {
+      // Continue to e.parameter for URL-encoded/FormData submissions.
+    }
+  }
+
+  if (!payload && parameters.payload) {
+    try {
+      payload = JSON.parse(String(parameters.payload));
+    } catch (payloadError) {
+      throw new Error('The quiz payload is not valid JSON.');
+    }
+  }
+
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    payload = {
+      name: parameters.name || '',
+      email: parameters.email || '',
+      mobile: parameters.mobile || '',
+      consultationDate: parameters.consultationDate || '',
+      privacyConsent: asBoolean_(parameters.privacyConsent),
+      privacyNoticeVersion: parameters.privacyNoticeVersion || '',
+      nurtureConsent: asBoolean_(parameters.nurtureConsent),
+      nurtureConsentVersion: parameters.nurtureConsentVersion || '',
+      submissionId: parameters.submissionId || '',
+      answers: []
+    };
+
+    if (parameters.answers) {
+      try {
+        payload.answers = JSON.parse(String(parameters.answers));
+      } catch (answersError) {
+        throw new Error('The quiz answers are not valid JSON.');
+      }
+    }
+  }
+
+  payload.answers = Array.isArray(payload.answers) ? payload.answers : [];
+  return payload;
+}
+
+function jsonResponse_(value) {
+  return ContentService
+    .createTextOutput(JSON.stringify(value))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function getImageThumbnailUrl_(fileId, width) {
@@ -607,8 +671,8 @@ function sendQuizNotification(payload) {
   const email = cleanText_(payload.email, 254).toLowerCase();
   const mobile = cleanText_(payload.mobile, 40);
   const consultationDate = cleanText_(payload.consultationDate, 120);
-  const privacyConsent = payload.privacyConsent === true;
-  const nurtureConsent = payload.nurtureConsent === true;
+  const privacyConsent = asBoolean_(payload.privacyConsent);
+  const nurtureConsent = asBoolean_(payload.nurtureConsent);
   const nurtureConsentVersion = cleanText_(payload.nurtureConsentVersion, 80) || NURTURE_CONSENT_VERSION;
   const submissionId = cleanText_(payload.submissionId, 120);
   const answers = Array.isArray(payload.answers) ? payload.answers.slice(0, 20).map(function(item) {
@@ -1037,7 +1101,24 @@ function saveLead_(leadId, name, email, mobile, consultationDate, leadType, answ
   Object.keys(lead).forEach(function(header) {
     if (map[header] !== undefined) values[map[header]] = lead[header];
   });
+  // Append the row first, then explicitly format identifier/contact/version
+  // fields as text. This prevents Sheets from converting +639... into a
+  // number/formula or 2026-08-24 into a date.
   sheet.appendRow(values);
+  const textFields = {
+    'Mobile': String(mobile || ''),
+    'Privacy Notice Version': String(privacyNoticeVersion || PRIVACY_NOTICE_VERSION),
+    'Nurture Consent Version': enrolled
+      ? String(nurtureConsentVersion || NURTURE_CONSENT_VERSION)
+      : ''
+  };
+  Object.keys(textFields).forEach(function(header) {
+    if (map[header] !== undefined) {
+      const textCell = sheet.getRange(sheet.getLastRow(), map[header] + 1);
+      textCell.setNumberFormat('@');
+      textCell.setValue(textFields[header]);
+    }
+  });
 
   // Do not inspect or create triggers during a public submission.
   // Install the follow-up trigger once by running installFollowUpAutomation()
@@ -1637,6 +1718,7 @@ function authorizeAutomation_() {
   MailApp.getRemainingDailyQuota();
   SpreadsheetApp.openById(LEADS_SPREADSHEET_ID).getName();
 }
+
 
 
 
