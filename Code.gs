@@ -8,7 +8,9 @@ const TESTIMONIAL_SANTOS_FILE_ID = '1to92kxemMLTJvbiHYeXWlNod6WZXA7-R';
 const TESTIMONIAL_VILLANUEVA_FILE_ID = '143T8pg0-3XWOc0i6hdWYV7TWy4TqOLk5';
 
 // Landing-page palette: emerald, dark green, gold, pale gold, cream, and neutral ink.
-const AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
+const AGENT_EMAIL = 'dellosacharlene1317@gmail.com';
+// Former agent address retained as a secondary recipient for internal lead alerts.
+const SECONDARY_AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
 const AGENT_NAME = 'Charlene Dellosa';
 const SENDER_NAME = 'Charlene Dellosa Properties · Dynamic Property Specialist';
 const EMAIL_BRAND_LOGO_FILE_ID = '1lWJhR0FoVgLXC_AKiKhdDJCxA_kOYWDz';
@@ -767,6 +769,7 @@ function sendQuizNotification(payload) {
   try {
     MailApp.sendEmail({
       to: AGENT_EMAIL,
+      cc: SECONDARY_AGENT_EMAIL,
       subject: subject,
       body: agentText,
       htmlBody: buildAgentHtml_(name, email, mobile, consultationDate, submittedAt, answerRows, nurtureConsent, nurtureConsentVersion),
@@ -780,17 +783,20 @@ function sendQuizNotification(payload) {
   }
 
   try {
-    MailApp.sendEmail({
-      to: email,
-      subject: clientSubject,
-      body: clientText,
-      htmlBody: buildClientHtml_(name, mobile, consultationDate, leadType, answers, leadId),
-      // Send exactly one PDF: the configured first-assessment guide.
-      attachments: [getQuizGuide_()],
-      replyTo: AGENT_EMAIL,
-      inlineImages: getEmailBrandLogo_(),
-      name: SENDER_NAME
-    });
+    GmailApp.sendEmail(
+      email,
+      clientSubject,
+      clientText,
+      {
+        htmlBody: buildClientHtml_(name, mobile, consultationDate, leadType, answers, leadId),
+        // Send exactly one PDF: the configured first-assessment guide.
+        attachments: [getQuizGuide_()],
+        from: AGENT_EMAIL,
+        replyTo: AGENT_EMAIL,
+        inlineImages: getEmailBrandLogo_(),
+        name: SENDER_NAME
+      }
+    );
   } catch (mailError) {
     clientEmailError = String(mailError && mailError.message ? mailError.message : mailError);
     console.error('Client confirmation failed for lead ' + leadId + ': ' + clientEmailError);
@@ -1230,6 +1236,7 @@ function sendReplyStopAlert_(name, email, leadType, submittedAt, stoppedAt, step
   try {
     MailApp.sendEmail({
       to: AGENT_EMAIL,
+      cc: SECONDARY_AGENT_EMAIL,
       subject: subject,
       body: body,
       htmlBody: htmlBody,
@@ -1292,15 +1299,18 @@ function processLeadFollowUps() {
     const copy = getNurtureCopy_(nextStep, leadType, name, answers, leadId);
 
     try {
-      MailApp.sendEmail({
-        to: email,
-        subject: copy.subject,
-        body: copy.body,
-        htmlBody: copy.htmlBody,
-        replyTo: AGENT_EMAIL,
-        inlineImages: getEmailBrandLogo_(),
-      name: SENDER_NAME
-      });
+      GmailApp.sendEmail(
+        email,
+        copy.subject,
+        copy.body,
+        {
+          htmlBody: copy.htmlBody,
+          from: AGENT_EMAIL,
+          replyTo: AGENT_EMAIL,
+          inlineImages: getEmailBrandLogo_(),
+          name: SENDER_NAME
+        }
+      );
       sheet.getRange(r + 1, map['Nurture Step'] + 1).setValue(nextStep);
       sheet.getRange(r + 1, map['Last Nurture Sent At'] + 1).setValue(now);
       sheet.getRange(r + 1, map['Last Nurture Error'] + 1).setValue('');
