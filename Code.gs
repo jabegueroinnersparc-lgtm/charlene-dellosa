@@ -788,24 +788,36 @@ function sendQuizNotification(payload) {
     console.error('Agent notification failed for lead ' + leadId + ': ' + agentEmailError);
   }
 
+  // Send the buyer confirmation through MailApp without forcing a `from` alias.
+  // GmailApp can reject `from: AGENT_EMAIL` when that address is not configured
+  // as a verified Gmail alias. The confirmation should still send if the PDF
+  // guide is unavailable, so attachment loading is isolated from email delivery.
+  let clientAttachments = [];
   try {
-    GmailApp.sendEmail(
-      email,
-      clientSubject,
-      clientText,
-      {
-        htmlBody: buildClientHtml_(name, mobile, consultationDate, leadType, answers, leadId),
-        // Send exactly one PDF: the configured first-assessment guide.
-        attachments: [getQuizGuide_()],
-        from: AGENT_EMAIL,
-        replyTo: AGENT_EMAIL,
-        inlineImages: getEmailBrandLogo_(),
-        name: SENDER_NAME
-      }
-    );
+    clientAttachments = [getQuizGuide_()];
+  } catch (attachmentError) {
+    clientEmailError = 'The buyer email was sent without the PDF guide because the attachment could not be loaded: ' +
+      String(attachmentError && attachmentError.message ? attachmentError.message : attachmentError);
+    console.error('Client guide attachment unavailable for lead ' + leadId + ': ' + clientEmailError);
+  }
+
+  try {
+    MailApp.sendEmail({
+      to: email,
+      subject: clientSubject,
+      body: clientText,
+      htmlBody: buildClientHtml_(name, mobile, consultationDate, leadType, answers, leadId),
+      attachments: clientAttachments,
+      replyTo: AGENT_EMAIL,
+      inlineImages: getEmailBrandLogo_(),
+      name: SENDER_NAME
+    });
   } catch (mailError) {
-    clientEmailError = String(mailError && mailError.message ? mailError.message : mailError);
-    console.error('Client confirmation failed for lead ' + leadId + ': ' + clientEmailError);
+    const sendError = String(mailError && mailError.message ? mailError.message : mailError);
+    clientEmailError = clientEmailError
+      ? clientEmailError + ' Email delivery also failed: ' + sendError
+      : sendError;
+    console.error('Client confirmation failed for lead ' + leadId + ': ' + sendError);
   }
 
   if (agentEmailError) {
