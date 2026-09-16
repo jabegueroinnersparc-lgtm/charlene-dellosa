@@ -76,8 +76,9 @@ const SOCIAL_LINKS = {
 // Direct Drive image URL used as the Facebook CTA background in email clients.
 // The Drive file must be shared as Anyone with the link -> Viewer.
 const FACEBOOK_CTA_BACKGROUND_URL = 'https://drive.google.com/uc?export=download&id=1DUediE3w5OB6tvkaaO58Fwv_cv-2Lt_8';
-// Public image used in the separate Facebook CTA section below the social links.
-const JOIN_US_BANNER_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663926558204/uzJMErbUNIPdfADr.png';
+// Direct Drive image used in the separate Facebook CTA section below the social links.
+// The Drive file must be shared as Anyone with the link -> Viewer.
+const JOIN_US_BANNER_URL = 'https://drive.google.com/uc?export=download&id=1DUediE3w5OB6tvkaaO58Fwv_cv-2Lt_8';
 const LINK_LIBRARY_SPREADSHEET_NAME = 'Charlene Dellosa · Website Link Library';
 const IMAGE_SETTINGS_SHEET_NAME = 'Image Settings';
 const QUIZ_QUESTIONS_SHEET_NAME = 'Quiz Questions';
