@@ -8,7 +8,7 @@ const TESTIMONIAL_SANTOS_FILE_ID = '1to92kxemMLTJvbiHYeXWlNod6WZXA7-R';
 const TESTIMONIAL_VILLANUEVA_FILE_ID = '143T8pg0-3XWOc0i6hdWYV7TWy4TqOLk5';
 
 // Landing-page palette: emerald, dark green, gold, pale gold, cream, and neutral ink.
-const AGENT_EMAIL = '';
+const AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
 // Former agent address retained as a secondary recipient for internal lead alerts.
 const SECONDARY_AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
 const AGENT_NAME = 'Charlene Dellosa';
@@ -76,6 +76,8 @@ const SOCIAL_LINKS = {
 // Direct Drive image URL used as the Facebook CTA background in email clients.
 // The Drive file must be shared as Anyone with the link -> Viewer.
 const FACEBOOK_CTA_BACKGROUND_URL = 'https://drive.google.com/uc?export=download&id=1DUediE3w5OB6tvkaaO58Fwv_cv-2Lt_8';
+// Public CDN image used as the clickable Facebook footer banner.
+const JOIN_US_BANNER_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663926558204/uzJMErbUNIPdfADr.png';
 const LINK_LIBRARY_SPREADSHEET_NAME = 'Charlene Dellosa · Website Link Library';
 const IMAGE_SETTINGS_SHEET_NAME = 'Image Settings';
 const QUIZ_QUESTIONS_SHEET_NAME = 'Quiz Questions';
@@ -989,14 +991,11 @@ function footerHtml_(text) {
     '<div style="margin:14px auto 18px;max-width:510px;color:' + BRAND.muted + ';font-size:14px;line-height:1.75;">' + escapeHtml_(text) + '</div>' +
     '<div style="height:1px;background:' + BRAND.line + ';margin:0 auto 18px;max-width:420px;"></div>' +
     '<div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:11px;">Join our Facebook community</div>' +
-    '<div style="margin:0 auto 16px;max-width:480px;padding:10px;background:#ffffff;border:1px solid ' + BRAND.line + ';border-radius:12px;">' +
-      '<img src="' + FACEBOOK_CTA_BACKGROUND_URL + '" alt="Charlene Dellosa Properties on Facebook" width="460" style="display:block;width:100%;max-width:460px;height:auto;border:0;border-radius:8px;" />' +
-    '</div>' +
-    '<div style="margin:0 auto 20px;text-align:center;"><a href="' + SOCIAL_LINKS.facebook + '" target="_blank" rel="noopener" style="display:inline-block;background:' + BRAND.deepGreen + ';border:1px solid ' + BRAND.deepGreen + ';border-radius:26px;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;line-height:1.2;padding:14px 24px;box-shadow:0 3px 8px rgba(18,55,42,.18);"><span style="display:inline-block;margin-right:8px;color:' + BRAND.paleGold + ';font-size:18px;line-height:15px;vertical-align:-2px;">f</span>Join the Community on Facebook</a></div>' +
+    '<div style="margin:0 auto 20px;max-width:620px;text-align:center;"><a href="' + SOCIAL_LINKS.facebook + '" target="_blank" rel="noopener" style="display:block;text-decoration:none;"><img src="' + JOIN_US_BANNER_URL + '" alt="Join us on Facebook — Charlene Dellosa Properties" width="620" style="display:block;width:100%;max-width:620px;height:auto;border:0;border-radius:10px;" /></a></div>' +
     '<a class="social-link" href="' + SOCIAL_LINKS.instagram + '" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin:4px;padding:9px 14px 9px 9px;border:1px solid #ddc9a7;border-radius:24px;background:#ffffff;color:' + BRAND.deepGreen + ';text-decoration:none;font-size:12px;font-weight:700;box-shadow:0 2px 5px rgba(18,55,42,.06);"><span style="display:inline-block;width:23px;height:23px;margin-right:6px;border-radius:50%;background:' + BRAND.gold + ';color:#ffffff;font-size:10px;line-height:23px;text-align:center;vertical-align:middle;">IG</span>Instagram</a>' +
     '<a class="social-link" href="' + SOCIAL_LINKS.tiktok + '" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin:4px;padding:9px 14px 9px 9px;border:1px solid #ddc9a7;border-radius:24px;background:#ffffff;color:' + BRAND.deepGreen + ';text-decoration:none;font-size:12px;font-weight:700;box-shadow:0 2px 5px rgba(18,55,42,.06);"><span style="display:inline-block;width:23px;height:23px;margin-right:6px;border-radius:50%;background:' + BRAND.deepGreen + ';color:#ffffff;font-size:10px;line-height:23px;text-align:center;vertical-align:middle;">TT</span>TikTok</a>' +
     '<a class="social-link" href="' + SOCIAL_LINKS.youtube + '" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin:4px;padding:9px 14px 9px 9px;border:1px solid #ddc9a7;border-radius:24px;background:#ffffff;color:' + BRAND.deepGreen + ';text-decoration:none;font-size:12px;font-weight:700;box-shadow:0 2px 5px rgba(18,55,42,.06);"><span style="display:inline-block;width:23px;height:23px;margin-right:6px;border-radius:50%;background:#b54832;color:#ffffff;font-size:10px;line-height:23px;text-align:center;vertical-align:middle;">YT</span>YouTube</a>' +
-    '<div style="margin-top:0;color:' + BRAND.muted + ';font-size:10px;line-height:1.5;">Follow us for property tips, new listings, market updates, and community highlights.</div>' +
+    '<div style="margin-top:17px;color:' + BRAND.muted + ';font-size:10px;line-height:1.5;">Follow us for property tips, new listings, market updates, and community highlights.</div>' +
   '</div>';
 }
 const LEADS_SPREADSHEET_ID = '10wEesmw6YAh64kc2ypUHgxdkVuRFup0dXYCHUbHMiBQ';
