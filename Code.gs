@@ -8,7 +8,7 @@ const TESTIMONIAL_SANTOS_FILE_ID = '1to92kxemMLTJvbiHYeXWlNod6WZXA7-R';
 const TESTIMONIAL_VILLANUEVA_FILE_ID = '143T8pg0-3XWOc0i6hdWYV7TWy4TqOLk5';
 
 // Landing-page palette: emerald, dark green, gold, pale gold, cream, and neutral ink.
-const AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
+const AGENT_EMAIL = 'dellosacharlene1317@gmail.com';
 // Former agent address retained as a secondary recipient for internal lead alerts.
 const SECONDARY_AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
 const AGENT_NAME = 'Charlene Dellosa';
