@@ -54,7 +54,7 @@ const PUBLIC_CONTACT_EMAIL = 'dellosacharlene1317@gmail.com';
 const PUBLIC_OFFICE_ADDRESS = 'Avida Residences, Sta. Catalina, Salawag, Dasmariñas, Cavite 4114, Philippines';
 const PUBLIC_CONSULTATION_HOURS = 'Monday–Saturday, 9:00 AM–6:00 PM';
 // Always use the public /exec deployment in email links, including editor-based tests.
-const PUBLIC_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxsNqoaXCkb6dO4L4ncCZJj2CBS-88eOuX95RMlmt8BtyxkDD9rK7DdqM1fKbSQ7Kjj/exec';
+const PUBLIC_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbymj8Gh664A3dsBL1SX_GQsKE71h7_kq1pLh2UembRC5DvOzhhtmj0cImYGBGoegqrA/exec';
 const PRIVACY_NOTICE_VERSION = '2026-08-24';
 const BRAND = {
   deepGreen: '#063c24',
