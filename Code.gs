@@ -8,9 +8,10 @@ const TESTIMONIAL_SANTOS_FILE_ID = '1to92kxemMLTJvbiHYeXWlNod6WZXA7-R';
 const TESTIMONIAL_VILLANUEVA_FILE_ID = '143T8pg0-3XWOc0i6hdWYV7TWy4TqOLk5';
 
 // Landing-page palette: emerald, dark green, gold, pale gold, cream, and neutral ink.
-const AGENT_EMAIL = 'dellosacharlene1317@gmail.com';
-// Former agent address retained as a secondary recipient for internal lead alerts.
-const SECONDARY_AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
+const AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
+// Optional secondary recipient for internal lead alerts. Leave blank when it
+// is the same as AGENT_EMAIL to avoid duplicate quota usage.
+const SECONDARY_AGENT_EMAIL = '';
 const AGENT_NAME = 'Charlene Dellosa';
 const SENDER_NAME = 'Charlene Dellosa Properties · Dynamic Property Specialist';
 const EMAIL_BRAND_LOGO_FILE_ID = '1lWJhR0FoVgLXC_AKiKhdDJCxA_kOYWDz';
@@ -146,7 +147,9 @@ function doPost(e) {
       leadId: result.leadId || '',
       duplicate: result.duplicate === true,
       emailQueued: result.emailQueued === true,
-      clientEmailWarning: result.clientEmailWarning || ''
+      agentEmailWarning: result.agentEmailWarning || '',
+      clientEmailWarning: result.clientEmailWarning || '',
+      emailWarning: result.emailWarning || ''
     });
   } catch (error) {
     console.error('doPost failed: ' + (error && error.stack ? error.stack : error));
@@ -683,6 +686,38 @@ function getLinkLibraryRows_() {
   ];
 }
 
+/**
+ * Sends an email only when at least one daily recipient remains. Email
+ * delivery is best-effort because the lead is saved before this is called.
+ */
+function sendEmailWithinQuota_(message, label) {
+  const safeLabel = label || 'email';
+
+  try {
+    if (MailApp.getRemainingDailyQuota() < 1) {
+      const quotaError =
+        'Daily email quota is exhausted. The lead was saved, but the ' +
+        safeLabel + ' was not sent.';
+      console.error(quotaError);
+      return { sent: false, error: quotaError };
+    }
+
+    MailApp.sendEmail(message);
+    return { sent: true, error: '' };
+  } catch (error) {
+    const messageText = String(error && error.message ? error.message : error);
+    console.error(safeLabel + ' failed: ' + messageText);
+    return { sent: false, error: messageText };
+  }
+}
+
+function checkEmailQuota() {
+  return {
+    remainingRecipients: MailApp.getRemainingDailyQuota(),
+    checkedAt: new Date()
+  };
+}
+
 function sendQuizNotification(payload) {
   payload = payload || {};
   console.log('sendQuizNotification started');
@@ -773,20 +808,22 @@ function sendQuizNotification(payload) {
   let agentEmailError = '';
   let clientEmailError = '';
 
-  try {
-    MailApp.sendEmail({
-      to: AGENT_EMAIL,
-      cc: SECONDARY_AGENT_EMAIL,
-      subject: subject,
-      body: agentText,
-      htmlBody: buildAgentHtml_(name, email, mobile, consultationDate, submittedAt, answerRows, nurtureConsent, nurtureConsentVersion),
-      replyTo: email,
-      inlineImages: getEmailBrandLogo_(),
-      name: SENDER_NAME
-    });
-  } catch (mailError) {
-    agentEmailError = String(mailError && mailError.message ? mailError.message : mailError);
-    console.error('Agent notification failed for lead ' + leadId + ': ' + agentEmailError);
+  const agentMessage = {
+    to: AGENT_EMAIL,
+    subject: subject,
+    body: agentText,
+    htmlBody: buildAgentHtml_(name, email, mobile, consultationDate, submittedAt, answerRows, nurtureConsent, nurtureConsentVersion),
+    replyTo: email,
+    inlineImages: getEmailBrandLogo_(),
+    name: SENDER_NAME
+  };
+  if (SECONDARY_AGENT_EMAIL && SECONDARY_AGENT_EMAIL.toLowerCase() !== AGENT_EMAIL.toLowerCase()) {
+    agentMessage.cc = SECONDARY_AGENT_EMAIL;
+  }
+
+  const agentResult = sendEmailWithinQuota_(agentMessage, 'agent notification');
+  if (!agentResult.sent) {
+    agentEmailError = agentResult.error;
   }
 
   // Send the buyer confirmation through MailApp without forcing a `from` alias.
@@ -802,36 +839,35 @@ function sendQuizNotification(payload) {
     console.error('Client guide attachment unavailable for lead ' + leadId + ': ' + clientEmailError);
   }
 
-  try {
-    MailApp.sendEmail({
-      to: email,
-      subject: clientSubject,
-      body: clientText,
-      htmlBody: buildClientHtml_(name, mobile, consultationDate, leadType, answers, leadId),
-      attachments: clientAttachments,
-      replyTo: AGENT_EMAIL,
-      inlineImages: getEmailBrandLogo_(),
-      name: SENDER_NAME
-    });
-  } catch (mailError) {
-    const sendError = String(mailError && mailError.message ? mailError.message : mailError);
+  const clientResult = sendEmailWithinQuota_({
+    to: email,
+    subject: clientSubject,
+    body: clientText,
+    htmlBody: buildClientHtml_(name, mobile, consultationDate, leadType, answers, leadId),
+    attachments: clientAttachments,
+    replyTo: AGENT_EMAIL,
+    inlineImages: getEmailBrandLogo_(),
+    name: SENDER_NAME
+  }, 'client confirmation');
+  if (!clientResult.sent) {
     clientEmailError = clientEmailError
-      ? clientEmailError + ' Email delivery also failed: ' + sendError
-      : sendError;
-    console.error('Client confirmation failed for lead ' + leadId + ': ' + sendError);
+      ? clientEmailError + ' Email delivery also failed: ' + clientResult.error
+      : clientResult.error;
   }
 
-  if (agentEmailError) {
-    throw new Error('Lead was saved, but the agent notification could not be sent: ' + agentEmailError);
-  }
+  const emailWarnings = [];
+  if (agentEmailError) emailWarnings.push('Agent notification: ' + agentEmailError);
+  if (clientEmailError) emailWarnings.push('Client confirmation: ' + clientEmailError);
 
-  console.log('sendQuizNotification completed for lead ' + leadId + (clientEmailError ? ' with client-email warning.' : ' successfully.'));
+  console.log('sendQuizNotification completed for lead ' + leadId + (emailWarnings.length ? ' with email warnings.' : ' successfully.'));
   return {
     ok: true,
     leadId: leadId,
     leadType: leadType,
-    emailQueued: true,
-    clientEmailWarning: clientEmailError || undefined
+    emailQueued: !agentEmailError && !clientEmailError,
+    agentEmailWarning: agentEmailError || undefined,
+    clientEmailWarning: clientEmailError || undefined,
+    emailWarning: emailWarnings.join(' ') || undefined
   };
 }
 
@@ -1044,7 +1080,7 @@ const NURTURE_CONSENT_VERSION = '2026-08-25-v2';
 const FAST_TEST_MODE = false;
 // Testing only: prevents the sender account from being detected as a client reply.
 // This automatically disables when FAST_TEST_MODE is false.
-const IGNORE_SENDER_ACCOUNT_DURING_TEST = false;
+const IGNORE_SENDER_ACCOUNT_DURING_TEST = true;
 
 // One nurture email at approximately 24-hour intervals: Days 1 through 30.
 const NORMAL_NURTURE_OFFSETS_HOURS = Array.from({ length: 30 }, function(_, index) {
@@ -1376,159 +1412,492 @@ function answerValue_(answers, index, fallback) {
 }
 
 function getNurtureCopy_(step, leadType, name, answers, leadId) {
-  const firstName = String(name || '').trim().split(/\s+/)[0] || 'there';
-  const segment = ['buyer', 'seller', 'investor'].indexOf(leadType) >= 0 ? leadType : 'buyer';
   const safeStep = Math.max(1, Math.min(30, Number(step) || 1));
-
-  const subjects = [
-    'A simple first step for your property plan',
-    'What matters most to you right now?',
-    'A practical way to narrow your options',
-    'The location question worth answering first',
-    'How to think about your budget comfortably',
-    'Three details that make a property search easier',
-    'You do not need to decide today',
-    'A quick property-planning check-in',
-    'How to compare properties more clearly',
-    'The hidden questions behind the asking price',
-    'What to look for in a community',
-    'A simple checklist for your next conversation',
-    'When is the right time to take the next step?',
-    'What a focused consultation can cover',
-    'A calmer way to review property choices',
-    'The details people often miss',
-    'What would make your decision feel easier?',
-    'A useful question about timing',
-    'How to avoid comparing the wrong things',
-    'Your property goals can change—and that is okay',
-    'A quick progress check',
-    'What should happen before you make an offer?',
-    'How to prepare for a property conversation',
-    'The difference between interest and readiness',
-    'One question to ask before moving forward',
-    'Would a shortlist, review, or second opinion help?',
-    'Let us make your next step more specific',
-    'Your plan does not have to be perfect',
-    'A final planning question before I step back',
-    'I will close this daily series for now'
-  ];
-
-  const previews = [
-    'A short, no-pressure starting point based on what you shared.',
-    'The best next step depends on the decision in front of you.',
-    'A few clear filters can save time and reduce noise.',
-    'Lifestyle fit is just as important as the property itself.',
-    'A comfortable budget includes more than the advertised price.',
-    'Small details can make a consultation much more useful.',
-    'Exploring first is a valid and sensible stage of the process.',
-    'Tell me the one issue you would like to understand better.',
-    'Use the same criteria so the comparison stays fair.',
-    'Look beyond the headline number before judging an opportunity.',
-    'Think about the everyday experience, not only the address.',
-    'Bring the information you already have; perfection is unnecessary.',
-    'Timing should fit your circumstances, not someone else’s urgency.',
-    'A focused conversation can answer questions without pressure.',
-    'Clarity comes from priorities and verified information.',
-    'A few overlooked details can affect the next decision.',
-    'One honest answer can improve the quality of your plan.',
-    'Separate what needs action now from what can wait.',
-    'Compare like with like before drawing conclusions.',
-    'Your goals are allowed to become clearer as you learn more.',
-    'A short review can show what is clear and what is still missing.',
-    'Preparation makes important decisions easier to evaluate.',
-    'Here is how to make a conversation more focused.',
-    'Interest is useful; readiness requires a little more clarity.',
-    'One good question can prevent an avoidable surprise.',
-    'Choose the kind of help that would be most useful to you.',
-    'A specific next step is easier than a vague intention.',
-    'You can move carefully and still make progress.',
-    'Tell me what remains unanswered, if anything.',
-    'I will reduce the frequency, but you are welcome to reconnect.'
-  ];
-
-  const segmentDetails = {
-    buyer: {
-      focus: 'your preferred area, property type, budget comfort, must-have features, and timing',
-      action: 'Reply with your preferred area, property type, or one must-have feature.',
-      offer: 'I can help you turn those priorities into a practical shortlist.',
-      process: 'For a buyer, that may include refining the search, reviewing financing readiness, evaluating the property, considering due diligence, and preparing for closing.'
-    },
-    seller: {
-      focus: 'your property location, condition, timing, likely buyer, and positioning',
-      action: 'Reply with the property location and your main preparation or positioning question.',
-      offer: 'I can help you organize the preparation and positioning questions before you commit to a launch plan.',
-      process: 'For a seller, that may include preparing the property, reviewing positioning, presenting it clearly, attracting suitable buyers, evaluating offers, and coordinating closing steps.'
-    },
-    investor: {
-      focus: 'your objective, preferred market, budget, holding period, costs, and risk questions',
-      action: 'Reply with your main objective: income, long-term growth, diversification, or exploration.',
-      offer: 'I can help you structure the questions to answer before evaluating a specific opportunity.',
-      process: 'For an investor, that may include clarifying the objective, testing assumptions, reviewing costs and risks, identifying information gaps, and defining decision criteria.'
-    }
-  }[segment];
-
   const messages = [
-    ['Thank you again for sharing your property goals.', 'The most useful starting point is to clarify ' + segmentDetails.focus + '. You do not need every answer yet.', segmentDetails.action],
-    ['Different people need different kinds of guidance at this stage.', 'Some people need help with location, budget, timing, preparation, or simply understanding what is realistic.', 'Reply with the one topic that matters most today.'],
-    ['A simple filter can make the process less overwhelming.', 'Choose your top three priorities and use them consistently when reviewing properties or opportunities.', 'Reply with your top three priorities, even if they are approximate.'],
-    ['The right location should support your daily life as well as your long-term plan.', 'Consider commute, access to services, neighborhood feel, future flexibility, and the people who will use the property.', 'Reply with one location or lifestyle priority that should not be compromised.'],
-    ['Budget is more useful when it describes comfort, not only maximum capacity.', 'Think about the purchase price together with fees, financing terms, reserves, maintenance, and improvement costs. This is general planning guidance, not financial advice.', 'Reply with your comfortable range or the cost question you would like to examine.'],
-    ['A useful property conversation does not require a perfect information pack.', 'The details you already know—' + segmentDetails.focus + '—are enough to identify the next questions.', segmentDetails.action],
-    ['You can learn before you commit.', 'Asking about pricing, preparation, financing, neighborhoods, or timing should make your choices clearer, not create pressure to act.', 'Reply with the concern that is making you hesitate, and I will address it directly.'],
-    ['I would like to keep these notes relevant to your situation.', 'Your biggest question may be price, location, financing, preparation, timing, income potential, or simply what is realistic.', 'Reply with one word: price, location, financing, preparation, timing, or exploring.'],
-    ['Comparisons become easier when the criteria stay consistent.', 'Review location, usable space, condition, total cost, likely trade-offs, and how well each option supports your original goal.', segmentDetails.offer],
-    [segment === 'seller' ? 'A strong marketing plan begins before the property is published.' : segment === 'investor' ? 'A disciplined evaluation begins with the numbers behind the headline.' : 'The advertised price is only one part of the budget.', segment === 'seller' ? 'Presentation, photography, positioning, timing, audience, and offer strategy should work together.' : segment === 'investor' ? 'Ask what income, costs, vacancy, taxes, financing, and downside assumptions are included.' : 'Remember fees, reserves, financing terms, and improvement costs when considering affordability.', 'Reply with the financial or marketing question you want to understand first.'],
-    ['A property is also an everyday environment.', 'Look at access, services, commute, community feel, noise, convenience, and how the area may fit your future plans.', 'Reply with the community feature that matters most to you.'],
-    ['Before your next conversation, write down three things: your goal, your biggest uncertainty, and the next decision you may need to make.', 'That short note is often more useful than collecting a large amount of unrelated information.', 'Reply with your biggest uncertainty if you would like a focused starting point.'],
-    ['There is no universal “right time” to move forward.', 'The right timing depends on your priorities, preparation, finances, family circumstances, and the information still missing.', 'Reply with sooner, later, or still exploring, and I will respect your timing.'],
-    ['A focused consultation can be smaller than people expect.', segmentDetails.process, 'Reply with the question you would want the consultation to answer.'],
-    ['Good property decisions usually become clearer when priorities are written down.', 'Separate must-haves, preferences, deal-breakers, and items you are willing to compromise on.', 'Reply with one must-have and one preference.'],
-    ['Important decisions often turn on details that are easy to overlook.', 'Check condition, documents, total costs, timing, access, restrictions, and what information still needs verification. Obtain independent professional advice where appropriate.', 'Reply with the detail you are least certain about.'],
-    ['A plan does not need to be final to be useful.', segmentDetails.offer, 'Reply with what would make your decision feel easier this week.'],
-    ['Separate urgent decisions from decisions that can wait.', 'If timing is flexible, use the extra time to prepare. If timing is urgent, focus first on the information that could materially change your choice.', 'Reply with your current timeline.'],
-    ['Avoid comparing options using different standards.', 'Choose a short list of criteria, score each option honestly, and record the trade-offs instead of relying only on first impressions.', 'Reply with two options you are comparing, and I will suggest a fair comparison framework.'],
-    ['It is normal for your priorities to become clearer as you learn.', 'A change in budget, location, timing, or property type is useful information for the next step.', 'Reply with the priority that has changed most since you started exploring.'],
-    ['Here is a useful progress check: what is clear, what is uncertain, and what decision comes next?', 'You do not need to solve everything at once. One answered question can create meaningful progress.', 'Reply with clear, uncertain, or next step.'],
-    ['Before making an offer or committing to a major next step, identify the information you still need.', 'That may include property condition, documents, total costs, financing, timeline, or professional review.', 'Reply with the item you would want checked first.'],
-    ['A focused conversation works best when it has a clear purpose.', 'We can use it to review a shortlist, discuss preparation, structure investment questions, or identify the next practical action.', 'Reply with shortlist, preparation, investment questions, or next step.'],
-    ['Being interested does not mean you must be ready today.', 'Readiness usually means you understand your goal, constraints, unanswered questions, and the decision you are actually considering.', 'Reply with interested or ready, and I will tailor the next suggestion.'],
-    ['Before moving forward, ask: “What would make me regret this decision later?”', 'The answer may reveal a missing document, cost, comparison, professional opinion, or timing consideration.', 'Reply with the risk or surprise you most want to avoid.'],
-    ['The most useful next step depends on what you need.', 'It may be a shortlist, property review, valuation discussion, preparation plan, investment framework, or short question-and-answer conversation.', 'Reply with the option that would help most.'],
-    ['A specific next step is easier to act on than a general intention.', 'If you would like to continue, we can agree on one narrow purpose for the next conversation and keep it practical.', 'Reply with schedule, shortlist, review, or question.'],
-    ['You can move carefully and still make progress.', 'A well-considered decision is deliberate about the information and trade-offs that matter.', 'Reply with the decision you are considering, even if it is still preliminary.'],
-    ['Before I close this daily series, is there one important question we have not addressed?', 'I would rather answer one relevant question than send more general information that does not help.', 'Reply with your unanswered question, or simply say not yet.'],
-    ['This is my final scheduled message in this daily series, so I will step back and avoid filling your inbox unnecessarily.', 'If your plans become clearer, you are welcome to reconnect. I can help with a focused property conversation when the timing feels right.', 'Reply whenever you are ready, or contact me directly at +63 916 999 4124 or dellosacharlene1317@gmail.com.']
-  ];
+    `Magandang araw!
 
-  const subject = subjects[safeStep - 1];
-  const preview = previews[safeStep - 1];
+Naghahanap ka ba ng sariling bahay pero hindi pa sure kung kailan magsisimula?
+
+Baka ito na ang sign na hinihintay mo! 🏡
+
+May available na housing units na pwedeng pasok sa iyong budget at payment capacity.
+
+📌 Limited units available
+📌 Flexible payment options
+📌 Perfect for first-time homebuyers
+
+Huwag nang puro “soon.” Simulan na natin ang “finally.” ❤️
+
+Reply lang sa email na ito para malaman ang available units at computation.`,
+    `Hello!
+
+Akala ng marami, kailangan agad ng malaking pera para makabili ng bahay.
+
+Pero alam mo ba na may mga housing options na may manageable down payment at installment plans?
+
+Ang mahalaga ay malaman muna natin kung ano ang kaya ng budget mo.
+
+🏠 House price
+💵 Down payment
+📅 Monthly amortization
+📋 Requirements
+
+Reply lang at tutulungan kitang magkaroon ng sample computation.
+
+Baka mas kaya mo pala kaysa sa iniisip mo! 😊`,
+    `Hi!
+
+Quick update para sa mga naghahanap ng bahay:
+
+⚠️ LIMITED UNITS AVAILABLE!
+
+Kapag naubusan ang preferred unit/location mo, maaaring kailangan mong pumili ng ibang available option.
+
+Kung interesado ka, mas magandang malaman agad ang:
+
+✔️ Available units
+✔️ Current price
+✔️ Down payment
+✔️ Monthly payment
+✔️ Move-in/takeout schedule
+
+Reply “AVAILABLE” para ma-check natin ang options.`,
+    `Magandang araw!
+
+Every month, may binabayaran kang renta.
+
+Pero naisip mo na ba kung magkano na ang kabuuang rent na nabayaran mo after several years?
+
+Hindi ibig sabihin na mali ang pag-rent—iba-iba ang situation ng bawat tao.
+
+Pero kung matagal ka nang nagpaplanong magkaroon ng sariling bahay, magandang tingnan kung ano ang available na homeownership options para sa budget mo.
+
+📩 Reply lang para sa sample computation.`,
+    `Before ka mag-reserve, alamin muna ang 3 bagay na ito:
+
+1️⃣ Magkano ang total property price?
+2️⃣ Magkano ang kailangan para sa down payment?
+3️⃣ Magkano ang estimated monthly payment?
+
+Bonus: Alamin din ang requirements at timeline ng purchase.
+
+Mas magandang informed buyer kaysa sa biglaang decision. 🏠
+
+Kung gusto mo ng sample computation, reply “COMPUTATION.”`,
+    `Saan mo gustong tumira?
+
+Malapit ba sa:
+
+🏫 School
+🏢 Work
+🛒 Commercial areas
+🚗 Main roads
+🏥 Hospitals
+
+Sa pagpili ng bahay, hindi lang presyo ang dapat tingnan.
+
+Mahalaga rin kung convenient ang location para sa iyong lifestyle at daily routine.
+
+Reply lang kung gusto mong malaman ang available properties at locations.`,
+    `Hello!
+
+May specific budget ka para sa bahay?
+
+Sabihin mo lang ang approximate budget range mo.
+
+Halimbawa:
+
+💰 ₱500K–₱1M
+💰 ₱1M–₱2M
+💰 ₱2M pataas
+
+Pwede nating tingnan kung anong housing options ang maaaring available.
+
+No pressure—computation muna. 😊`,
+    `First time bumili ng bahay?
+
+Normal lang kung maraming questions.
+
+Ano ang requirements?
+Magkano ang down payment?
+Paano ang financing?
+Kailan ang move-in?
+Ano ang proseso?
+
+Don't worry—step-by-step natin itong pag-uusapan.
+
+📩 Reply “FIRST HOME” at magsisimula tayo sa basic information.`,
+    `Sandali lang…
+
+Imagine mo:
+
+Pag-uwi mo galing trabaho, hindi ka na nangungupahan.
+
+May sarili kang space.
+May sarili kang gate.
+May lugar para sa pamilya. 🏡
+
+Dreaming is the first step.
+
+Next step?
+
+Alamin kung realistic ang options para sa budget mo.
+
+Reply para sa sample property details.`,
+    `Quick checklist:
+
+☐ Valid IDs
+☐ Proof of income
+☐ Budget assessment
+☐ Down payment plan
+☐ Preferred location
+☐ Desired house type
+
+Kung hindi pa kumpleto lahat, okay lang.
+
+Pwede nating pag-usapan muna ang requirements at process.`,
+    `May mga buyers na naghihintay ng promo bago mag-inquire.
+
+Kung ikaw iyon, magandang malaman ang current available offers habang may units pa.
+
+🎁 Possible promos
+💰 Discounted units
+🏠 Limited inventory
+📅 Flexible payment options
+
+Reply “PROMO” para malaman ang current offers.`,
+    `Ang bahay ay hindi lang four walls.
+
+Dito nag-aaral ang mga anak.
+Dito nagsasalo-salo ang pamilya.
+Dito nabubuo ang maraming memories.
+
+Kung matagal mo nang pangarap magkaroon ng sariling bahay, simulan natin sa simple:
+
+Alamin muna kung ano ang kaya ng budget mo. ❤️`,
+    `Isa sa pinakamalaking concern ng buyers:
+
+“Magkano ang kailangan kong ilabas?”
+
+May mga properties na may different down payment structures.
+
+Kaya bago ka mag-decide, magandang magpa-compute muna.
+
+📩 Reply “DP” at ipapakita namin ang available payment options.`,
+    `Two weeks na!
+
+Kung naghahanap ka pa rin ng bahay, baka kailangan mo lang ng mas malinaw na options.
+
+Sabihin lang:
+
+📍 Preferred location
+💰 Budget
+🏠 House type
+👨‍👩‍👧 Family size
+
+At tutulungan kitang makita kung anong options ang maaaring mag-fit.`,
+    `Hindi kailangang hulaan ang decision.
+
+I-compare natin:
+
+🏠 Monthly rent
+vs.
+🏡 Estimated monthly housing payment
+
+Kasama rin sa pag-review ang down payment, financing terms, fees, maintenance, at iba pang costs.
+
+Numbers first. Decision later.
+
+Reply “COMPARE” para sa sample computation.`,
+    `Kung bibigyan ka ng chance pumili, ano ang gusto mong bahay?
+
+🏠 2-bedroom?
+🏠 3-bedroom?
+🌳 May outdoor space?
+🚗 May parking?
+📍 Malapit sa work?
+
+I-send mo sa amin ang preferred specifications mo.
+
+Tingnan natin kung may available na property na pasok sa requirements mo.`,
+    `Walang “stupid question” kapag malaking investment ang pinag-uusapan.
+
+Pwede mong itanong:
+
+❓ Magkano ang monthly?
+❓ Ano ang requirements?
+❓ May promo ba?
+❓ Kailan ang turnover?
+❓ Paano ang reservation?
+
+Reply lang sa email na ito.
+
+We'll help you understand the process.`,
+    `Mas madaling mag-decide kapag nakita mo mismo ang property.
+
+Kung available, maaari kang mag-schedule ng property viewing para makita ang:
+
+🏠 Actual unit
+📍 Location
+🛣️ Accessibility
+🌳 Surroundings
+📐 House layout
+
+Interested?
+
+Reply “TOUR”.`,
+    `PROPERTY ALERT 🚨
+
+May available units na maaaring maging interesting para sa mga naghahanap ng affordable home options.
+
+Pero tandaan:
+
+Availability can change quickly.
+
+Kung may preferred unit/location ka, mas magandang i-check ang current availability bago gumawa ng plans.
+
+Reply “CHECK” para sa details.`,
+    `10 days na lang!
+
+Nasaan ka na?
+
+☐ Naghahanap pa lang
+☐ Nagko-compute
+☐ Nagco-compare
+☐ Nagvi-viewing
+☐ Ready na mag-reserve
+
+Kahit nasaan ka man sa process, okay lang.
+
+Reply sa current status mo at tutulungan kitang malaman ang next step.`,
+    `May budget ka na?
+
+Let's work backward.
+
+Budget → Down Payment → Monthly Payment → Property Options
+
+Mas practical ito kaysa pumili muna ng bahay bago malaman kung kaya ng finances.
+
+Reply with your approximate monthly budget para makapag-start tayo ng computation.`,
+    `Quick reminder!
+
+Kung naghahanap ka ng property na may promo, discounted price, or special payment terms, magandang i-check ang current offer and availability.
+
+📩 Reply “PROMO” para ma-send namin ang available details.`,
+    `Minsan, isang message lang ang kailangan para makapagsimula.
+
+Hindi mo kailangang mag-commit agad.
+
+Pwede kang:
+
+✔️ Magtanong
+✔️ Magpa-compute
+✔️ Mag-compare
+✔️ Mag-request ng details
+✔️ Mag-schedule ng viewing
+
+Start with a simple inquiry.
+
+“Magkano po?” 😊`,
+    `Kailan mo gustong magkaroon ng sariling bahay?
+
+This year?
+Next year?
+In the next few years?
+
+Kapag may target date ka, mas madaling gumawa ng savings at payment plan.
+
+🏠 Goal
+💰 Budget
+📅 Timeline
+
+Start planning today.`,
+    `Para sa sarili?
+Para sa pamilya?
+Para sa future?
+
+Whatever your reason, mahalagang piliin ang property base sa actual needs mo.
+
+Space. Location. Budget. Accessibility.
+
+Let's find options that match your priorities.`,
+    `Four days na lang sa 30-day homebuyer series natin!
+
+Kung may property ka nang pinag-iisipan, ngayon ang magandang time para itanong ang important details:
+
+💰 Total price
+💵 Down payment
+📅 Payment terms
+📋 Requirements
+🏠 Turnover details
+
+Reply “DETAILS” para makapag-inquire.`,
+    `Hindi mo kailangang hulaan kung kaya mo.
+
+Magpa-compute.
+
+Makikita mo ang possible:
+
+💵 Initial payment
+📆 Monthly payment
+🏠 Total property cost
+📋 Other applicable fees
+
+Then ikaw ang makakapag-decide kung pasok sa budget mo.`,
+    `Malapit na matapos ang 30-day homebuyer series!
+
+Before we wrap up, may property ka bang gustong ipa-check?
+
+Send us:
+
+📍 Location
+🏠 Property type
+💰 Budget
+📅 Target purchase date
+
+We'll check the available information for you.`,
+    `One day left!
+
+Kung may natutunan ka sa 30-day homebuyer series, hopefully mas malinaw na sa'yo ang:
+
+✔️ Budget
+✔️ Down payment
+✔️ Monthly payment
+✔️ Requirements
+✔️ Property selection
+✔️ Homebuying process
+
+Pero kung nagsisimula ka pa lang, okay lang.
+
+Every homebuying journey starts somewhere. 🏡`,
+    `Congratulations! 🎉
+
+Nakarating ka sa Day 30!
+
+Pero ang pinaka-importanteng part ay hindi ang pagtatapos ng email series.
+
+It's knowing your next step.
+
+Kung seryoso kang naghahanap ng bahay, pwede nating simulan sa:
+
+🏠 Available properties
+💰 Sample computation
+💵 Down payment options
+📋 Requirements
+📍 Location details
+📅 Viewing schedule
+
+Walang kailangan madaliin.
+
+Mag-inquire. Mag-compute. Mag-compare. Then decide when you're ready.
+
+Reply “HOME” at magsimula tayo. 🏡❤️`
+  ];
   const message = messages[safeStep - 1];
-  const intro = message[0];
-  const detail = message[1];
-  const cta = message[2];
+  const lines = message.split(/\r?\n/);
+  const subjectSeed = lines.find(function(line) { return String(line || '').trim() !== ''; }) || 'Homebuyer guidance';
+  const subjects = [
+    'Your first step toward a home of your own',
+    'A smarter way to begin your home search',
+    'Could your dream home fit your budget?',
+    'The location question that matters most',
+    'A clearer way to understand your home budget',
+    'Before you choose a home, review these details',
+    'You can explore your options without pressure',
+    'Let’s make your home search more personal',
+    'How to compare homes with greater confidence',
+    'The price is only part of the picture',
+    'Find a location that fits your everyday life',
+    'A simple checklist for your next home conversation',
+    'When could the right time be for you?',
+    'Your homebuying questions deserve clear answers',
+    'A calmer, more confident way to choose',
+    'The details that can make a difference',
+    'What would make your decision feel easier?',
+    'A practical question about your timeline',
+    'Compare your options with more clarity',
+    'Your home goals can become clearer from here',
+    'How is your home search progressing?',
+    'What should you know before moving forward?',
+    'Prepare for a more productive property conversation',
+    'Interest is the beginning—clarity is the next step',
+    'One important question before you decide',
+    'Which next step would help you most?',
+    'Let’s turn your home plans into a clear direction',
+    'A thoughtful plan starts with one practical step',
+    'You are closer to clarity than you think',
+    'Your next chapter in homeownership starts here'
+  ];
+  const subject = subjects[safeStep - 1] + ' · Day ' + safeStep + ' of 30';
+  const preview = subjectSeed.trim().slice(0, 120);
   const unsubscribeUrl = getUnsubscribeUrl_(leadId);
+  const firstName = String(name || '').trim().split(/\s+/)[0] || '';
+
+  const emojiEntities = {
+    '🏡': '&#127968;', '🏠': '&#127968;', '🏫': '&#127979;', '🏢': '&#127970;',
+    '🛒': '&#128722;', '🚗': '&#128663;', '🏥': '&#127973;', '📌': '&#128204;',
+    '💵': '&#128181;', '💰': '&#128176;', '📅': '&#128197;', '📋': '&#128203;',
+    '📩': '&#128233;', '⚠️': '&#9888;&#65039;', '✔️': '&#10004;&#65039;',
+    '🎁': '&#127873;', '☐': '&#9744;', '1️⃣': '&#9312;', '2️⃣': '&#9313;',
+    '3️⃣': '&#9314;', '😊': '&#128522;', '❤️': '&#10084;&#65039;', '🎉': '&#127881;'
+  };
+  function escapeEmailHtml_(value) {
+    let escaped = escapeHtml_(value);
+    Object.keys(emojiEntities).forEach(function(icon) {
+      escaped = escaped.split(escapeHtml_(icon)).join(emojiEntities[icon]);
+    });
+    return escaped;
+  }
+
+  // Preserve the message text exactly while giving each line editorial spacing.
+  const messageHtml = message.split(/\r?\n/).map(function(line) {
+    const text = String(line || '').trim();
+    if (!text) return '<div style="height:12px;line-height:12px;">&nbsp;</div>';
+    return '<div style="margin:0 0 11px;">' + escapeEmailHtml_(text) + '</div>';
+  }).join('');
+  const progress = Math.round((safeStep / 30) * 100);
+  const greetingHtml = firstName
+    ? '<div style="margin:0 0 20px;color:' + BRAND.muted + ';font-size:14px;letter-spacing:.2px;">Prepared especially for <strong style="color:' + BRAND.deepGreen + ';">' + escapeHtml_(firstName) + '</strong></div>'
+    : '';
 
   const body = [
-    'Hi ' + firstName + ',', '', intro, '', detail, '', cta, '',
-    'Warm regards,', AGENT_NAME, 'Dynamic Property Specialist', '',
+    firstName ? 'Hi ' + firstName + ',' : '',
+    '',
+    message,
+    '',
+    'Warm regards,',
+    AGENT_NAME,
+    'Dynamic Property Specialist',
+    '',
     'To stop property guidance emails, use the unsubscribe link in the HTML version of this message.'
-  ].join('\\n');
+  ].join('\n');
 
   const html = emailShell_(subject,
-    '<div style="background:' + BRAND.deepGreen + ';padding:28px 30px;color:#ffffff;">' +
-      '<div style="font-size:14px;letter-spacing:1.4px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">Property guidance · Day ' + safeStep + ' of 30</div>' +
-      '<h1 class="email-title" style="margin:8px 0 0;font-family:Georgia,serif;font-size:27px;line-height:1.25;color:#ffffff;">' + escapeHtml_(subject) + '</h1>' +
-      '<div style="margin-top:10px;color:#e9f1eb;font-size:12px;line-height:1.5;">' + escapeHtml_(preview) + '</div>' +
+    '<div style="background:linear-gradient(135deg,' + BRAND.deepGreen + ' 0%,' + BRAND.emerald + ' 62%,#3f6b2a 100%);padding:30px 32px 26px;color:#ffffff;position:relative;">' +
+      '<div style="height:3px;width:58px;background:' + BRAND.paleGold + ';margin-bottom:19px;"></div>' +
+      '<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">Charlene Dellosa Properties</div>' +
+      '<h1 class="email-title" style="margin:9px 0 8px;font-family:Georgia,Times New Roman,serif;font-size:30px;line-height:1.2;color:#ffffff;letter-spacing:-.2px;">Homebuyer guidance</h1>' +
+      '<div style="font-size:14px;line-height:1.6;color:#edf5ed;">A thoughtful step toward a home that fits your life.</div>' +
+      '<div style="margin-top:25px;padding:13px 15px;background:rgba(255,255,255,.10);border:1px solid rgba(245,214,138,.45);border-radius:10px;">' +
+        '<div style="font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">Day ' + safeStep + ' of 30</div>' +
+        '<div style="height:6px;margin-top:10px;background:rgba(255,255,255,.22);border-radius:9px;overflow:hidden;"><div style="height:6px;width:' + progress + '%;background:' + BRAND.paleGold + ';border-radius:9px;"></div></div>' +
+        '<div style="margin-top:7px;text-align:right;color:#edf5ed;font-size:11px;">' + progress + '% of your guided journey</div>' +
+      '</div>' +
     '</div>' +
-    '<div class="email-pad" style="padding:30px;">' +
-      '<p style="font-size:17px;line-height:1.8;color:' + BRAND.ink + ';margin:0 0 16px;">Hi <strong>' + escapeHtml_(firstName) + '</strong>,</p>' +
-      '<p style="font-size:17px;line-height:1.8;color:' + BRAND.ink + ';margin:0 0 16px;">' + escapeHtml_(intro) + '</p>' +
-      '<div style="padding:18px;background:' + BRAND.cream + ';border-left:5px solid ' + BRAND.gold + ';border-radius:8px;color:' + BRAND.ink + ';font-size:17px;line-height:1.8;">' + escapeHtml_(detail) + '</div>' +
-      '<p style="font-size:17px;line-height:1.8;color:' + BRAND.ink + ';margin:18px 0;">' + escapeHtml_(cta) + '</p>' +
-      '<div style="text-align:center;margin:24px 0 0;"><a href="mailto:' + AGENT_EMAIL + '" style="display:inline-block;background:' + BRAND.gold + ';color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;padding:15px 24px;border-radius:24px;">Reply to Charlene</a></div>' +
+    '<div class="email-pad" style="padding:34px 34px 30px;background:' + BRAND.paper + ';">' +
+      '<div style="display:inline-block;padding:7px 12px;border-radius:20px;background:#f8f0df;color:' + BRAND.emerald + ';font-size:11px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;">A private note for your property journey</div>' +
+      '<div style="margin-top:22px;font-family:Arial,Helvetica,Segoe UI Emoji,Noto Color Emoji,sans-serif;font-size:17px;line-height:1.85;color:' + BRAND.ink + ';word-break:normal;">' +
+        greetingHtml + messageHtml +
+      '</div>' +
+      '<div style="margin:28px 0 0;padding:20px 20px 22px;background:linear-gradient(180deg,#fffaf0 0%,#fbf8f2 100%);border:1px solid #eadabd;border-radius:14px;text-align:center;box-shadow:0 5px 16px rgba(18,55,42,.06);">' +
+        '<div style="font-family:Georgia,Times New Roman,serif;color:' + BRAND.deepGreen + ';font-size:20px;font-weight:700;">Have a question?</div>' +
+        '<div style="margin:6px auto 15px;max-width:390px;color:' + BRAND.muted + ';font-size:13px;line-height:1.6;">Reply directly to this email and Charlene will help you take the next step with clarity.</div>' +
+        '<a href="mailto:' + AGENT_EMAIL + '" style="display:inline-block;background:' + BRAND.deepGreen + ';border:1px solid ' + BRAND.deepGreen + ';color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;line-height:1.2;padding:14px 25px;border-radius:28px;box-shadow:0 4px 10px rgba(6,60,36,.18);">Reply to Charlene</a>' +
+      '</div>' +
+      '<div style="margin-top:22px;text-align:center;color:' + BRAND.muted + ';font-size:11px;line-height:1.6;">Your information is treated with care and used only to support your property journey.</div>' +
     '</div>' +
     footerHtml_('A helpful daily note from Charlene Dellosa') +
-    '<div style="padding:4px 30px 28px;background:' + BRAND.cream + ';text-align:center;color:' + BRAND.muted + ';font-size:11px;line-height:1.6;">' +
+    '<div style="padding:5px 30px 30px;background:' + BRAND.cream + ';text-align:center;color:' + BRAND.muted + ';font-size:11px;line-height:1.6;">' +
       '<div style="margin-bottom:12px;">You are receiving this because you requested property guidance.</div>' +
       '<a href="' + escapeHtml_(unsubscribeUrl) + '" style="display:inline-block;background:#ffffff;color:' + BRAND.emerald + ';border:1px solid ' + BRAND.emerald + ';border-radius:24px;padding:11px 20px;font-size:12px;font-weight:700;text-decoration:none;">Unsubscribe from property guidance</a>' +
       '<div style="margin-top:10px;font-size:10px;color:' + BRAND.muted + ';">You will be asked to confirm before any change is made.</div>' +
@@ -1536,6 +1905,37 @@ function getNurtureCopy_(step, leadType, name, answers, leadId) {
   );
 
   return { subject: subject, body: body, htmlBody: html };
+}
+
+
+/**
+ * Sends a single 30-day nurture email to the configured agent inbox for visual testing.
+ * Run sendTestNurtureEmail() from the Apps Script editor, then check Gmail on desktop/mobile.
+ * Optional examples: sendTestNurtureEmail(1); sendTestNurtureEmail(30, 'your@email.com');
+ * This does not modify any lead record or advance the live nurture sequence.
+ */
+function sendTestNurtureEmail(day, recipient) {
+  const testDay = Math.max(1, Math.min(30, Number(day) || 1));
+  const testRecipient = String(recipient || AGENT_EMAIL).trim();
+  if (!testRecipient || testRecipient.indexOf('@') < 1) {
+    throw new Error('Provide a valid test recipient email address.');
+  }
+
+  const copy = getNurtureCopy_(testDay, 'buyer', 'Test Recipient', [], 'TEST-PREVIEW');
+  GmailApp.sendEmail(
+    testRecipient,
+    copy.subject,
+    copy.body,
+    {
+      htmlBody: copy.htmlBody,
+      from: AGENT_EMAIL,
+      replyTo: AGENT_EMAIL,
+      inlineImages: getEmailBrandLogo_(),
+      name: SENDER_NAME
+    }
+  );
+  console.log('Test nurture email sent: Day ' + testDay + ' to ' + testRecipient);
+  return 'Test nurture email sent: Day ' + testDay + ' to ' + testRecipient;
 }
 
 function getUnsubscribeUrl_(leadId) {
@@ -1714,7 +2114,9 @@ function testDummyQuizSubmission() {
   if (String(value('Privacy Notice Version')) !== PRIVACY_NOTICE_VERSION) throw new Error('Privacy notice version was not saved correctly.');
 
   Logger.log(JSON.stringify({
-    status: 'PASS — emails submitted and sheet row verified',
+    status: result.emailQueued
+      ? 'PASS — emails submitted and sheet row verified'
+      : 'PASS — sheet row verified; email delivery warning recorded',
     result: result,
     sheetRow: sheetAfter,
     leadType: value('Lead Type'),
@@ -1764,3 +2166,6 @@ function authorizeAutomation_() {
   MailApp.getRemainingDailyQuota();
   SpreadsheetApp.openById(LEADS_SPREADSHEET_ID).getName();
 }
+
+
+
