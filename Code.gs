@@ -712,11 +712,30 @@ function sendEmailWithinQuota_(message, label) {
 }
 
 function checkEmailQuota() {
-  return {
+  const result = {
     remainingRecipients: MailApp.getRemainingDailyQuota(),
-    checkedAt: new Date()
+    checkedAt: new Date().toISOString()
   };
+
+  Logger.log(JSON.stringify(result, null, 2));
+  console.log(JSON.stringify(result, null, 2));
+
+  return result;
 }
+
+function inspectEmailAccess() {
+  const result = {
+    configuredAgentEmail: AGENT_EMAIL,
+    remainingRecipients: MailApp.getRemainingDailyQuota(),
+    checkedAt: new Date().toISOString(),
+    note: 'Effective account lookup omitted to avoid requiring the userinfo.email OAuth scope.'
+  };
+
+  Logger.log(JSON.stringify(result, null, 2));
+  console.log(JSON.stringify(result, null, 2));
+  return result;
+}
+
 
 function sendQuizNotification(payload) {
   payload = payload || {};
@@ -2166,6 +2185,7 @@ function authorizeAutomation_() {
   MailApp.getRemainingDailyQuota();
   SpreadsheetApp.openById(LEADS_SPREADSHEET_ID).getName();
 }
+
 
 
 
