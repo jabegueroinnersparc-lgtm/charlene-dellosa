@@ -54,7 +54,7 @@ const PUBLIC_CONTACT_EMAIL = 'dellosacharlene1317@gmail.com';
 const PUBLIC_OFFICE_ADDRESS = 'Avida Residences, Sta. Catalina, Salawag, Dasmariñas, Cavite 4114, Philippines';
 const PUBLIC_CONSULTATION_HOURS = 'Monday–Saturday, 9:00 AM–6:00 PM';
 // Always use the public /exec deployment in email links, including editor-based tests.
-const PUBLIC_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbymj8Gh664A3dsBL1SX_GQsKE71h7_kq1pLh2UembRC5DvOzhhtmj0cImYGBGoegqrA/exec';
+const PUBLIC_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxsNqoaXCkb6dO4L4ncCZJj2CBS-88eOuX95RMlmt8BtyxkDD9rK7DdqM1fKbSQ7Kjj/exec';
 const PRIVACY_NOTICE_VERSION = '2026-08-24';
 const BRAND = {
   deepGreen: '#063c24',
@@ -1080,7 +1080,7 @@ const NURTURE_CONSENT_VERSION = '2026-08-25-v2';
 const FAST_TEST_MODE = false;
 // Testing only: prevents the sender account from being detected as a client reply.
 // This automatically disables when FAST_TEST_MODE is false.
-const IGNORE_SENDER_ACCOUNT_DURING_TEST = true;
+const IGNORE_SENDER_ACCOUNT_DURING_TEST = false;
 
 // One nurture email at approximately 24-hour intervals: Days 1 through 30.
 const NORMAL_NURTURE_OFFSETS_HOURS = Array.from({ length: 30 }, function(_, index) {
