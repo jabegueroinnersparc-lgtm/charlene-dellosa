@@ -5540,7 +5540,7 @@
   }
 }
 
-      /* OFW testimonial enhancement */
+       
       .testimonial-card.ofw-testimonial .testimonial-image-wrapper {
         isolation: isolate;
         background: #063c24;
@@ -5584,7 +5584,7 @@
         .testimonial-card.ofw-testimonial .testimonial-image-overlay span { font-size: 1rem; }
       }
 
-      /* Warm Ivory Estate background system */
+       
       body {
         background:
           radial-gradient(circle at 8% 12%, rgba(204,149,62,.11), transparent 27%),
@@ -5657,7 +5657,7 @@
       @media (prefers-reduced-motion: reduce) {
         body { background-attachment: scroll; }
       }
-      /* Integrated 3D loading screen overrides. */
+       
       #pageLoader {
         --loader-green: #063c24;
         --loader-emerald: #275016;
@@ -5780,7 +5780,7 @@
       .page-loader-progress-percent { color: #f5d68a; font-size: clamp(1.1rem, 4vw, 1.45rem); font-weight: 800; letter-spacing: .03em; font-variant-numeric: tabular-nums; }
       .page-loader-progress { display: block; width: 100%; height: 6px; overflow: hidden; border: 1px solid rgba(245,214,138,.25); border-radius: 999px; background: rgba(251,248,242,.16); box-shadow: inset 0 1px 3px rgba(0,0,0,.16); }
       .page-loader-progress-bar { display: block; width: 0%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #cc953e, #f5d68a); box-shadow: 0 0 14px rgba(245,214,138,.62); transition: width .25s ease-out; }
-      /* Soft exit: the loader recedes while the landing page rises into focus. */
+       
       #pageLoader.is-exiting { opacity: 1; visibility: visible; pointer-events: none; animation: loader-exit-shell .9s cubic-bezier(.23,1,.32,1) forwards; }
       #pageLoader.is-exiting::after { animation: loader-exit-frame .9s cubic-bezier(.23,1,.32,1) forwards; }
       #pageLoader.is-exiting::before { animation: loader-exit-glow .9s ease-out forwards; }
@@ -5788,7 +5788,7 @@
       #pageLoader.is-exiting .page-loader-mark-3d { animation: loader-logo-zoom .9s cubic-bezier(.16,1,.3,1) forwards; }
       body.loader-revealing .main-content { animation: landing-page-reveal .95s cubic-bezier(.23,1,.32,1) both; }
       body.loader-revealing .mobile-nav { animation: landing-nav-reveal .7s cubic-bezier(.23,1,.32,1) both; }
-      /* Stagger only the first-view elements so the page feels composed, not delayed. */
+       
       body.loader-revealing .hero-content > *,
       body.loader-revealing #about .content-inner > * {
         opacity: 0;
@@ -6181,7 +6181,7 @@
               <div class="client-path-trust"><span>Personalized guidance</span><i></i><span>Property options</span><i></i><span>Homebuying support</span></div>
             </div>
             <div class="client-path-visual">
-              <img src="https://drive.google.com/thumbnail?id=1LxFsPCxNF0eab9CrOYSaSxVbFf757DCH&sz=w1600" alt="Free homebuyer guide cover" loading="lazy" />
+              <img src="https://drive.google.com/thumbnail?id=1LxFsPCxNF0eab9CrOYSaSxVbFf757DCH&amp;sz=w1600" alt="Free homebuyer guide cover" loading="lazy" />
               <div class="client-path-visual-caption"><span class="client-path-guide-badge">FREE PDF GUIDE</span><span>Homebuying support, made clearer</span></div>
               <a class="client-path-visual-cta" href="#" onclick="openQuizPopup(event)"><i class="fas fa-file-arrow-down" aria-hidden="true"></i><span>Get Your Free Homebuyer Guide</span></a>
             </div>
@@ -7083,10 +7083,10 @@
           const requestBody = JSON.stringify(payload);
 
           try {
-            // Google Apps Script web-app responses may redirect to a
-            // googleusercontent.com URL. A normal CORS fetch can report an
-            // error after the POST has already been processed and saved.
-            // sendBeacon is the reliable cross-origin delivery mechanism here.
+            
+            
+            
+            
             let queued = false;
             if (navigator.sendBeacon) {
               const blob = new Blob(
@@ -7108,9 +7108,9 @@
               });
             }
 
-            // A queued beacon/no-cors request cannot expose the Apps Script
-            // response to the browser. Do not show a false failure after the
-            // request has been accepted for delivery.
+            
+            
+            
             btn.classList.remove('is-sending');
             btn.classList.add('is-done');
             btn.innerHTML = '<i class=\"fas fa-check\"></i> Sent';
@@ -7284,7 +7284,7 @@
         var soundStarting = false;
         var soundCleanup = function () {};
 
-        /* Optional ambient pad generated locally with Web Audio; no audio file or dependency is required. */
+         
         function startAmbientSound() {
           if (soundEnabled || soundStarting) return;
           var AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -7336,7 +7336,7 @@
 
         soundCleanup = stopAmbientSound;
 
-        /* Try during idle time; this generated sound has no file download and will not block the 3D frame. */
+         
         if (window.requestIdleCallback) window.requestIdleCallback(startAmbientSound, { timeout: 900 });
         else window.setTimeout(startAmbientSound, 180);
         function startSoundFromGesture(event) {
@@ -7345,7 +7345,7 @@
         window.addEventListener('pointerdown', startSoundFromGesture, { passive: true });
         window.addEventListener('keydown', startSoundFromGesture);
 
-        /* Lightweight canvas particles: they orbit gently and respond to pointer/touch proximity. */
+         
         if (particleCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           var particleContext = particleCanvas.getContext('2d');
           var particles = [];
@@ -7459,7 +7459,7 @@
           };
         }
 
-        /* Google Drive thumbnails can be slow on mobile; use the local brand asset if needed. */
+         
         window.setTimeout(function () {
           if (loaderLogo && (!loaderLogo.complete || loaderLogo.naturalWidth === 0)) {
             loaderLogo.src = '/favicon-brand-180.png';
@@ -7476,7 +7476,7 @@
         }
 
         function getReadinessProgress() {
-          /* Count only critical images; lazy gallery images should not hold the loader back. */
+           
           var criticalImages = Array.prototype.slice.call(document.images).filter(function (image) {
             return image.loading !== 'lazy' && !image.closest('[hidden]');
           });
@@ -7488,7 +7488,7 @@
           return 1 + Math.max(imageProgress, documentProgress) * 98;
         }
 
-        /* Blend actual page readiness with elapsed showcase time for a truthful, smooth percentage. */
+         
         var progressTimer = window.setInterval(function () {
           if (finished) return;
           var elapsedProgress = 1 + Math.min(1, (Date.now() - startedAt) / minimumDisplayMs) * 96;
