@@ -88,6 +88,38 @@ const QUIZ_SPREADSHEET_NAME = 'Charlene Dellosa · Quiz Questions';
 // If you already have a dedicated spreadsheet, you may paste its ID here once.
 const QUIZ_SPREADSHEET_ID = '';
 const QUIZ_CACHE_SECONDS = 60;
+// Google reCAPTCHA v2 secret. Prefer storing this in Apps Script Properties
+// under RECAPTCHA_SECRET_KEY; the fallback keeps this deployment self-contained.
+const RECAPTCHA_SECRET_KEY = '6LdKqsMtAAAAAIAEcFE8MDrGyvkyfEihlJRB6uLR';
+
+function getRecaptchaSecretKey_() {
+  return PropertiesService.getScriptProperties().getProperty('RECAPTCHA_SECRET_KEY') || RECAPTCHA_SECRET_KEY;
+}
+
+function verifyRecaptcha_(token) {
+  const responseToken = String(token || '').trim();
+  if (!responseToken) throw new Error('Please complete the reCAPTCHA verification before submitting.');
+
+  const response = UrlFetchApp.fetch('https://www.google.com/recaptcha/api/siteverify', {
+    method: 'post',
+    payload: {
+      secret: getRecaptchaSecretKey_(),
+      response: responseToken
+    },
+    muteHttpExceptions: true
+  });
+  let result = {};
+  try {
+    result = JSON.parse(response.getContentText() || '{}');
+  } catch (error) {
+    throw new Error('The reCAPTCHA verification service returned an invalid response.');
+  }
+  if (!result.success) {
+    console.warn('reCAPTCHA rejected submission: ' + JSON.stringify(result['error-codes'] || []));
+    throw new Error('reCAPTCHA verification failed. Please try again.');
+  }
+  return true;
+}
 
 function doGet(e) {
   // Public configuration endpoint for external frontends such as Vercel.
@@ -141,6 +173,7 @@ function doGet(e) {
 function doPost(e) {
   try {
     const payload = readQuizPostPayload_(e);
+    verifyRecaptcha_(payload.recaptchaToken);
     const result = sendQuizNotification(payload);
     return jsonResponse_({
       ok: true,
