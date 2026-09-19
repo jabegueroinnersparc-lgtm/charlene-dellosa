@@ -1031,7 +1031,7 @@ function getLeadProfile_(leadType) {
 }
 
 function emailShell_(previewTitle, content) {
-  return '<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><style>' +
+  return '<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light"><style>' +
     'body{margin:0!important;padding:0!important;background:#f2efe9;font-family:Arial,Helvetica,sans-serif;color:' + BRAND.ink + ';}' +
     'table{border-spacing:0;}img{border:0;display:block;max-width:100%;}a{color:' + BRAND.emerald + ';}' +
     '@media only screen and (max-width:680px){.email-outer{padding:12px 6px!important}.email-card{border-radius:10px!important}.email-pad{padding-left:20px!important;padding-right:20px!important}.email-title{font-size:27px!important;line-height:1.3!important}.answer-question,.answer-value{display:block!important;width:auto!important;font-size:16px!important;line-height:1.7!important}.answer-value{border-top:0!important;padding-top:0!important}.social-link{display:block!important;margin:8px auto!important;max-width:280px!important;text-align:left!important;font-size:15px!important;padding:11px 15px!important}.email-pad p,.email-pad td{font-size:16px!important;line-height:1.75!important}.email-pad a{font-size:16px!important}}' +
@@ -1892,15 +1892,15 @@ Reply “HOME” at magsimula tayo. 🏡❤️`
   ].join('\n');
 
   const html = emailShell_(subject,
-    '<div style="background:linear-gradient(135deg,' + BRAND.deepGreen + ' 0%,' + BRAND.emerald + ' 62%,#3f6b2a 100%);padding:30px 32px 26px;color:#ffffff;position:relative;">' +
-      '<div style="height:3px;width:58px;background:' + BRAND.paleGold + ';margin-bottom:19px;"></div>' +
-      '<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">Charlene Dellosa Properties</div>' +
-      '<h1 class="email-title" style="margin:9px 0 8px;font-family:Georgia,Times New Roman,serif;font-size:30px;line-height:1.2;color:#ffffff;letter-spacing:-.2px;">Homebuyer guidance</h1>' +
-      '<div style="font-size:14px;line-height:1.6;color:#edf5ed;">A thoughtful step toward a home that fits your life.</div>' +
-      '<div style="margin-top:25px;padding:13px 15px;background:rgba(255,255,255,.10);border:1px solid rgba(245,214,138,.45);border-radius:10px;">' +
-        '<div style="font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">Day ' + safeStep + ' of 30</div>' +
-        '<div style="height:6px;margin-top:10px;background:rgba(255,255,255,.22);border-radius:9px;overflow:hidden;"><div style="height:6px;width:' + progress + '%;background:' + BRAND.paleGold + ';border-radius:9px;"></div></div>' +
-        '<div style="margin-top:7px;text-align:right;color:#edf5ed;font-size:11px;">' + progress + '% of your guided journey</div>' +
+    '<div style="background:#fbf8f2 !important;padding:30px 32px 26px;color:#063c24 !important;position:relative;color-scheme:light only;" bgcolor="#fbf8f2">' +
+      '<div style="height:3px;width:58px;background:#cc953e !important;margin-bottom:19px;"></div>' +
+      '<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#063c24 !important;font-weight:700;">Charlene Dellosa Properties</div>' +
+      '<h1 class="email-title" style="margin:9px 0 8px;font-family:Georgia,Times New Roman,serif;font-size:30px;line-height:1.2;color:#063c24 !important;letter-spacing:-.2px;">Homebuyer guidance</h1>' +
+      '<div style="font-size:14px;line-height:1.6;color:#66736c !important;">A thoughtful step toward a home that fits your life.</div>' +
+      '<div style="margin-top:25px;padding:13px 15px;background:#ffffff !important;border:1px solid #eadabd;border-radius:10px;color:#063c24 !important;" bgcolor="#ffffff">' +
+        '<div style="font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:#063c24 !important;font-weight:700;">Day ' + safeStep + ' of 30</div>' +
+        '<div style="height:6px;margin-top:10px;background:#e8dfd2 !important;border-radius:9px;overflow:hidden;"><div style="height:6px;width:' + progress + '%;background:#cc953e !important;border-radius:9px;"></div></div>' +
+        '<div style="margin-top:7px;text-align:right;color:#66736c !important;font-size:11px;">' + progress + '% of your guided journey</div>' +
       '</div>' +
     '</div>' +
     '<div class="email-pad" style="padding:34px 34px 30px;background:' + BRAND.paper + ';">' +
@@ -2185,7 +2185,3 @@ function authorizeAutomation_() {
   MailApp.getRemainingDailyQuota();
   SpreadsheetApp.openById(LEADS_SPREADSHEET_ID).getName();
 }
-
-
-
-
