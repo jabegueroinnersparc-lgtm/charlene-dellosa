@@ -5859,6 +5859,15 @@
   gtag('config', 'G-GLKYFPK7W2');
 </script>
 
+    <script>
+      window.recaptchaWidgetId = null;
+      window.recaptchaReady = false;
+      window.onRecaptchaLoaded = function() {
+        window.recaptchaReady = true;
+        if (typeof window.renderQuizRecaptcha === 'function') window.renderQuizRecaptcha();
+      };
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render=explicit" async defer></script>
   </head>
   <body>
     
@@ -6889,6 +6898,18 @@
           progressLines.forEach((line,i) => { line.classList.toggle('done', i < index); });
         }
 
+        window.renderQuizRecaptcha = function() {
+          const container = document.getElementById('quizRecaptcha');
+          if (!container || !window.recaptchaReady || !window.grecaptcha) return;
+          if (window.recaptchaWidgetId !== null) {
+            try { window.grecaptcha.reset(window.recaptchaWidgetId); } catch (error) {}
+            return;
+          }
+          window.recaptchaWidgetId = window.grecaptcha.render(container, {
+            sitekey: container.getAttribute('data-sitekey')
+          });
+        };
+
         function renderResult() {
           const selected = quizData.map((q,i) => ({ question: q.question, answer: q.options[answers[i]] || 'No answer' }));
           quizCard.innerHTML = `
@@ -6928,6 +6949,7 @@
                   <div class="privacy-note"><i class="fas fa-envelope-open-text"></i> Optional: this separate choice is for the 30-day property guidance series.</div>
                   <div class="consent-error" id="consentError" role="alert">Please confirm the privacy notice before submitting.</div>
                   <div class="form-success" id="quizSuccess"><i class="fas fa-check-circle"></i><p>Successfully sent!</p><p id="quizSuccessDetail" style="font-size:0.8rem; margin-top:0.2rem; color:#4a4a4a;">Charlene will review your request and confirm your consultation slot shortly.</p></div>
+                  <div class="g-recaptcha" id="quizRecaptcha" data-sitekey="6LdKqsMtAAAAAFdWd8bnwyUaLKbw6AOGPU82rb9_"></div>
                   <div class="privacy-note"><i class="fas fa-lock"></i> Your information is used to respond to this request.</div>
                 </form>
               </div>
@@ -6937,9 +6959,10 @@
             </div>
           `;
           progressSteps.forEach(step => { step.classList.remove('active','done'); step.classList.add('done'); step.innerHTML = '<i class="fas fa-check"></i>'; });
+          window.setTimeout(window.renderQuizRecaptcha, 0);
           progressLines.forEach(line => line.classList.add('done'));
 
-          // Initialize the consultation date/time picker for this render of the results screen.
+          
           if (window.flatpickr) {
             flatpickr("#consultationDate", {
               enableTime: true,
@@ -6949,7 +6972,7 @@
               maxTime: "18:00",
               time_24hr: false,
               disable: [
-                function(date) { return date.getDay() === 0; } // disable Sundays — remove this line if not needed
+                function(date) { return date.getDay() === 0; } 
               ]
             });
           }
@@ -7007,6 +7030,14 @@
           if(!consultDate) { alert('Please select your preferred consultation date and time.'); return false; }
           if(!privacyConsent) { if (consentEl) consentEl.focus(); return false; }
 
+          const recaptchaToken = window.grecaptcha && window.recaptchaWidgetId !== null
+            ? window.grecaptcha.getResponse(window.recaptchaWidgetId)
+            : '';
+          if (!recaptchaToken) {
+            alert('Please complete the reCAPTCHA verification before submitting.');
+            return false;
+          }
+
           const btn = document.getElementById('quizSubmitBtn');
           const orig = btn.innerHTML;
           const hasAllAnswers = quizData.every(function(q, i) {
@@ -7016,14 +7047,14 @@
             alert('Please answer all quiz questions before submitting.');
             return false;
           }
-          // Convert the clicked option indexes into readable question/answer pairs
-          // so the Apps Script email and lead record receive exactly what the user selected.
+          
+          
           const selected = quizData.map((q,i) => ({
             question: q.question,
             answer: q.options[answers[i]]
           }));
           const payload = {
-            // Same ID is used for any fallback request, preventing duplicate emails.
+            
             submissionId: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(36).slice(2),
             name: name,
             email: email,
@@ -7033,6 +7064,7 @@
             privacyNoticeVersion: '2026-08-24',
             nurtureConsent: nurtureConsent,
             nurtureConsentVersion: '2026-08-25-v1',
+            recaptchaToken: recaptchaToken,
             answers: selected
           };
 
@@ -7041,7 +7073,7 @@
           btn.disabled = true;
           btn.style.opacity = '0.92';
 
-          // Netlify-hosted pages submit to the public Apps Script doPost endpoint.
+          
           
           
           
@@ -7098,6 +7130,10 @@
         };
 
         window.resetQuiz = function() {
+          if (window.grecaptcha && window.recaptchaWidgetId !== null) {
+            try { window.grecaptcha.reset(window.recaptchaWidgetId); } catch (error) {}
+          }
+          window.recaptchaWidgetId = null;
           currentQ = 0; answers = {};
           setupQuizProgress();
           renderQuestion(0);
