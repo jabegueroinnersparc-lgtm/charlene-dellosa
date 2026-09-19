@@ -5848,6 +5848,102 @@
         .page-loader-mark-3d { transform: none; }
         #pageLoaderParticles { display: none; }
       }
+
+      .quiz-modal .quiz-card #quizRecaptcha {
+        display: none;
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: min(100%, 350px);
+        min-height: 0;
+        max-height: 0;
+        margin: 0 auto .9rem;
+        padding: 0;
+        border: 1px solid transparent;
+        border-radius: 18px;
+        background: transparent;
+        box-shadow: 0 0 0 rgba(6,60,36,0);
+        opacity: 0;
+        transform: translateY(-14px) scale(.96);
+        transform-origin: top center;
+        overflow: hidden;
+        transition: opacity .38s ease, transform .48s cubic-bezier(.23,1,.32,1), max-height .42s ease, padding .42s ease, border-color .42s ease, background .42s ease, box-shadow .42s ease;
+      }
+      .quiz-modal .quiz-card #quizRecaptcha::before {
+        content: 'SECURE VERIFICATION';
+        display: block;
+        color: #66736c;
+        font-size: .58rem;
+        font-weight: 700;
+        letter-spacing: .18em;
+        line-height: 1;
+        opacity: 0;
+        transform: translateY(5px);
+        transition: opacity .25s ease .18s, transform .35s ease .18s;
+      }
+      .quiz-modal .quiz-card #quizRecaptcha::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        border-radius: inherit;
+        background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,.62) 45%, transparent 70%);
+        transform: translateX(-120%);
+        transition: transform .7s ease;
+      }
+      .quiz-modal .quiz-card #quizRecaptcha.is-visible {
+        display: flex;
+        max-height: 142px;
+        padding: 13px 12px 10px;
+        border-color: rgba(204,149,62,.34);
+        background: linear-gradient(145deg, rgba(255,255,255,.99), rgba(251,248,242,.96));
+        box-shadow: 0 14px 30px rgba(6,60,36,.13), 0 0 0 5px rgba(204,149,62,.07), inset 0 1px 0 rgba(255,255,255,.9);
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      .quiz-modal .quiz-card #quizRecaptcha.is-visible::before {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .quiz-modal .quiz-card #quizRecaptcha.is-visible::after {
+        transform: translateX(120%);
+      }
+      .quiz-modal .quiz-card #quizRecaptcha.needs-verification {
+        animation: recaptcha-attention .6s ease both;
+      }
+      .quiz-modal .quiz-card #quizRecaptcha iframe {
+        position: relative;
+        z-index: 1;
+        max-width: 100%;
+        border-radius: 8px;
+      }
+      @keyframes recaptcha-attention {
+        0%, 100% { transform: translateX(0); }
+        35% { transform: translateX(-4px); }
+        70% { transform: translateX(4px); }
+      }
+      @media (max-width: 520px) {
+        .quiz-modal .quiz-card #quizRecaptcha {
+          width: 100%;
+          margin-bottom: .8rem;
+        }
+        .quiz-modal .quiz-card #quizRecaptcha.is-visible {
+          max-height: 142px;
+          padding: 12px 5px 9px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .quiz-modal .quiz-card #quizRecaptcha,
+        .quiz-modal .quiz-card #quizRecaptcha::before,
+        .quiz-modal .quiz-card #quizRecaptcha::after {
+          transition: none;
+          animation: none;
+          transform: none;
+        }
+      }
 </style>
 
  
@@ -6930,7 +7026,7 @@
               </div>
               <div class="quiz-email-form">
                 <form novalidate onsubmit="return handleQuizEmailSubmit(event)">
-                  <div class="g-recaptcha" id="quizRecaptcha" data-sitekey="6LdKqsMtAAAAAFdWd8bnwyUaLKbw6AOGPU82rb9_" style="display:none;margin:0 auto 0.9rem;justify-content:center;"></div>
+                  <div class="g-recaptcha" id="quizRecaptcha" data-sitekey="6LdKqsMtAAAAAFdWd8bnwyUaLKbw6AOGPU82rb9_" aria-label="Security verification"></div>
                   <div class="email-row">
                     <input type="text" id="quizName" placeholder="Full Name" required />
                     <input type="email" id="quizEmail" placeholder="Email address" required />
@@ -7037,9 +7133,12 @@
           if (!recaptchaToken) {
             if (recaptchaBox) {
               recaptchaBox.style.display = 'flex';
+              window.requestAnimationFrame(function() {
+                recaptchaBox.classList.add('is-visible');
+              });
               recaptchaBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-            alert('Please complete the reCAPTCHA verification, then click Send Guide again.');
+            if (recaptchaBox) recaptchaBox.classList.add('needs-verification');
             return false;
           }
 
