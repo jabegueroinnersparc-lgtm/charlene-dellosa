@@ -8,10 +8,10 @@ const TESTIMONIAL_SANTOS_FILE_ID = '1to92kxemMLTJvbiHYeXWlNod6WZXA7-R';
 const TESTIMONIAL_VILLANUEVA_FILE_ID = '143T8pg0-3XWOc0i6hdWYV7TWy4TqOLk5';
 
 // Landing-page palette: emerald, dark green, gold, pale gold, cream, and neutral ink.
-const AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
+const AGENT_EMAIL = 'dellosacharlene1317@gmail.com';
 // Optional secondary recipient for internal lead alerts. Leave blank when it
 // is the same as AGENT_EMAIL to avoid duplicate quota usage.
-const SECONDARY_AGENT_EMAIL = '';
+const SECONDARY_AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
 const AGENT_NAME = 'Charlene Dellosa';
 const SENDER_NAME = 'Charlene Dellosa Properties · Dynamic Property Specialist';
 const EMAIL_BRAND_LOGO_FILE_ID = '1lWJhR0FoVgLXC_AKiKhdDJCxA_kOYWDz';
