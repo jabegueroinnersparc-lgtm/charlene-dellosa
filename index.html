@@ -5540,7 +5540,7 @@
   }
 }
 
-       
+      /* OFW testimonial enhancement */
       .testimonial-card.ofw-testimonial .testimonial-image-wrapper {
         isolation: isolate;
         background: #063c24;
@@ -5584,7 +5584,7 @@
         .testimonial-card.ofw-testimonial .testimonial-image-overlay span { font-size: 1rem; }
       }
 
-       
+      /* Warm Ivory Estate background system */
       body {
         background:
           radial-gradient(circle at 8% 12%, rgba(204,149,62,.11), transparent 27%),
@@ -5657,7 +5657,7 @@
       @media (prefers-reduced-motion: reduce) {
         body { background-attachment: scroll; }
       }
-       
+      /* Integrated 3D loading screen overrides. */
       #pageLoader {
         --loader-green: #063c24;
         --loader-emerald: #275016;
@@ -5780,7 +5780,7 @@
       .page-loader-progress-percent { color: #f5d68a; font-size: clamp(1.1rem, 4vw, 1.45rem); font-weight: 800; letter-spacing: .03em; font-variant-numeric: tabular-nums; }
       .page-loader-progress { display: block; width: 100%; height: 6px; overflow: hidden; border: 1px solid rgba(245,214,138,.25); border-radius: 999px; background: rgba(251,248,242,.16); box-shadow: inset 0 1px 3px rgba(0,0,0,.16); }
       .page-loader-progress-bar { display: block; width: 0%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #cc953e, #f5d68a); box-shadow: 0 0 14px rgba(245,214,138,.62); transition: width .25s ease-out; }
-       
+      /* Soft exit: the loader recedes while the landing page rises into focus. */
       #pageLoader.is-exiting { opacity: 1; visibility: visible; pointer-events: none; animation: loader-exit-shell .9s cubic-bezier(.23,1,.32,1) forwards; }
       #pageLoader.is-exiting::after { animation: loader-exit-frame .9s cubic-bezier(.23,1,.32,1) forwards; }
       #pageLoader.is-exiting::before { animation: loader-exit-glow .9s ease-out forwards; }
@@ -5788,7 +5788,7 @@
       #pageLoader.is-exiting .page-loader-mark-3d { animation: loader-logo-zoom .9s cubic-bezier(.16,1,.3,1) forwards; }
       body.loader-revealing .main-content { animation: landing-page-reveal .95s cubic-bezier(.23,1,.32,1) both; }
       body.loader-revealing .mobile-nav { animation: landing-nav-reveal .7s cubic-bezier(.23,1,.32,1) both; }
-       
+      /* Stagger only the first-view elements so the page feels composed, not delayed. */
       body.loader-revealing .hero-content > *,
       body.loader-revealing #about .content-inner > * {
         opacity: 0;
@@ -5961,10 +5961,85 @@
       window.onRecaptchaLoaded = function() {
         window.recaptchaReady = true;
         if (typeof window.renderQuizRecaptcha === 'function') window.renderQuizRecaptcha();
+        if (typeof window.onUpgradeRecaptchaReady === 'function') window.onUpgradeRecaptchaReady();
       };
     </script>
     <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render=explicit" async defer></script>
-  </head>
+  
+<style id="upgrade-campaign-styles">
+  body.upgrade-campaign-mode { background: #f8f4ec; }
+  body.upgrade-campaign-mode .mobile-nav,
+  body.upgrade-campaign-mode .client-popup,
+  body.upgrade-campaign-mode .parallax-wrapper { display: none !important; }
+  body.upgrade-campaign-mode .scroll-accent-wash,
+  body.upgrade-campaign-mode .scroll-accent-rail { display: none !important; }
+  .upgrade-campaign { display: none; min-height: 100vh; color: #173226; background:
+    radial-gradient(circle at 92% 5%, rgba(204,149,62,.18), transparent 26rem),
+    linear-gradient(180deg, #fffaf1 0%, #f7f1e7 52%, #fffdf8 100%); }
+  body.upgrade-campaign-mode .upgrade-campaign { display: block; }
+  .upgrade-campaign * { box-sizing: border-box; }
+  .upgrade-campaign-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .9rem clamp(1rem, 4vw, 4.5rem); background: rgba(255,250,241,.88); border-bottom: 1px solid rgba(204,149,62,.2); backdrop-filter: blur(16px); }
+  .upgrade-brand { display: inline-flex; align-items: center; gap: .7rem; color: #063c24; text-decoration: none; font-weight: 800; letter-spacing: .02em; }
+  .upgrade-brand-mark { display: grid; place-items: center; width: 2.35rem; height: 2.35rem; border-radius: 50%; color: #fff; background: linear-gradient(145deg,#cc953e,#275016); font: 700 .78rem Georgia,serif; }
+  .upgrade-header-link { color: #275016; font-size: .86rem; font-weight: 700; text-decoration: none; }
+  .upgrade-container { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; }
+  .upgrade-hero { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(320px,.95fr); align-items: center; gap: clamp(2rem, 6vw, 6rem); padding: clamp(4rem, 9vw, 8rem) 0 5rem; }
+  .upgrade-kicker { display: inline-flex; align-items: center; gap: .55rem; margin-bottom: 1.1rem; color: #9b671f; font-size: .72rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+  .upgrade-campaign h1,.upgrade-campaign h2 { font-family: 'Playfair Display', Georgia, serif; color: #063c24; }
+  .upgrade-campaign h1 { max-width: 720px; margin: 0 0 1rem; font-size: clamp(2.75rem, 6.4vw, 5.7rem); line-height: .98; letter-spacing: -.045em; }
+  .upgrade-campaign h1 em { color: #b57d2d; font-style: normal; }
+  .upgrade-lead { max-width: 630px; color: #46534b; font-size: clamp(1.05rem, 2vw, 1.26rem); line-height: 1.75; }
+  .upgrade-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; margin-top: 1.7rem; }
+  .upgrade-btn { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; min-height: 3.3rem; padding: .8rem 1.25rem; border: 0; border-radius: 999px; cursor: pointer; font: 700 .93rem Inter,sans-serif; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
+  .upgrade-btn:hover { transform: translateY(-2px); }
+  .upgrade-btn-primary { color: #fff; background: #063c24; box-shadow: 0 12px 24px rgba(6,60,36,.18); }
+  .upgrade-btn-secondary { color: #275016; background: #fff; border: 1px solid rgba(39,80,22,.22); }
+  .upgrade-note { margin-top: .8rem; color: #6d776f; font-size: .78rem; }
+  .upgrade-hero-card { position: relative; padding: 1.6rem; border: 1px solid rgba(204,149,62,.3); border-radius: 1.7rem; background: linear-gradient(145deg,#063c24,#173226); color: #fff; box-shadow: 0 25px 60px rgba(6,60,36,.22); overflow: hidden; }
+  .upgrade-hero-card::before { content: ''; position: absolute; width: 16rem; height: 16rem; right: -5rem; top: -6rem; border-radius: 50%; background: rgba(245,214,138,.16); }
+  .upgrade-card-label { position: relative; color: #f5d68a; font-size: .72rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+  .upgrade-hero-card h2 { position: relative; margin: .8rem 0 1.2rem; color: #fff; font-size: clamp(1.8rem, 3.8vw, 3rem); line-height: 1.05; }
+  .upgrade-mini-list { position: relative; display: grid; gap: .7rem; margin: 0; padding: 0; list-style: none; }
+  .upgrade-mini-list li { display: flex; gap: .65rem; align-items: flex-start; color: #e6efe8; line-height: 1.55; }
+  .upgrade-mini-list i { margin-top: .25rem; color: #f5d68a; }
+  .upgrade-trust { display: grid; grid-template-columns: repeat(4,1fr); gap: .7rem; padding: 1.1rem 0 4rem; }
+  .upgrade-trust-item { padding: 1rem; text-align: center; border-top: 1px solid rgba(204,149,62,.35); color: #275016; font-size: .87rem; font-weight: 700; }
+  .upgrade-section { padding: 5rem 0; }
+  .upgrade-section.alt { background: rgba(255,255,255,.55); border-block: 1px solid rgba(204,149,62,.14); }
+  .upgrade-section-heading { max-width: 720px; margin-bottom: 2rem; }
+  .upgrade-section h2 { margin-bottom: .8rem; font-size: clamp(2rem, 4.3vw, 3.7rem); line-height: 1.05; }
+  .upgrade-section-heading p { color: #59645d; font-size: 1.02rem; line-height: 1.75; }
+  .upgrade-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+  .upgrade-panel { padding: 1.35rem; border: 1px solid rgba(39,80,22,.13); border-radius: 1.1rem; background: rgba(255,255,255,.72); box-shadow: 0 12px 26px rgba(6,60,36,.05); }
+  .upgrade-panel i { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; margin-bottom: .85rem; border-radius: 50%; color: #fff; background: #275016; }
+  .upgrade-panel h3 { margin-bottom: .45rem; color: #063c24; font-size: 1.05rem; }
+  .upgrade-panel p { color: #5c675f; line-height: 1.65; }
+  .upgrade-steps { display: grid; grid-template-columns: repeat(5,1fr); gap: .8rem; counter-reset: steps; }
+  .upgrade-step { position: relative; padding: 1rem; border-radius: 1rem; background: #fff; border: 1px solid rgba(204,149,62,.18); }
+  .upgrade-step::before { counter-increment: steps; content: '0' counter(steps); display: block; margin-bottom: 1.2rem; color: #b57d2d; font-weight: 800; letter-spacing: .12em; }
+  .upgrade-step strong { display: block; margin-bottom: .35rem; color: #063c24; }
+  .upgrade-step span { color: #68736b; font-size: .88rem; line-height: 1.55; }
+  .upgrade-proof { display: grid; grid-template-columns: .9fr 1.1fr; gap: 2rem; align-items: center; }
+  .upgrade-quote { padding: 1.8rem; border-left: 4px solid #cc953e; background: #fff; color: #275016; font: 700 clamp(1.25rem, 2.5vw, 1.8rem)/1.45 Georgia,serif; }
+  .upgrade-quote cite { display: block; margin-top: 1rem; color: #788179; font: 600 .82rem Inter,sans-serif; }
+  .upgrade-form-wrap { display: grid; grid-template-columns: 1fr .95fr; gap: 2rem; align-items: start; padding: clamp(1.2rem, 3vw, 2.2rem); border-radius: 1.5rem; background: #063c24; color: #fff; box-shadow: 0 24px 54px rgba(6,60,36,.2); }
+  .upgrade-form-wrap h2 { color: #fff; }
+  .upgrade-form-copy p { color: #dce9df; line-height: 1.7; }
+  .upgrade-form { display: grid; gap: .75rem; padding: 1.1rem; border-radius: 1rem; background: #fff; color: #173226; }
+  .upgrade-form label { color: #275016; font-size: .78rem; font-weight: 700; }
+  .upgrade-form input { width: 100%; padding: .8rem .85rem; border: 1px solid #d9dfd8; border-radius: .65rem; font: inherit; }
+  .upgrade-form .consent { display: flex; gap: .55rem; align-items: flex-start; color: #657068; font-size: .74rem; line-height: 1.45; }
+  .upgrade-form .consent input { width: auto; margin-top: .2rem; }
+  .upgrade-form-status { display: none; padding: .8rem; border-radius: .65rem; color: #275016; background: #edf7ee; font-size: .86rem; line-height: 1.5; }
+  .upgrade-form-status.is-visible { display: block; }
+  .upgrade-final { padding: 5rem 1rem 6rem; text-align: center; }
+  .upgrade-final h2 { max-width: 720px; margin: 0 auto .9rem; }
+  .upgrade-final p { max-width: 620px; margin: 0 auto 1.5rem; color: #5c675f; line-height: 1.7; }
+  @media (max-width: 800px) { .upgrade-hero,.upgrade-proof,.upgrade-form-wrap { grid-template-columns: 1fr; } .upgrade-trust { grid-template-columns: repeat(2,1fr); } .upgrade-grid,.upgrade-steps { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 520px) { .upgrade-campaign-header { padding-inline: 1rem; } .upgrade-header-link { display: none; } .upgrade-hero { padding-top: 3.3rem; } .upgrade-trust,.upgrade-grid,.upgrade-steps { grid-template-columns: 1fr; } .upgrade-btn { width: 100%; } .upgrade-hero-actions { align-items: stretch; } }
+</style>
+
+</head>
   <body>
     
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MV8KWB86"
@@ -5995,6 +6070,33 @@
         </div>
       </div>
     </div>
+
+<div class="upgrade-campaign" id="upgradeCampaign" aria-labelledby="upgrade-title">
+  <header class="upgrade-campaign-header">
+    <a class="upgrade-brand" href="?" aria-label="Charlene Dellosa Properties home"><span class="upgrade-brand-mark">CD</span><span>Charlene Dellosa Properties</span></a>
+    <a class="upgrade-header-link" href="?">Visit the full brand website <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+  </header>
+  <main>
+    <section class="upgrade-hero upgrade-container">
+      <div>
+        <div class="upgrade-kicker"><i class="fas fa-house-chimney-window" aria-hidden="true"></i> The Home Upgrade Journey</div>
+        <h1>Your family has grown. Maybe your home should <em>too.</em></h1>
+        <p class="upgrade-lead">If your current home is starting to feel too small, crowded, or no longer fits the lifestyle you want, Charlene can help you explore your next property move—based on your budget, preferred location, and family's needs.</p>
+        <div class="upgrade-hero-actions"><a class="upgrade-btn upgrade-btn-primary" href="#upgrade-guide"><i class="fas fa-file-arrow-down"></i> Get the free homebuyer checklist</a><a class="upgrade-btn upgrade-btn-secondary" href="#upgrade-consultation" data-upgrade-book><i class="fas fa-calendar-check"></i> Talk to Charlene</a></div>
+        <p class="upgrade-note">Free guide · Practical tips · No-pressure guidance</p>
+      </div>
+      <aside class="upgrade-hero-card"><div class="upgrade-card-label">A clearer next move</div><h2>You do not need to choose a property today.</h2><ul class="upgrade-mini-list"><li><i class="fas fa-check-circle"></i><span>First, understand what has changed for your family.</span></li><li><i class="fas fa-check-circle"></i><span>Then compare the options that fit your life and budget.</span></li><li><i class="fas fa-check-circle"></i><span>Move forward with confidence—not pressure.</span></li></ul></aside>
+    </section>
+    <div class="upgrade-trust upgrade-container"><div class="upgrade-trust-item">100+ Happy Clients</div><div class="upgrade-trust-item">7+ Years Experience</div><div class="upgrade-trust-item">Licensed Professional</div><div class="upgrade-trust-item">Personal Guidance</div></div>
+    <section class="upgrade-section alt"><div class="upgrade-container"><div class="upgrade-section-heading"><div class="upgrade-kicker">Recognition</div><h2>Your current home may have been perfect before. But life changes.</h2><p>What once felt spacious can start to feel crowded. Your family's routines, finances, and priorities may be different now.</p></div><div class="upgrade-grid"><article class="upgrade-panel"><i class="fas fa-people-roof"></i><h3>Your family has grown</h3><p>More people, more routines, and less room to breathe.</p></article><article class="upgrade-panel"><i class="fas fa-expand"></i><h3>You need more space</h3><p>More bedrooms, storage, parking, comfort, and room to grow.</p></article><article class="upgrade-panel"><i class="fas fa-route"></i><h3>Your lifestyle has changed</h3><p>You may want a better location, accessibility, amenities, or daily routine.</p></article></div></div></section>
+    <section class="upgrade-section"><div class="upgrade-container upgrade-proof"><div class="upgrade-section-heading"><div class="upgrade-kicker">Personal guidance</div><h2>Your next home deserves more than a property listing. It deserves a plan.</h2><p>I'm Charlene Dellosa, a Dynamic Property Specialist helping families make clearer property decisions. My role is not to pressure you into buying. It is to help you understand your realistic options before making a major commitment.</p><a class="upgrade-btn upgrade-btn-primary" href="#upgrade-consultation" data-upgrade-book>Talk to Ma'am Charlene <i class="fas fa-arrow-right"></i></a></div><blockquote class="upgrade-quote">“Anong home ang bagay sa buhay namin ngayon—and sa buhay na gusto naming magkaroon?”<cite>A better question for your next property move</cite></blockquote></div></section>
+    <section class="upgrade-section alt"><div class="upgrade-container"><div class="upgrade-section-heading"><div class="upgrade-kicker">The journey</div><h2>From “Siksikan na kami…” to “Mas bagay na ito sa buhay namin.”</h2></div><div class="upgrade-steps"><div class="upgrade-step"><strong>Recognize</strong><span>What no longer works in your current home?</span></div><div class="upgrade-step"><strong>Clarify</strong><span>What kind of space and lifestyle do you want?</span></div><div class="upgrade-step"><strong>Compare</strong><span>Which locations and properties fit your priorities?</span></div><div class="upgrade-step"><strong>Plan</strong><span>What budget and payment capacity feel realistic?</span></div><div class="upgrade-step"><strong>Move</strong><span>Choose your next step with greater confidence.</span></div></div></div></section>
+    <section class="upgrade-section" id="upgrade-guide"><div class="upgrade-container upgrade-form-wrap"><div class="upgrade-form-copy"><div class="upgrade-kicker">Free resource</div><h2>Before you upgrade, make sure you know what you are getting into.</h2><p>Get the free Homebuyer Mistakes Checklist. Use it to evaluate total costs, financing, location, property condition, documents, and long-term suitability before making your next move.</p></div><form class="upgrade-form" id="upgradeGuideForm"><div><label for="upgradeName">Name</label><input id="upgradeName" name="name" autocomplete="name" required></div><div><label for="upgradeEmail">Email</label><input id="upgradeEmail" name="email" type="email" autocomplete="email" required></div><div><label for="upgradeMobile">Mobile number</label><input id="upgradeMobile" name="mobile" type="tel" autocomplete="tel" required></div><div class="g-recaptcha" id="upgradeRecaptcha" data-sitekey="6LdKqsMtAAAAAFdWd8bnwyUaLKbw6AOGPU82rb9_" aria-label="Security verification"></div><label class="consent"><input id="upgradePrivacy" type="checkbox" required><span>I agree that Charlene Dellosa may use my details to send the guide and respond to my property inquiry. See the <a href="?" target="_blank">privacy notice</a>.</span></label><button class="upgrade-btn upgrade-btn-primary" type="submit" id="upgradeGuideSubmit"><i class="fas fa-paper-plane"></i> Send me the free guide</button><div class="upgrade-form-status" id="upgradeGuideStatus" role="status"></div></form></div></section>
+    <section class="upgrade-section alt" id="upgrade-consultation"><div class="upgrade-container upgrade-section-heading"><div class="upgrade-kicker">The personalized next step</div><h2>Want more personalized guidance?</h2><p>The checklist can help you avoid common mistakes. Your family's situation is unique. Book a private 15-minute consultation to discuss your current home, goals, budget, location, and next step.</p><a class="upgrade-btn upgrade-btn-primary" href="#" data-upgrade-book><i class="fas fa-calendar-check"></i> Book my free 15-minute consultation</a></div></section>
+    <section class="upgrade-final"><div class="upgrade-container"><h2>Maybe your next home is closer than you think.</h2><p>Your current home got you here. Let’s find out what your next home could look like.</p><a class="upgrade-btn upgrade-btn-primary" href="#" data-upgrade-book>Start the conversation <i class="fas fa-arrow-right"></i></a></div></section>
+  </main>
+</div>
+
     <nav class="mobile-nav" aria-label="Quick navigation">
       <a class="mobile-nav-brand" href="#home" aria-label="Go to the home section">
         <span class="mobile-nav-mark">CD</span><span class="mobile-nav-brand-name">Charlene</span>
@@ -6277,7 +6379,7 @@
               <div class="client-path-trust"><span>Personalized guidance</span><i></i><span>Property options</span><i></i><span>Homebuying support</span></div>
 	            </div>
 	            <div class="client-path-visual">
-	              <img src="https://drive.google.com/thumbnail?id=1pTq7tMXdWfutASa_hUUkvEnZuHJ8hD6s&amp;sz=w1600" alt="Free homebuyer guide cover" loading="lazy" />
+	              <img src="https://drive.google.com/thumbnail?id=1pTq7tMXdWfutASa_hUUkvEnZuHJ8hD6s&sz=w1600" alt="Free homebuyer guide cover" loading="lazy" />
 	              <div class="client-path-visual-caption"><span class="client-path-guide-badge">FREE PDF GUIDE</span><span>Homebuying support, made clearer</span></div>
 	              <a class="client-path-visual-cta" href="#" onclick="openQuizPopup(event)"><i class="fas fa-file-arrow-down" aria-hidden="true"></i><span>Get Your Free Homebuyer Guide</span></a>
             </div>
@@ -7187,10 +7289,10 @@
           const requestBody = JSON.stringify(payload);
 
           try {
-            
-            
-            
-            
+            // Google Apps Script web-app responses may redirect to a
+            // googleusercontent.com URL. A normal CORS fetch can report an
+            // error after the POST has already been processed and saved.
+            // sendBeacon is the reliable cross-origin delivery mechanism here.
             let queued = false;
             if (navigator.sendBeacon) {
               const blob = new Blob(
@@ -7212,9 +7314,9 @@
               });
             }
 
-            
-            
-            
+            // A queued beacon/no-cors request cannot expose the Apps Script
+            // response to the browser. Do not show a false failure after the
+            // request has been accepted for delivery.
             btn.classList.remove('is-sending');
             btn.classList.add('is-done');
             btn.innerHTML = '<i class=\"fas fa-check\"></i> Sent';
@@ -7234,8 +7336,8 @@
         };
 
         window.resetQuiz = function() {
-          
-          
+          // The CAPTCHA element is removed with the result screen, so only
+          // clear its ID; never reset a widget whose DOM element is gone.
           window.recaptchaWidgetId = null;
           currentQ = 0; answers = {};
           setupQuizProgress();
@@ -7387,7 +7489,7 @@
         var soundStarting = false;
         var soundCleanup = function () {};
 
-         
+        /* Optional ambient pad generated locally with Web Audio; no audio file or dependency is required. */
         function startAmbientSound() {
           if (soundEnabled || soundStarting) return;
           var AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -7439,7 +7541,7 @@
 
         soundCleanup = stopAmbientSound;
 
-         
+        /* Try during idle time; this generated sound has no file download and will not block the 3D frame. */
         if (window.requestIdleCallback) window.requestIdleCallback(startAmbientSound, { timeout: 900 });
         else window.setTimeout(startAmbientSound, 180);
         function startSoundFromGesture(event) {
@@ -7448,7 +7550,7 @@
         window.addEventListener('pointerdown', startSoundFromGesture, { passive: true });
         window.addEventListener('keydown', startSoundFromGesture);
 
-         
+        /* Lightweight canvas particles: they orbit gently and respond to pointer/touch proximity. */
         if (particleCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           var particleContext = particleCanvas.getContext('2d');
           var particles = [];
@@ -7562,7 +7664,7 @@
           };
         }
 
-         
+        /* Google Drive thumbnails can be slow on mobile; use the local brand asset if needed. */
         window.setTimeout(function () {
           if (loaderLogo && (!loaderLogo.complete || loaderLogo.naturalWidth === 0)) {
             loaderLogo.src = '/favicon-brand-180.png';
@@ -7579,7 +7681,7 @@
         }
 
         function getReadinessProgress() {
-           
+          /* Count only critical images; lazy gallery images should not hold the loader back. */
           var criticalImages = Array.prototype.slice.call(document.images).filter(function (image) {
             return image.loading !== 'lazy' && !image.closest('[hidden]');
           });
@@ -7591,7 +7693,7 @@
           return 1 + Math.max(imageProgress, documentProgress) * 98;
         }
 
-         
+        /* Blend actual page readiness with elapsed showcase time for a truthful, smooth percentage. */
         var progressTimer = window.setInterval(function () {
           if (finished) return;
           var elapsedProgress = 1 + Math.min(1, (Date.now() - startedAt) / minimumDisplayMs) * 96;
@@ -7729,6 +7831,52 @@
     if (reduceMotionQuery.addEventListener) reduceMotionQuery.addEventListener('change', handleModeChange);
     else if (reduceMotionQuery.addListener) reduceMotionQuery.addListener(handleModeChange);
   }());
+
+
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var isUpgradeCampaign = params.get('campaign') === 'upgrade';
+  if (!isUpgradeCampaign) return;
+  document.body.classList.add('upgrade-campaign-mode');
+  document.title = 'The Home Upgrade Journey | Charlene Dellosa Properties';
+  var description = document.querySelector('meta[name="description"]');
+  if (description) description.setAttribute('content', 'Your family has grown. Explore your next home with a free checklist and no-pressure 15-minute consultation from Charlene Dellosa.');
+  var endpoint = 'https://script.google.com/macros/s/AKfycbymj8Gh664A3dsBL1SX_GQsKE71h7_kq1pLh2UembRC5DvOzhhtmj0cImYGBGoegqrA/exec';
+  var recaptchaId = null;
+  var recaptcha = document.getElementById('upgradeRecaptcha');
+  function renderCampaignRecaptcha() {
+    if (recaptchaId !== null || !recaptcha || !window.grecaptcha) return;
+    try { recaptchaId = window.grecaptcha.render(recaptcha, { sitekey: recaptcha.getAttribute('data-sitekey') }); } catch (e) { console.warn('Campaign reCAPTCHA render delayed', e); }
+  }
+  window.onUpgradeRecaptchaReady = renderCampaignRecaptcha;
+  if (window.recaptchaReady) renderCampaignRecaptcha();
+  document.querySelectorAll('[data-upgrade-book]').forEach(function (link) {
+    link.addEventListener('click', function (event) {
+      event.preventDefault();
+      document.body.classList.remove('upgrade-campaign-mode');
+      var target = document.getElementById('quizOverlay');
+      if (target) { target.classList.add('active'); document.body.style.overflow = 'hidden'; if (typeof window.renderQuizRecaptcha === 'function') window.setTimeout(window.renderQuizRecaptcha, 0); }
+    });
+  });
+  var form = document.getElementById('upgradeGuideForm');
+  if (!form) return;
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    var name = document.getElementById('upgradeName').value.trim();
+    var email = document.getElementById('upgradeEmail').value.trim();
+    var mobile = document.getElementById('upgradeMobile').value.trim();
+    var privacy = document.getElementById('upgradePrivacy').checked;
+    var status = document.getElementById('upgradeGuideStatus');
+    var button = document.getElementById('upgradeGuideSubmit');
+    var token = window.grecaptcha && recaptchaId !== null ? window.grecaptcha.getResponse(recaptchaId) : '';
+    if (!name || !email || !mobile || !privacy) { status.textContent = 'Please complete your name, email, mobile number, and privacy consent.'; status.classList.add('is-visible'); return; }
+    if (!token) { renderCampaignRecaptcha(); status.textContent = 'Please complete the security verification before submitting.'; status.classList.add('is-visible'); return; }
+    var payload = { mode: 'guide', submissionId: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()), name: name, email: email, mobile: mobile, consultationDate: 'Not booked yet', privacyConsent: true, privacyNoticeVersion: '2026-08-24', nurtureConsent: false, nurtureConsentVersion: '', recaptchaToken: token, answers: [{ question: 'Campaign', answer: 'Home Upgrade Journey' }] };
+    button.disabled = true; button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    var body = JSON.stringify(payload), queued = false;
+    try { if (navigator.sendBeacon) queued = navigator.sendBeacon(endpoint, new Blob([body], { type: 'text/plain;charset=utf-8' })); if (!queued) fetch(endpoint, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body, keepalive: true }).catch(function () {}); status.innerHTML = '<strong>Your guide is on its way.</strong><br>Check your email, then book a private 15-minute consultation below when you are ready.'; status.classList.add('is-visible'); button.innerHTML = '<i class="fas fa-check"></i> Guide requested'; form.querySelectorAll('input').forEach(function (input) { input.disabled = true; }); } catch (e) { button.disabled = false; button.innerHTML = '<i class="fas fa-paper-plane"></i> Send me the free guide'; status.textContent = 'We could not send the guide right now. Please try again.'; status.classList.add('is-visible'); }
+  });
+})();
 </script>
   </body>
   </html>
