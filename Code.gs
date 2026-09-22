@@ -179,7 +179,7 @@ function doPost(e) {
   try {
     const payload = readQuizPostPayload_(e);
     verifyRecaptcha_(payload.recaptchaToken);
-    const result = sendQuizNotification(payload);
+    const result = payload.mode === 'guide' ? sendGuideLeadNotification(payload) : sendQuizNotification(payload);
     return jsonResponse_({
       ok: true,
       leadId: result.leadId || '',
@@ -926,6 +926,36 @@ function sendQuizNotification(payload) {
     clientEmailWarning: clientEmailError || undefined,
     emailWarning: emailWarnings.join(' ') || undefined
   };
+}
+
+
+function sendGuideLeadNotification(payload) {
+  payload = payload || {};
+  var name = cleanText_(payload.name, 120);
+  var email = cleanText_(payload.email, 254).toLowerCase();
+  var mobile = cleanText_(payload.mobile, 40);
+  var privacyConsent = asBoolean_(payload.privacyConsent);
+  var submissionId = cleanText_(payload.submissionId, 120);
+  var answers = Array.isArray(payload.answers) ? payload.answers.slice(0, 20) : [{ question: 'Campaign', answer: 'Home Upgrade Journey' }];
+  if (!name) throw new Error('Please provide your full name.');
+  if (!isValidEmail_(email)) throw new Error('Please provide a valid email address.');
+  if (!isValidMobile_(mobile)) throw new Error('Please provide a valid mobile number.');
+  if (!privacyConsent) throw new Error('Please confirm the privacy notice before submitting your request.');
+  var cacheKey = submissionId ? 'guide-submission-' + submissionId : '';
+  var lock = LockService.getScriptLock();
+  if (cacheKey) { lock.waitLock(5000); try { if (CacheService.getScriptCache().get(cacheKey)) return { ok: true, duplicate: true }; } finally { lock.releaseLock(); } }
+  var leadId = Utilities.getUuid();
+  var now = new Date();
+  saveLead_(leadId, name, email, mobile, 'Not booked yet', 'home-upgrade-guide', answers, now, PRIVACY_NOTICE_VERSION, false, null, '');
+  if (cacheKey) CacheService.getScriptCache().put(cacheKey, 'processed', 21600);
+  var guide = null;
+  try { guide = getQuizGuide_(); } catch (error) { console.warn('Guide attachment unavailable: ' + error.message); }
+  var attachments = guide ? [guide] : [];
+  var clientMessage = { to: email, subject: 'Your Homebuyer Mistakes Checklist · ' + AGENT_NAME, body: 'Thank you for requesting the Homebuyer Mistakes Checklist. Your guide is attached. When you are ready, reply to this email or book a free 15-minute consultation.', htmlBody: emailShell_('Your Homebuyer Mistakes Checklist', '<div style="background:' + BRAND.deepGreen + ';padding:28px 30px;color:#fff;"><div style="font-size:14px;letter-spacing:1.2px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">The Home Upgrade Journey</div><h1 style="margin:8px 0 0;font-family:Georgia,serif;color:#fff;">Your guide is ready</h1></div><div style="padding:30px;color:' + BRAND.ink + ';font-size:17px;line-height:1.8;"><p>Hi ' + escapeHtml_(name) + ',</p><p>Thank you for taking the first step. Your Homebuyer Mistakes Checklist is attached to this email.</p><p>When you are ready, book a private 15-minute consultation so we can look at your current situation, goals, budget, location, and next step together.</p></div>' + footerHtml_('Home Upgrade Journey · Charlene Dellosa')), attachments: attachments, replyTo: AGENT_EMAIL, inlineImages: getEmailBrandLogo_(), name: SENDER_NAME };
+  var agentMessage = { to: AGENT_EMAIL, cc: SECONDARY_AGENT_EMAIL, subject: 'New Home Upgrade Journey guide lead · ' + name, body: 'New guide lead\n\nName: ' + name + '\nEmail: ' + email + '\nMobile: ' + mobile + '\nLead ID: ' + leadId, htmlBody: emailShell_('New Home Upgrade Journey guide lead', '<div style="padding:30px;color:' + BRAND.ink + ';font-size:17px;line-height:1.8;"><h1 style="font-family:Georgia,serif;color:' + BRAND.deepGreen + ';">New guide lead</h1><p><strong>' + escapeHtml_(name) + '</strong><br>' + escapeHtml_(email) + '<br>' + escapeHtml_(mobile) + '</p><p>Campaign: Home Upgrade Journey<br>Lead ID: ' + escapeHtml_(leadId) + '</p></div>' + footerHtml_('Internal lead notification')), replyTo: email, inlineImages: getEmailBrandLogo_(), name: SENDER_NAME };
+  var agentResult = sendEmailWithinQuota_(agentMessage, 'guide lead notification');
+  var clientResult = sendEmailWithinQuota_(clientMessage, 'guide delivery');
+  return { ok: true, leadId: leadId, emailQueued: agentResult.sent && clientResult.sent, agentEmailWarning: agentResult.error || undefined, clientEmailWarning: clientResult.error || undefined };
 }
 
 function diagnoseSubmissionBackend() {
@@ -2223,4 +2253,5 @@ function authorizeAutomation_() {
   MailApp.getRemainingDailyQuota();
   SpreadsheetApp.openById(LEADS_SPREADSHEET_ID).getName();
 }
+
 
