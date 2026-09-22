@@ -88,12 +88,17 @@ const QUIZ_SPREADSHEET_NAME = 'Charlene Dellosa · Quiz Questions';
 // If you already have a dedicated spreadsheet, you may paste its ID here once.
 const QUIZ_SPREADSHEET_ID = '';
 const QUIZ_CACHE_SECONDS = 60;
-// Google reCAPTCHA v2 secret. Prefer storing this in Apps Script Properties
-// under RECAPTCHA_SECRET_KEY; the fallback keeps this deployment self-contained.
-const RECAPTCHA_SECRET_KEY = '6LdKqsMtAAAAAIAEcFE8MDrGyvkyfEihlJRB6uLR';
+// Google reCAPTCHA v2 secret is stored only in Apps Script Properties.
+const RECAPTCHA_SECRET_PROPERTY = 'RECAPTCHA_SECRET_KEY';
 
 function getRecaptchaSecretKey_() {
-  return PropertiesService.getScriptProperties().getProperty('RECAPTCHA_SECRET_KEY') || RECAPTCHA_SECRET_KEY;
+  const secret = String(
+    PropertiesService.getScriptProperties().getProperty(RECAPTCHA_SECRET_PROPERTY) || ''
+  ).trim();
+  if (!secret) {
+    throw new Error('reCAPTCHA is not configured. Add RECAPTCHA_SECRET_KEY to Script Properties.');
+  }
+  return secret;
 }
 
 function verifyRecaptcha_(token) {
@@ -2218,3 +2223,4 @@ function authorizeAutomation_() {
   MailApp.getRemainingDailyQuota();
   SpreadsheetApp.openById(LEADS_SPREADSHEET_ID).getName();
 }
+
