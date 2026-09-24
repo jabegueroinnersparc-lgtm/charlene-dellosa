@@ -6185,6 +6185,114 @@
         .btn-primary, .btn-secondary, .submit-btn, .calc-btn, .quiz-nav-btn, .upgrade-btn { transition: none !important; }
       }
 
+    
+       
+      .reference-header {
+        width: min(1320px, calc(100% - 2rem)) !important;
+        min-height: 4.7rem;
+        padding: .72rem clamp(1rem, 2.4vw, 1.65rem) !important;
+        grid-template-columns: auto minmax(0, 1fr) auto !important;
+        gap: clamp(.8rem, 2vw, 2rem) !important;
+        background: rgba(6,60,36,.96) !important;
+        border: 1px solid rgba(245,214,138,.3) !important;
+        box-shadow: 0 16px 40px rgba(6,60,36,.2), inset 0 1px 0 rgba(255,255,255,.08) !important;
+        backdrop-filter: blur(18px);
+      }
+      .reference-brand,
+      .reference-brand:visited { color: #fff !important; }
+      .reference-brand-name {
+        color: #fff !important;
+        font-size: clamp(1.05rem, 1.8vw, 1.55rem) !important;
+        letter-spacing: -.02em;
+      }
+      .reference-brand-role { color: #f5d68a !important; }
+      .reference-nav {
+        justify-content: center !important;
+        gap: clamp(.45rem, 1.15vw, 1rem) !important;
+      }
+      .reference-nav a,
+      .reference-nav a:visited {
+        color: rgba(255,255,255,.78) !important;
+        padding: .6rem .25rem !important;
+        font-size: clamp(.68rem, .8vw, .82rem) !important;
+        font-weight: 600 !important;
+        letter-spacing: .01em;
+        text-shadow: none !important;
+      }
+      .reference-nav a:hover,
+      .reference-nav a:focus-visible,
+      .reference-nav a.is-active {
+        color: #f5d68a !important;
+      }
+      .reference-nav a::after {
+        background: #f5d68a !important;
+        bottom: .2rem !important;
+        height: 2px !important;
+      }
+      .reference-nav .nav-checklist-link {
+        color: #f5d68a !important;
+        padding-inline: .55rem !important;
+        border: 1px solid rgba(245,214,138,.26);
+        border-radius: 999px;
+      }
+      .reference-nav .nav-checklist-link:hover { background: rgba(245,214,138,.12); }
+      .reference-header-cta,
+      .reference-header-cta:visited {
+        min-width: 0 !important;
+        padding: .72rem 1rem !important;
+        color: #063c24 !important;
+        background: #f5d68a !important;
+        border: 1px solid #f5d68a !important;
+        box-shadow: 0 8px 22px rgba(0,0,0,.14) !important;
+      }
+      .reference-header-cta span,
+      .reference-header-cta i { color: #063c24 !important; }
+      .reference-header-cta:hover,
+      .reference-header-cta:focus-visible {
+        color: #fff !important;
+        background: #cc953e !important;
+        border-color: #cc953e !important;
+      }
+      .reference-header-cta:hover span,
+      .reference-header-cta:focus-visible span,
+      .reference-header-cta:hover i,
+      .reference-header-cta:focus-visible i { color: #fff !important; }
+      .reference-header-cta:focus-visible,
+      .reference-nav a:focus-visible { outline: 2px solid #f5d68a !important; outline-offset: 3px; }
+
+       
+      .hero-text {
+        padding: clamp(1.25rem, 2.6vw, 2rem) !important;
+        border: 1px solid rgba(6,60,36,.1);
+        border-radius: 1.4rem;
+        background: rgba(255,253,249,.78);
+        box-shadow: 0 20px 55px rgba(6,60,36,.08);
+        backdrop-filter: blur(10px);
+      }
+      .hero-text h1 { text-wrap: balance; }
+      .hero-consultation-cta { border-radius: 999px !important; }
+      .hero-consultation-cta-arrow { color: #f5d68a !important; }
+      @media (max-width: 1180px) {
+        .reference-header { grid-template-columns: auto 1fr auto !important; }
+        .reference-nav { gap: .55rem !important; }
+        .reference-nav a { font-size: .7rem !important; }
+        .reference-nav .nav-checklist-link { padding-inline: .4rem !important; }
+        .reference-header-cta { padding-inline: .75rem !important; }
+      }
+      @media (max-width: 930px) {
+        .reference-header { width: calc(100% - 1rem) !important; }
+        .reference-brand-name { font-size: 1rem !important; }
+        .reference-nav { gap: .3rem !important; }
+        .reference-nav a { font-size: .64rem !important; padding-inline: .15rem !important; }
+        .reference-header-cta { font-size: .68rem !important; }
+        .reference-header-cta span { display: none; }
+        .reference-header-cta { width: 2.4rem; height: 2.4rem; padding: 0 !important; }
+      }
+      @media (max-width: 768px) {
+        .reference-header { display: none !important; }
+        .hero-text { padding: 1.1rem !important; }
+      }
+
     </style>
 
  
