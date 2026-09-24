@@ -147,6 +147,13 @@ function doGet(e) {
   if (e && e.parameter && e.parameter.unsubscribe) {
     return handleUnsubscribe_(e.parameter.unsubscribe, e.parameter.confirm, e.parameter.cancel);
   }
+
+  // Show a neutral response when the web-app URL is opened directly.
+  // The configuration, sitemap, and unsubscribe routes above remain intact.
+  return ContentService
+    .createTextOutput('Not available')
+    .setMimeType(ContentService.MimeType.TEXT);
+
   const template = HtmlService.createTemplateFromFile('Index');
   // Read image IDs from the Image Settings sheet so visual updates do not require code edits.
   const imageSettings = getImageSettings_();
