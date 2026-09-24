@@ -5944,7 +5944,248 @@
           transform: none;
         }
       }
-</style>
+
+       
+      :root {
+        --brand-ink: #0b2e20;
+        --brand-green: #063c24;
+        --brand-emerald: #275016;
+        --brand-gold: #cc953e;
+        --brand-champagne: #f5d68a;
+        --brand-cream: #fbf8f2;
+        --brand-paper: #fffdf9;
+        --brand-muted: #68766e;
+        --section-gap: clamp(4.5rem, 9vw, 8rem);
+      }
+      html { scroll-behavior: smooth; }
+      body {
+        background: var(--brand-cream);
+        color: var(--brand-ink);
+        letter-spacing: -0.01em;
+      }
+      .parallax-wrapper { background: var(--brand-cream); }
+      .reference-header {
+        width: min(1180px, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: .85rem 1.1rem;
+        border: 1px solid rgba(245,214,138,.38);
+        border-radius: 999px;
+        background: rgba(6,60,36,.92);
+        box-shadow: 0 18px 55px rgba(6,60,36,.15);
+        backdrop-filter: blur(16px);
+      }
+      .reference-brand-name { letter-spacing: .02em; }
+      .reference-nav a { opacity: .86; }
+      .reference-nav a:hover, .reference-nav a.is-active { color: var(--brand-champagne); opacity: 1; }
+      .reference-header-cta { background: var(--brand-gold) !important; color: #fff !important; box-shadow: 0 8px 20px rgba(204,149,62,.25); }
+      .hero {
+        min-height: min(860px, 100vh);
+        padding: 8rem clamp(1.25rem, 5vw, 5rem) 5rem;
+        background: linear-gradient(115deg, rgba(251,248,242,.98) 0%, rgba(251,248,242,.91) 47%, rgba(6,60,36,.2) 100%);
+      }
+      .hero-bg-layer { opacity: .24; filter: saturate(.75) contrast(.92); }
+      .hero-bg-layer::after { background: linear-gradient(90deg, var(--brand-cream) 0%, rgba(251,248,242,.72) 44%, rgba(6,60,36,.18) 100%); }
+      .hero-content {
+        display: grid;
+        grid-template-columns: minmax(250px, .7fr) minmax(0, 1.3fr);
+        align-items: center;
+        gap: clamp(2rem, 6vw, 6rem);
+      }
+      .profile-section { align-items: center; }
+      .profile-image-wrapper {
+        max-width: 390px;
+        aspect-ratio: 4 / 5;
+        border-radius: 2rem;
+        padding: 6px;
+        background: linear-gradient(145deg, var(--brand-gold), var(--brand-green));
+        box-shadow: 0 28px 70px rgba(6,60,36,.23);
+      }
+      .profile-image-wrapper img { border-radius: 1.65rem; }
+      .badge-ring { border-radius: 2.35rem; }
+      .profile-name-badge { margin-top: 1.25rem; }
+      .profile-name-badge h2 { font-size: clamp(1.4rem, 2.2vw, 2rem); letter-spacing: .02em; }
+      .profile-name-badge .title-role { font-size: .78rem; letter-spacing: .18em; }
+      .hero-text { max-width: 720px; text-align: left; margin-top: 0; }
+      .hero-text .tagline { color: var(--brand-gold); font-size: .72rem; letter-spacing: .18em; }
+      .hero-text h1 { font-size: clamp(3rem, 6vw, 6.1rem); line-height: .98; letter-spacing: -.055em; margin: .9rem 0 1.25rem; }
+      .hero-text h1 .highlight { color: var(--brand-green); }
+      .hero-text h1 .highlight::after { bottom: 1px; height: 6px; opacity: .42; }
+      .hero-text .subtitle { max-width: 600px; font-size: clamp(1rem, 1.5vw, 1.22rem); line-height: 1.7; color: #395247; }
+      .trust-builders {
+        width: fit-content;
+        max-width: 100%;
+        margin: 1.4rem 0;
+        padding: 1rem 1.15rem;
+        background: rgba(255,255,255,.72);
+        border: 1px solid rgba(6,60,36,.12);
+        border-left: 3px solid var(--brand-gold);
+        border-right: 0;
+        border-radius: 1rem;
+        box-shadow: 0 12px 35px rgba(6,60,36,.08);
+        backdrop-filter: blur(12px);
+      }
+      .trust-builders .trust-title { color: var(--brand-green); font-size: .66rem; letter-spacing: .15em; }
+      .trust-builders .trust-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem 1.3rem; }
+      .trust-item { color: #466057; font-size: .78rem; }
+      .trust-item i { color: var(--brand-gold); }
+      .cta-buttons { justify-content: flex-start; margin-top: 1.25rem; }
+      .btn-primary {
+        min-width: 0;
+        padding: 1rem 1.35rem;
+        border-radius: .85rem;
+        background: var(--brand-green);
+        box-shadow: 0 12px 28px rgba(6,60,36,.24);
+        text-transform: uppercase;
+        font-size: .82rem;
+        letter-spacing: .08em;
+      }
+      .btn-primary:hover { background: var(--brand-gold); transform: translateY(-3px); }
+      .hero-consultation-cta { display: inline-flex; max-width: 430px; text-align: left; }
+      .hero-consultation-cta-copy { display: flex; flex-direction: column; gap: .18rem; }
+      .hero-consultation-cta-copy small { font-size: .7rem; font-weight: 400; letter-spacing: 0; text-transform: none; opacity: .82; }
+      .hero-proof { display: flex; flex-wrap: wrap; gap: .75rem 1.2rem; color: #4c655a; font-size: .72rem; }
+      .hero-proof i { color: var(--brand-gold); margin-right: .25rem; }
+      .main-content { padding: var(--section-gap) clamp(1rem, 4vw, 3rem); background: var(--brand-cream); }
+      .main-content > section, .main-content > .landing-card, .main-content > .section-divider { margin-bottom: var(--section-gap); }
+      .landing-card, .footer-section {
+        border-radius: 1.5rem;
+        border: 1px solid rgba(6,60,36,.1);
+        box-shadow: 0 22px 60px rgba(6,60,36,.075);
+      }
+      .landing-card { padding: clamp(1.35rem, 4vw, 3.25rem); }
+      .landing-card:hover { transform: translateY(-3px); }
+      .section-kicker, .tagline { color: var(--brand-gold) !important; letter-spacing: .16em !important; }
+      .pain-points-section { background: var(--brand-green); color: #fff; border-color: rgba(245,214,138,.2); }
+      .pain-points-section h2, .pain-points-section p, .pain-points-section .pain-point-card h3 { color: #fff; }
+      .pain-point-card { background: rgba(255,255,255,.08) !important; border-color: rgba(245,214,138,.18) !important; }
+      .pain-point-card p { color: rgba(255,255,255,.78) !important; }
+      .pain-point-card > i { color: var(--brand-champagne) !important; }
+      .section-divider { margin-top: 1rem; }
+      .section-divider span { background: var(--brand-cream); color: var(--brand-gold); }
+      .services-grid, .location-grid, .calc-grid { gap: 1rem; }
+      .service-card, .calc-box { border-radius: 1rem; border-color: rgba(6,60,36,.11); background: var(--brand-paper); }
+      .service-card:hover, .calc-box:hover { border-color: var(--brand-gold); box-shadow: 0 16px 35px rgba(6,60,36,.1); }
+      .quiz-overlay { background: rgba(6,60,36,.72); backdrop-filter: blur(9px); }
+      .quiz-modal { border-radius: 1.5rem; border: 1px solid rgba(245,214,138,.4); box-shadow: 0 30px 90px rgba(0,0,0,.28); }
+      .quiz-modal .quiz-card { border-radius: 1rem; border-color: rgba(6,60,36,.11); }
+      .quiz-modal .quiz-card .quiz-options .option { border-radius: .85rem; border-color: rgba(6,60,36,.12); }
+      .quiz-modal .quiz-card .quiz-options .option:hover, .quiz-modal .quiz-card .quiz-options .option.selected { border-color: var(--brand-gold); background: rgba(204,149,62,.08); }
+      .scroll-accent-rail { border-color: rgba(204,149,62,.3); }
+      @media (max-width: 850px) {
+        .reference-header { border-radius: 1rem; }
+        .hero { padding-top: 6rem; }
+        .hero-content { grid-template-columns: 1fr; gap: 2rem; }
+        .profile-section { order: 2; }
+        .hero-text { order: 1; text-align: center; margin: 0 auto; }
+        .hero-text .subtitle { margin-left: auto; margin-right: auto; }
+        .cta-buttons { justify-content: center; }
+        .hero-proof { justify-content: center; }
+        .profile-image-wrapper { max-width: 270px; aspect-ratio: 1 / 1; }
+        .profile-name-badge h2 { font-size: 1.45rem; }
+      }
+      @media (max-width: 560px) {
+        .hero { padding: 5.6rem .95rem 3.8rem; }
+        .hero-text h1 { font-size: clamp(2.7rem, 13vw, 4rem); }
+        .trust-builders .trust-grid { grid-template-columns: 1fr; }
+        .hero-consultation-cta { width: 100%; justify-content: center; }
+        .hero-proof { font-size: .68rem; }
+        .landing-card { border-radius: 1.15rem; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .profile-image-wrapper, .badge-ring, .hero-particles span { animation: none !important; }
+      }
+
+    
+       
+      .btn-primary,
+      .submit-btn,
+      .calc-btn,
+      .quiz-nav-btn.next,
+      .reference-header-cta,
+      .upgrade-btn-primary {
+        color: #fff !important;
+        background: var(--brand-green, #063c24) !important;
+        border-color: var(--brand-green, #063c24) !important;
+        text-shadow: 0 1px 1px rgba(0,0,0,.18);
+      }
+      .btn-primary:hover,
+      .submit-btn:hover,
+      .calc-btn:hover,
+      .quiz-nav-btn.next:hover,
+      .reference-header-cta:hover,
+      .upgrade-btn-primary:hover {
+        color: #fff !important;
+        background: var(--brand-gold, #cc953e) !important;
+        border-color: var(--brand-gold, #cc953e) !important;
+      }
+      .btn-secondary,
+      .quiz-nav-btn.prev,
+      .upgrade-btn-secondary {
+        color: var(--brand-green, #063c24) !important;
+        background: #fffdf9 !important;
+        border: 1px solid rgba(6,60,36,.3) !important;
+        text-shadow: none;
+      }
+      .btn-secondary:hover,
+      .quiz-nav-btn.prev:hover,
+      .upgrade-btn-secondary:hover {
+        color: var(--brand-green, #063c24) !important;
+        background: #f5d68a !important;
+        border-color: var(--brand-gold, #cc953e) !important;
+      }
+      .btn-primary i,
+      .submit-btn i,
+      .calc-btn i,
+      .quiz-nav-btn.next i,
+      .reference-header-cta i,
+      .upgrade-btn-primary i { color: #fff !important; }
+      .btn-secondary i,
+      .quiz-nav-btn.prev i,
+      .upgrade-btn-secondary i { color: var(--brand-green, #063c24) !important; }
+      .btn-primary:focus-visible,
+      .btn-secondary:focus-visible,
+      .submit-btn:focus-visible,
+      .calc-btn:focus-visible,
+      .quiz-nav-btn:focus-visible,
+      .upgrade-btn:focus-visible,
+      .reference-header-cta:focus-visible {
+        outline: 3px solid var(--brand-champagne, #f5d68a) !important;
+        outline-offset: 3px;
+      }
+      .hero-consultation-cta-copy strong,
+      .hero-consultation-cta-copy small { color: #fff !important; }
+      .hero-consultation-cta-copy small { opacity: .95; }
+
+       
+      .hero-bg-layer {
+        opacity: .68 !important;
+        filter: saturate(.9) contrast(1.02) !important;
+        background-position: center center !important;
+      }
+      .hero-bg-layer::after {
+        background:
+          linear-gradient(90deg, rgba(251,248,242,.97) 0%, rgba(251,248,242,.88) 36%, rgba(251,248,242,.34) 68%, rgba(6,60,36,.12) 100%) !important;
+      }
+      .profile-image-wrapper {
+        background: linear-gradient(145deg, #f5d68a 0%, #cc953e 42%, #063c24 100%) !important;
+        box-shadow: 0 28px 70px rgba(6,60,36,.3), 0 0 0 8px rgba(245,214,138,.18) !important;
+      }
+      .profile-image-wrapper img {
+        opacity: 1 !important;
+        filter: saturate(1.04) contrast(1.05) !important;
+      }
+      .profile-name-badge h2 { color: var(--brand-green, #063c24) !important; text-shadow: 0 1px 0 rgba(255,255,255,.9); }
+      .profile-name-badge .title-role { color: #8e5c1e !important; text-shadow: 0 1px 0 rgba(255,255,255,.9); }
+      .floating-badges .badge { color: #fff !important; background: rgba(6,60,36,.82) !important; border-color: rgba(245,214,138,.45) !important; }
+      @media (max-width: 850px) {
+        .hero-bg-layer { opacity: .5 !important; }
+        .hero-bg-layer::after { background: linear-gradient(180deg, rgba(251,248,242,.9) 0%, rgba(251,248,242,.55) 42%, rgba(251,248,242,.78) 100%) !important; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .btn-primary, .btn-secondary, .submit-btn, .calc-btn, .quiz-nav-btn, .upgrade-btn { transition: none !important; }
+      }
+
+    </style>
 
  
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GLKYFPK7W2"></script>
@@ -6224,12 +6465,11 @@
             </div>
           </div>
           <div class="hero-text reveal" style="transition-delay:0.2s;">
-            <div class="tagline"><i class="fas fa-home" style="margin-right:8px;"></i> Property Guidance, Made Personal</div>
-            <h1>Your Next Property Move <span class="highlight">in Cavite, Made Clear.</span></h1>
+            <div class="tagline"><i class="fas fa-home" style="margin-right:8px;"></i> A clearer next step for your property journey</div>
+            <h1>READY FOR YOUR NEXT <span class="highlight">HOME UPGRADE?</span></h1>
             <div class="subtitle">
               <i class="fas fa-map-pin"></i>
-              Buy, sell, or invest with a clear plan and personal guidance from start to finish.
-              Serving first-time homebuyers, growing families, and OFWs in Cavite, Imus, Dasmariñas, General Trias, Bacoor, CALABARZON, Metro Manila, and across the Philippines.
+              Your family, lifestyle, and priorities change. Find out what type of property may fit your budget, location, lifestyle, and family goals.
             </div>
             <div class="trust-builders">
               <div class="trust-title"><i class="fas fa-shield-heart" style="margin-right:8px;"></i> Why Trust Charlene?</div>
@@ -6245,7 +6485,7 @@
             <div class="cta-buttons">
               <a href="#" class="btn-primary hero-consultation-cta" onclick="openQuizPopup(event)" aria-label="Book a consultation with Charlene Dellosa">
                 <span class="hero-consultation-cta-icon"><i class="fas fa-calendar-check" aria-hidden="true"></i></span>
-                <span class="hero-consultation-cta-copy"><strong>Book a Consultation</strong><small>Get clear next steps for your property goals</small></span>
+                <span class="hero-consultation-cta-copy"><strong>Take the 60-second property match quiz</strong><small>No pressure. No commitment. Just a clearer direction.</small></span>
                 <i class="fas fa-arrow-right hero-consultation-cta-arrow" aria-hidden="true"></i>
               </a>
               <div class="hero-proof" aria-label="Client assurances"><span><i class="fas fa-check-circle"></i> No-pressure guidance</span><span><i class="fas fa-lock"></i> Confidential consultation</span></div>
@@ -6257,7 +6497,7 @@
             
       <section class="landing-card reveal pain-points-section" id="pain-points" aria-labelledby="pain-points-title">
         <div class="section-kicker"><i class="fas fa-compass" aria-hidden="true"></i> Before you make your next move</div>
-        <h2 id="pain-points-title">Buying, selling, or investing should feel exciting not confusing.</h2>
+        <h2 id="pain-points-title">What kind of property fits the life you want next?</h2>
         <p class="pain-points-intro">
           The right property decision starts with the right guidance. If you are overwhelmed by listings, unsure what you can comfortably afford, or worried about missing an important detail, you do not have to navigate the process alone. Get clear, practical direction before you commit.
         </p>
@@ -6291,7 +6531,7 @@
           <strong>Get clarity before you commit.</strong>
           <span>Share your goals, budget, and preferred location. We will help you understand your options and identify the most sensible next step without pressure.</span>
           <a href="#" class="btn-primary" onclick="openQuizPopup(event)">
-            <i class="fas fa-comments" aria-hidden="true"></i> Find My Best Next Step
+            <i class="fas fa-comments" aria-hidden="true"></i> Help Me Find My Next Home
           </a>
         </div>
       </section>
