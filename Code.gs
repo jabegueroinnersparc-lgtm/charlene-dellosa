@@ -1043,6 +1043,10 @@ function buildClientHtml_(name, mobile, consultationDate, leadType, answers, lea
     '<div class="email-pad" style="padding:32px 30px 26px;">' +
       '<p style="margin:0 0 16px;color:' + BRAND.ink + ';font-size:17px;line-height:1.8;">Hi <strong>' + escapeHtml_(name) + '</strong>,</p>' +
       '<p style="margin:0 0 16px;color:' + BRAND.ink + ';font-size:17px;line-height:1.8;">' + profile.clientIntro + '</p>' +
+      '<div style="margin:22px 0;padding:18px 20px;background:#fffaf0;border:1px solid ' + BRAND.line + ';border-left:5px solid ' + BRAND.gold + ';border-radius:8px;">' +
+        '<div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:7px;">What we will help you avoid</div>' +
+        '<div style="font-size:16px;line-height:1.75;color:' + BRAND.ink + ';">' + profile.painPoint + '</div>' +
+      '</div>' +
       '<div style="margin:22px 0;padding:18px 20px;background:' + BRAND.cream + ';border:1px solid ' + BRAND.line + ';border-left:5px solid ' + BRAND.gold + ';border-radius:8px;">' +
         '<div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:6px;">Your preferred consultation</div>' +
         '<div style="font-size:18px;color:' + BRAND.deepGreen + ';font-weight:700;">' + escapeHtml_(consultationDate) + '</div>' +
@@ -1081,25 +1085,28 @@ function classifyLead_(answers) {
 function getLeadProfile_(leadType) {
   const profiles = {
     buyer: {
-      label: 'Buyer', eyebrow: 'Buyer consultation', previewTitle: 'Buyer consultation request received',
-      agentSubject: 'New Buyer Lead', clientSubject: 'Your Buyer Consultation', clientHeadline: 'Your home-buying journey starts here',
-      clientIntro: 'Thank you for completing the consultation assessment . Your home-buying consultation request has been received.',
-      clientPromise: 'Charlene will review your preferred location, property type, budget range, and timeline so the conversation can focus on practical options for you.',
-      nextStep: 'Reply with any must-have features or preferred areas so Charlene can prepare a more focused starting point.'
+      label: 'Buyer', eyebrow: 'Buyer consultation', previewTitle: 'Your home-buying plan starts here',
+      agentSubject: 'New Buyer Lead', clientSubject: 'Your Buyer Consultation', clientHeadline: 'Turn your home plan into a clear next step',
+      clientIntro: 'Thank you for completing the consultation assessment. Your request has been received. Buying a home can feel overwhelming when prices, financing, requirements, and timing all compete for your attention—but you do not have to figure it out alone.',
+      painPoint: 'Many buyers delay because they are unsure what they can really afford, worry about unexpected costs, or fear choosing a location that does not fit their daily life. A clear, personalized starting point can replace guesswork with a practical plan.',
+      clientPromise: 'Charlene will review your preferred location, property type, budget range, and timeline so the conversation can focus on realistic options—not generic listings or pressure to decide before you are ready.',
+      nextStep: 'Reply with your must-have features, preferred areas, or biggest concern—budget, down payment, monthly payment, requirements, or location—so Charlene can prepare a more focused starting point.'
     },
     seller: {
-      label: 'Seller', eyebrow: 'Seller consultation', previewTitle: 'Seller consultation request received',
-      agentSubject: 'New Seller Lead', clientSubject: 'Your Seller Consultation', clientHeadline: 'Let’s prepare your property for its next chapter',
-      clientIntro: 'Thank you for completing Consultation Assessment. Your property-selling consultation request has been received.',
+      label: 'Seller', eyebrow: 'Seller consultation', previewTitle: 'Your property-selling plan starts here',
+      agentSubject: 'New Seller Lead', clientSubject: 'Your Seller Consultation', clientHeadline: 'Prepare your property for its next chapter',
+      clientIntro: 'Thank you for completing the consultation assessment. Your property-selling request has been received. Selling can feel uncertain when you are worried about pricing too low, attracting the wrong buyers, or spending on improvements that may not pay off.',
+      painPoint: 'The most expensive mistake is often making decisions without a clear position on price, presentation, timing, and buyer fit. A structured review helps you avoid unnecessary guesswork before going to market.',
       clientPromise: 'Charlene will help you think through positioning, presentation, pricing considerations, and a clear process for attracting suitable buyers.',
-      nextStep: 'Reply with the property location and any important details you would like Charlene to consider before the consultation.'
+      nextStep: 'Reply with the property location, approximate size, and your biggest selling concern so Charlene can make the consultation more relevant.'
     },
     investor: {
-      label: 'Investor', eyebrow: 'Investment consultation', previewTitle: 'Investment consultation request received',
+      label: 'Investor', eyebrow: 'Investment consultation', previewTitle: 'Your property strategy starts here',
       agentSubject: 'New Investor Lead', clientSubject: 'Your Investment Consultation', clientHeadline: 'Build your property strategy with clarity',
-      clientIntro: 'Thank you for completing the consultation Assessment . Your real-estate investment consultation request has been received.',
-      clientPromise: 'I will review your preferred market, budget range, property type, and timing so the discussion can focus on suitable opportunities and next steps.',
-      nextStep: 'Reply with your investment goal—income, long-term growth, diversification, or another priority—to make the consultation more relevant.'
+      clientIntro: 'Thank you for completing the consultation assessment. Your real-estate investment request has been received. Investment decisions can become stressful when projected returns, cash flow, financing, and market risks are not viewed together.',
+      painPoint: 'A property may look attractive on paper but still fail to match your time horizon, liquidity needs, or risk tolerance. Reviewing the numbers and purpose first can help you avoid an expensive mismatch.',
+      clientPromise: 'Charlene will review your preferred market, budget range, property type, and timing so the discussion can focus on suitable opportunities and next steps.',
+      nextStep: 'Reply with your investment goal—income, long-term growth, diversification, or another priority—and Charlene can make the consultation more relevant.'
     }
   };
   return profiles[leadType] || profiles.buyer;
@@ -1308,7 +1315,7 @@ function ensureFollowUpTrigger_() {
 
 function installFollowUpAutomation() {
   // One-time migration: remove any existing processLeadFollowUps timer
-  // and recreate it with the current 15-minute interval.
+  // and recreate it with the current 1-minute interval.
   ScriptApp.getProjectTriggers().forEach(function(trigger) {
     if (trigger.getHandlerFunction() === 'processLeadFollowUps') {
       ScriptApp.deleteTrigger(trigger);
@@ -1445,7 +1452,8 @@ function processLeadFollowUps() {
     if (hasClientReplied_(email, submittedAt)) {
       if (map['Replied'] !== undefined) sheet.getRange(r + 1, map['Replied'] + 1).setValue(true);
       if (map['Nurture Completed'] !== undefined) sheet.getRange(r + 1, map['Nurture Completed'] + 1).setValue(true);
-      sendReplyStopAlert_(name, email, leadType, submittedAt, now, step);
+      // The nurture sequence stops silently after a client reply.
+      // No admin notification is sent here to conserve email quota.
       continue;
     }
 
@@ -1460,7 +1468,6 @@ function processLeadFollowUps() {
         copy.body,
         {
           htmlBody: copy.htmlBody,
-          from: AGENT_EMAIL,
           replyTo: AGENT_EMAIL,
           inlineImages: getEmailBrandLogo_(),
           name: SENDER_NAME
@@ -1507,385 +1514,223 @@ function answerValue_(answers, index, fallback) {
 
 function getNurtureCopy_(step, leadType, name, answers, leadId) {
   const safeStep = Math.max(1, Math.min(30, Number(step) || 1));
+  // 30-day sequence strategy:
+  // Days 1–6  | Awareness and affordability: surface uncertainty around budget, costs, and fit.
+  // Days 7–12 | Readiness and process: reduce fear around documents, financing, and first steps.
+  // Days 13–18| Risk reduction and validation: address hidden costs, promos, availability, and comparison.
+  // Days 19–24| Decision support: clarify priorities, timing, family needs, and consultation readiness.
+  // Days 25–30| Action and conversion: invite a low-pressure reply, review, viewing, or computation.
   const messages = [
-    `Magandang araw!
+    `Starting your home search can feel exciting—and confusing at the same time.
 
-Naghahanap ka ba ng sariling bahay pero hindi pa sure kung kailan magsisimula?
+You may be asking yourself: “What can I really afford without making every month difficult?” Many buyers begin with the house price, then feel discouraged when they discover the down payment, fees, utilities, and other costs.
 
-Baka ito na ang sign na hinihintay mo! 🏡
+That uncertainty does not mean homeownership is impossible. It simply means your search should begin with a comfortable monthly budget, not with random listings. When the numbers are clear, you can look at options with less fear and more confidence.
 
-May available na housing units na pwedeng pasok sa iyong budget at payment capacity.
+Reply “BUDGET” and I’ll help you identify the first numbers to review.`,
+    `One of the most common buyer worries is having enough cash at the beginning.
 
-📌 Limited units available
-📌 Flexible payment options
-📌 Perfect for first-time homebuyers
+The down payment is important, but it is not always the only amount to prepare. Depending on the property and transaction, you may also need to consider reservation costs, processing fees, moving expenses, utility setup, and an emergency buffer.
 
-Huwag nang puro “soon.” Simulan na natin ang “finally.” ❤️
+Seeing the full picture early can feel uncomfortable—but it is far better than being surprised after you have already become emotionally attached to a property. A responsible plan protects both your dream and your finances.
 
-Reply lang sa email na ito para malaman ang available units at computation.`,
-    `Hello!
+Reply “COSTS” if you would like a simple list of expenses to ask about.`,
+    `Many buyers stay stuck because they are afraid of choosing the wrong home.
 
-Akala ng marami, kailangan agad ng malaking pera para makabili ng bahay.
+What if the location is inconvenient? What if the space becomes too small? What if the monthly payment feels manageable today but stressful later? These are valid questions, especially when the purchase will affect your family for years.
 
-Pero alam mo ba na may mga housing options na may manageable down payment at installment plans?
+You do not need to decide everything in one day. Start by separating your true non-negotiables from features that would simply be nice to have. That small exercise can turn an overwhelming search into a more focused one.
 
-Ang mahalaga ay malaman muna natin kung ano ang kaya ng budget mo.
+Send me your top three priorities—location, space, payment, or timing—and we can use them as your starting filter.`,
+    `Renting can provide flexibility, but it can also make your homeownership goal feel like something you will start “next year.” Over time, that uncertainty can become frustrating—especially when rent increases while your long-term plan remains unchanged.
 
-🏠 House price
-💵 Down payment
-📅 Monthly amortization
-📋 Requirements
+This is not a message telling you to rush into buying. The better question is whether your current rent, savings, and timeline are aligned with what you want. A simple comparison may show that you need to buy now, prepare longer, or adjust your target.
 
-Reply lang at tutulungan kitang magkaroon ng sample computation.
+Either answer is useful because it replaces guessing with direction.
 
-Baka mas kaya mo pala kaysa sa iniisip mo! 😊`,
-    `Hi!
+Reply “COMPARE” and I’ll help you organize a rent-versus-ownership review.`,
+    `A property purchase is not only one decision. It is a sequence of decisions: choosing a suitable property, preparing documents, reviewing payment terms, arranging financing, completing requirements, and understanding the turnover timeline.
 
-Quick update para sa mga naghahanap ng bahay:
+When buyers do not know what comes next, even a good opportunity can feel stressful. You may worry about missing a requirement, misunderstanding a payment, or committing before you are ready.
 
-⚠️ LIMITED UNITS AVAILABLE!
+A clear process makes the journey calmer. You do not need to memorize everything; you only need to know the next step and the question to ask.
 
-Kapag naubusan ang preferred unit/location mo, maaaring kailangan mong pumili ng ibang available option.
+Reply “PROCESS” if you want the homebuying journey explained in plain language.`,
+    `A home can fit your budget and still fail to fit your life.
 
-Kung interesado ka, mas magandang malaman agad ang:
+Think beyond the photo and floor plan. How long will the commute be? Are schools, groceries, hospitals, and major roads accessible? Will the location still work if your family or work situation changes?
 
-✔️ Available units
-✔️ Current price
-✔️ Down payment
-✔️ Monthly payment
-✔️ Move-in/takeout schedule
+The best property decision considers an ordinary weekday—not only the excitement of a weekend viewing. When the location supports your routine, the home becomes easier to enjoy and easier to sustain.
 
-Reply “AVAILABLE” para ma-check natin ang options.`,
-    `Magandang araw!
+Reply with your preferred area and the places you need to reach regularly. I’ll help you identify the location questions worth asking.`,
+    `Some buyers wait until every document is complete before asking for guidance. That can make the process feel even more difficult because you do not know which document matters first or what may be missing.
 
-Every month, may binabayaran kang renta.
+You do not have to be perfectly prepared to begin a conversation. A preliminary review can help you understand what to gather, what to clarify, and what timeline may be realistic—without forcing you to reserve a property.
 
-Pero naisip mo na ba kung magkano na ang kabuuang rent na nabayaran mo after several years?
+Small preparation steps create momentum. Instead of thinking, “I am not ready,” you can ask, “What is the next thing I can prepare?”
 
-Hindi ibig sabihin na mali ang pag-rent—iba-iba ang situation ng bawat tao.
+Reply “READY” and I’ll send a basic buyer-preparation checklist.`,
+    `First-time buyers often worry that their questions will sound basic or that they will appear unprepared.
 
-Pero kung matagal ka nang nagpaplanong magkaroon ng sariling bahay, magandang tingnan kung ano ang available na homeownership options para sa budget mo.
+Please remember that a home is a significant financial decision. Asking about down payment, financing, requirements, fees, turnover, and total cost is not a weakness—it is part of protecting yourself.
 
-📩 Reply lang para sa sample computation.`,
-    `Before ka mag-reserve, alamin muna ang 3 bagay na ito:
+The greater risk is staying quiet and making assumptions. Clear answers help you compare options properly and prevent surprises later. You should feel comfortable asking questions before making a commitment.
 
-1️⃣ Magkano ang total property price?
-2️⃣ Magkano ang kailangan para sa down payment?
-3️⃣ Magkano ang estimated monthly payment?
+Reply to this email with your biggest question. It can be as simple as “How much do I need to start?”`,
+    `The monthly payment shown in a conversation is only one part of affordability.
 
-Bonus: Alamin din ang requirements at timeline ng purchase.
+A more complete review considers your initial cash requirement, estimated monthly payment, applicable fees, maintenance, utilities, transportation, and the emergency savings you want to keep untouched. Looking only at the monthly figure can create a false sense of comfort.
 
-Mas magandang informed buyer kaysa sa biglaang decision. 🏠
+The purpose of a computation is not to pressure you into buying. It is to help you decide whether the plan is comfortable, needs adjustment, or should wait until you are better prepared.
 
-Kung gusto mo ng sample computation, reply “COMPUTATION.”`,
-    `Saan mo gustong tumira?
+Reply “NUMBERS” and I’ll share the questions to bring to a property computation.`,
+    `A home should support the people who will actually live in it—not only the person viewing the listing.
 
-Malapit ba sa:
+Think about bedrooms, storage, privacy, work-from-home needs, children, elderly family members, parking, and the possibility that your household may change. Choosing too little space can create stress later, while choosing too much may create an unnecessary payment burden.
 
-🏫 School
-🏢 Work
-🛒 Commercial areas
-🚗 Main roads
-🏥 Hospitals
+There is no universal “best” house. There is only a home that fits your household, priorities, and realistic budget more closely.
 
-Sa pagpili ng bahay, hindi lang presyo ang dapat tingnan.
+Reply with your household size and ideal bedroom count so we can narrow your requirements.`,
+    `Limited availability can make buyers feel that they must decide immediately.
 
-Mahalaga rin kung convenient ang location para sa iyong lifestyle at daily routine.
+Urgency can be real, but it should never replace due diligence. Before acting, confirm the exact unit, current price, payment terms, inclusions, fees, requirements, and expected timeline. A screenshot or old post may not show the latest information.
 
-Reply lang kung gusto mong malaman ang available properties at locations.`,
-    `Hello!
+A careful buyer is not a slow buyer. A careful buyer knows what must be verified before saying yes.
 
-May specific budget ka para sa bahay?
+Reply “CHECKLIST” and I’ll help you organize the questions to ask before reserving.`,
+    `Some buyers believe they need a perfect budget before they can ask about properties. That belief can delay useful planning for months.
 
-Sabihin mo lang ang approximate budget range mo.
+An approximate range is enough to begin. You can start by identifying the monthly payment that would feel responsible—not simply the maximum a lender or calculator might show. From there, we can work backward toward property price, initial cash, and preparation steps.
 
-Halimbawa:
+Your first conversation does not need to produce a final answer. It only needs to make the next answer easier.
 
-💰 ₱500K–₱1M
-💰 ₱1M–₱2M
-💰 ₱2M pataas
+Reply with your comfortable monthly range, even if it is only an estimate.`,
+    `Financing is one of the areas that creates the most uncertainty for buyers.
 
-Pwede nating tingnan kung anong housing options ang maaaring available.
+You may be wondering whether your income qualifies, what documents will be requested, how much down payment is needed, or how long approval may take. It is easy to compare your situation with a friend’s and assume the same result—but every application is different.
 
-No pressure—computation muna. 😊`,
-    `First time bumili ng bahay?
+The helpful approach is to understand the possible payment paths and prepare the right questions early. That gives you time to improve your readiness instead of discovering concerns at the last minute.
 
-Normal lang kung maraming questions.
+Reply “FINANCE” and I’ll send a preparation guide for your next conversation.`,
+    `Photos can create excitement, but a viewing should give you information.
 
-Ano ang requirements?
-Magkano ang down payment?
-Paano ang financing?
-Kailan ang move-in?
-Ano ang proseso?
+Look at the actual layout, ventilation, natural light, noise, road access, surrounding properties, drainage, parking, and the daily convenience of the location. Notice what is included and what may require additional work or cost.
 
-Don't worry—step-by-step natin itong pag-uusapan.
+A good viewing does not make you feel pressured to say yes. It helps you say either “this may fit” or “this is not right for us” with greater confidence.
 
-📩 Reply “FIRST HOME” at magsisimula tayo sa basic information.`,
-    `Sandali lang…
+Reply “TOUR” if you would like to discuss what to inspect during a property viewing.`,
+    `Comparing properties only by selling price can lead to the wrong conclusion.
 
-Imagine mo:
+One home may cost less but require a longer commute. Another may have a higher price but a more practical location, better layout, or payment structure. Fees, usable space, maintenance, and time savings can change the real value of an option.
 
-Pag-uwi mo galing trabaho, hindi ka na nangungupahan.
+The goal is not to find the cheapest listing. The goal is to find the option that gives you the best overall fit without creating an unhealthy financial burden.
 
-May sarili kang space.
-May sarili kang gate.
-May lugar para sa pamilya. 🏡
+Reply “COMPARE” with two properties or locations, and I’ll share a comparison framework.`,
+    `If the down payment is your biggest concern, it is better to say so early than to avoid the conversation.
 
-Dreaming is the first step.
+Many buyers feel embarrassed that they are not ready with a large amount. But knowing the amount you need—and the amount you can responsibly prepare—allows you to build a realistic timeline. It may also help you identify which property options are worth considering.
 
-Next step?
+The goal is not to stretch your finances until they become uncomfortable. The goal is to find a path that respects your current situation and future responsibilities.
 
-Alamin kung realistic ang options para sa budget mo.
+Reply “DP” if you want to review the down-payment questions that matter most.`,
+    `Promos can be helpful, but they can also create pressure that makes buyers overlook the full decision.
 
-Reply para sa sample property details.`,
-    `Quick checklist:
+A discount is only valuable if the property fits your location needs, payment capacity, family requirements, and timeline. Before responding to a promo, confirm the total price, what is included, the validity period, payment terms, and any conditions.
 
-☐ Valid IDs
-☐ Proof of income
-☐ Budget assessment
-☐ Down payment plan
-☐ Preferred location
-☐ Desired house type
+You do not have to choose between ignoring every promo and rushing into one. You can ask better questions and decide from facts.
 
-Kung hindi pa kumpleto lahat, okay lang.
+Reply “PROMO” and I’ll send the questions to ask before evaluating an offer.`,
+    `After looking at many listings, the search can become exhausting. Every property begins to look like another decision, and it becomes difficult to remember what truly matters.
 
-Pwede nating pag-usapan muna ang requirements at process.`,
-    `May mga buyers na naghihintay ng promo bago mag-inquire.
+A simple filter can restore clarity. Separate your requirements into three groups: must-haves, preferences, and deal-breakers. This helps you stop spending time on properties that were never a good fit.
 
-Kung ikaw iyon, magandang malaman ang current available offers habang may units pa.
+Your search should feel more focused over time—not more confusing.
 
-🎁 Possible promos
-💰 Discounted units
-🏠 Limited inventory
-📅 Flexible payment options
+Send me your must-haves and deal-breakers, and I’ll help turn them into a practical property brief.`,
+    `There is no single correct timeline for buying a home.
 
-Reply “PROMO” para malaman ang current offers.`,
-    `Ang bahay ay hindi lang four walls.
+Some buyers want to move this year. Others need twelve months to prepare savings, documents, or financing. Some are only gathering information for the future. The problem is not having a later target; the problem is having no plan for what to do before that target arrives.
 
-Dito nag-aaral ang mga anak.
-Dito nagsasalo-salo ang pamilya.
-Dito nabubuo ang maraming memories.
+A timeline gives your savings, requirements, property search, and decision-making a direction.
 
-Kung matagal mo nang pangarap magkaroon ng sariling bahay, simulan natin sa simple:
+Reply with your target timeline—this year, next year, or later—and I’ll suggest an appropriate next step.`,
+    `Your household may look different several years from now than it does today.
 
-Alamin muna kung ano ang kaya ng budget mo. ❤️`,
-    `Isa sa pinakamalaking concern ng buyers:
+Work arrangements can change. Children may need more space. Parents may move in. A location that is convenient now may become difficult if your daily routine changes. These are not reasons to overbuy; they are reasons to think beyond the viewing day.
 
-“Magkano ang kailangan kong ilabas?”
+The right question is not “What can I afford at the limit?” It is “What home can support my life without creating unnecessary pressure?”
 
-May mga properties na may different down payment structures.
+Reply with the people and priorities your future home needs to serve.`,
+    `A consultation should give you clarity—not pressure to reserve.
 
-Kaya bago ka mag-decide, magandang magpa-compute muna.
+To make the conversation useful, prepare four things: your approximate budget, preferred areas, must-have features, and biggest concern. You do not need to know the exact property yet. These details are enough to begin narrowing the possibilities.
 
-📩 Reply “DP” at ipapakita namin ang available payment options.`,
-    `Two weeks na!
+A good discussion can help you understand what is realistic, what needs preparation, and what choices deserve more attention.
 
-Kung naghahanap ka pa rin ng bahay, baka kailangan mo lang ng mas malinaw na options.
+Reply “CONSULT” if you would like help preparing for your conversation.`,
+    `If you are still browsing, that does not mean you have failed.
 
-Sabihin lang:
+It may mean your search needs better filters, your numbers need clarification, or you have not found an option that feels right. Sometimes indecision is not a lack of interest—it is a sign that an important question remains unanswered.
 
-📍 Preferred location
-💰 Budget
-🏠 House type
-👨‍👩‍👧 Family size
+Instead of forcing a decision, identify the one thing holding you back. Once that concern is named, it becomes easier to address.
 
-At tutulungan kitang makita kung anong options ang maaaring mag-fit.`,
-    `Hindi kailangang hulaan ang decision.
+Reply with what is keeping you from moving forward, and we can identify one manageable next step.`,
+    `Unexpected costs are a common source of buyer stress because they appear after the buyer has already become emotionally committed.
 
-I-compare natin:
+Before making a decision, ask about applicable taxes, transfer or processing costs, association or maintenance fees, utility connection, repairs, moving expenses, and other charges relevant to the property. The exact costs may vary, but the questions should not be skipped.
 
-🏠 Monthly rent
-vs.
-🏡 Estimated monthly housing payment
+A complete cost review gives you a more honest picture of affordability.
 
-Kasama rin sa pag-review ang down payment, financing terms, fees, maintenance, at iba pang costs.
+Reply “TOTAL” and I’ll help you create a cost-review checklist.`,
+    `The lowest purchase price is not always the lowest total cost.
 
-Numbers first. Decision later.
+A cheaper property may create a longer commute, higher transportation expenses, more repairs, or a monthly payment that only looks affordable because other costs were excluded. A slightly different option may fit your daily life better and reduce stress over time.
 
-Reply “COMPARE” para sa sample computation.`,
-    `Kung bibigyan ka ng chance pumili, ano ang gusto mong bahay?
+This does not mean choosing the most expensive property. It means looking at the full lifestyle and financial picture before comparing prices.
 
-🏠 2-bedroom?
-🏠 3-bedroom?
-🌳 May outdoor space?
-🚗 May parking?
-📍 Malapit sa work?
+Reply with your top priority—monthly payment, location, space, or convenience—and we can use it to evaluate options.`,
+    `A serious home search does not have to begin with a reservation.
 
-I-send mo sa amin ang preferred specifications mo.
+It can begin with one honest conversation about what you want, what you can manage, and what you are not willing to compromise. That conversation can save you time because it prevents you from chasing properties that do not fit your actual situation.
 
-Tingnan natin kung may available na property na pasok sa requirements mo.`,
-    `Walang “stupid question” kapag malaking investment ang pinag-uusapan.
+You are allowed to ask questions before making a commitment. In fact, informed questions are one of the strongest signs of a responsible buyer.
 
-Pwede mong itanong:
+Reply “START” and tell me the one thing you want to understand first.`,
+    `If you have a preferred unit or location, current information matters.
 
-❓ Magkano ang monthly?
-❓ Ano ang requirements?
-❓ May promo ba?
-❓ Kailan ang turnover?
-❓ Paano ang reservation?
+Availability, pricing, payment terms, and promotional conditions can change. Relying on an old post or forwarded screenshot may give you an outdated picture and create unnecessary disappointment.
 
-Reply lang sa email na ito.
+A quick verification can tell you whether the option is still available, what has changed, and whether it remains aligned with your priorities. That is a much better starting point than assuming.
 
-We'll help you understand the process.`,
-    `Mas madaling mag-decide kapag nakita mo mismo ang property.
+Reply “AVAILABILITY” with the property or location you want to check.`,
+    `Taking time before deciding is completely reasonable. The important thing is to use that time to reduce uncertainty.
 
-Kung available, maaari kang mag-schedule ng property viewing para makita ang:
+Collect the current price, estimated payment, initial cash requirement, requirements, timeline, included features, and alternative options. With that information, you can make a decision based on facts instead of excitement, fear, or pressure from a deadline.
 
-🏠 Actual unit
-📍 Location
-🛣️ Accessibility
-🌳 Surroundings
-📐 House layout
+You do not have to decide today. You can simply prepare better today.
 
-Interested?
+Reply “DETAILS” and I’ll help you organize the information you still need.`,
+    `There are only a few days left in this guided series, so let’s make your next step practical.
 
-Reply “TOUR”.`,
-    `PROPERTY ALERT 🚨
+You may need a budget review, a property shortlist, a requirements check, a financing conversation, or a viewing. You do not need to complete the entire journey at once. Choosing one useful next step is enough to move from browsing toward clarity.
 
-May available units na maaaring maging interesting para sa mga naghahanap ng affordable home options.
+Which would help you most right now?
 
-Pero tandaan:
+Reply with one word: “BUDGET,” “SHORTLIST,” “REQUIREMENTS,” or “VIEWING.”`,
+    `Tomorrow is the final daily note, but your homeownership plan does not need to end with the series.
 
-Availability can change quickly.
+If you have a property in mind, now is a good time to gather the details that make a conversation productive: location, property type, budget range, preferred payment, household needs, and target purchase date.
 
-Kung may preferred unit/location ka, mas magandang i-check ang current availability bago gumawa ng plans.
+If you do not have a property yet, that is also okay. We can start with your goals and work toward a realistic shortlist.
 
-Reply “CHECK” para sa details.`,
-    `10 days na lang!
+Reply with whatever information you already have, and we’ll identify what still needs clarification.`,
+    `You made it to Day 30.
 
-Nasaan ka na?
+The purpose of these emails was never to pressure you into buying. It was to help you recognize the concerns that can make homeownership feel confusing: affordability, down payment, financing, hidden costs, location, timing, and the fear of making the wrong choice.
 
-☐ Naghahanap pa lang
-☐ Nagko-compute
-☐ Nagco-compare
-☐ Nagvi-viewing
-☐ Ready na mag-reserve
+You do not need to have everything solved before taking the next step. You can ask for available properties, request a sample computation, review requirements, compare locations, or simply ask one question.
 
-Kahit nasaan ka man sa process, okay lang.
-
-Reply sa current status mo at tutulungan kitang malaman ang next step.`,
-    `May budget ka na?
-
-Let's work backward.
-
-Budget → Down Payment → Monthly Payment → Property Options
-
-Mas practical ito kaysa pumili muna ng bahay bago malaman kung kaya ng finances.
-
-Reply with your approximate monthly budget para makapag-start tayo ng computation.`,
-    `Quick reminder!
-
-Kung naghahanap ka ng property na may promo, discounted price, or special payment terms, magandang i-check ang current offer and availability.
-
-📩 Reply “PROMO” para ma-send namin ang available details.`,
-    `Minsan, isang message lang ang kailangan para makapagsimula.
-
-Hindi mo kailangang mag-commit agad.
-
-Pwede kang:
-
-✔️ Magtanong
-✔️ Magpa-compute
-✔️ Mag-compare
-✔️ Mag-request ng details
-✔️ Mag-schedule ng viewing
-
-Start with a simple inquiry.
-
-“Magkano po?” 😊`,
-    `Kailan mo gustong magkaroon ng sariling bahay?
-
-This year?
-Next year?
-In the next few years?
-
-Kapag may target date ka, mas madaling gumawa ng savings at payment plan.
-
-🏠 Goal
-💰 Budget
-📅 Timeline
-
-Start planning today.`,
-    `Para sa sarili?
-Para sa pamilya?
-Para sa future?
-
-Whatever your reason, mahalagang piliin ang property base sa actual needs mo.
-
-Space. Location. Budget. Accessibility.
-
-Let's find options that match your priorities.`,
-    `Four days na lang sa 30-day homebuyer series natin!
-
-Kung may property ka nang pinag-iisipan, ngayon ang magandang time para itanong ang important details:
-
-💰 Total price
-💵 Down payment
-📅 Payment terms
-📋 Requirements
-🏠 Turnover details
-
-Reply “DETAILS” para makapag-inquire.`,
-    `Hindi mo kailangang hulaan kung kaya mo.
-
-Magpa-compute.
-
-Makikita mo ang possible:
-
-💵 Initial payment
-📆 Monthly payment
-🏠 Total property cost
-📋 Other applicable fees
-
-Then ikaw ang makakapag-decide kung pasok sa budget mo.`,
-    `Malapit na matapos ang 30-day homebuyer series!
-
-Before we wrap up, may property ka bang gustong ipa-check?
-
-Send us:
-
-📍 Location
-🏠 Property type
-💰 Budget
-📅 Target purchase date
-
-We'll check the available information for you.`,
-    `One day left!
-
-Kung may natutunan ka sa 30-day homebuyer series, hopefully mas malinaw na sa'yo ang:
-
-✔️ Budget
-✔️ Down payment
-✔️ Monthly payment
-✔️ Requirements
-✔️ Property selection
-✔️ Homebuying process
-
-Pero kung nagsisimula ka pa lang, okay lang.
-
-Every homebuying journey starts somewhere. 🏡`,
-    `Congratulations! 🎉
-
-Nakarating ka sa Day 30!
-
-Pero ang pinaka-importanteng part ay hindi ang pagtatapos ng email series.
-
-It's knowing your next step.
-
-Kung seryoso kang naghahanap ng bahay, pwede nating simulan sa:
-
-🏠 Available properties
-💰 Sample computation
-💵 Down payment options
-📋 Requirements
-📍 Location details
-📅 Viewing schedule
-
-Walang kailangan madaliin.
-
-Mag-inquire. Mag-compute. Mag-compare. Then decide when you're ready.
-
-Reply “HOME” at magsimula tayo. 🏡❤️`
+Reply “HOME” and tell me what would be most helpful. We can begin with clarity and move forward only when the plan feels right for you.`
   ];
   const message = messages[safeStep - 1];
   const lines = message.split(/\r?\n/);
