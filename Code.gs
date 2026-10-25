@@ -830,9 +830,7 @@ function sendQuizNotification(payload) {
   const clientSubject = profile.clientSubject + ' · ' + AGENT_NAME;
   const leadId = Utilities.getUuid();
   const answerRows = answers.map(function(item, index) {
-    return '<tr><td style="padding:12px 14px;border-top:1px solid ' + BRAND.line + ';vertical-align:top;color:' + BRAND.muted + ';font-size:16px;width:38%;">' +
-      (index + 1) + '. ' + escapeHtml_(item.question) + '</td><td style="padding:12px 14px;border-top:1px solid ' + BRAND.line + ';vertical-align:top;color:' + BRAND.ink + ';font-size:16px;font-weight:600;">' +
-      escapeHtml_(item.answer || 'No answer') + '</td></tr>';
+    return answerRowHtml_(index, item.question, item.answer);
   }).join('');
 
   const agentText = buildAgentText_(name, email, mobile, consultationDate, submittedAt, answers, nurtureConsent, nurtureConsentVersion) + '\nPrivacy consent: Confirmed · notice ' + PRIVACY_NOTICE_VERSION;
@@ -990,29 +988,28 @@ function diagnoseSubmissionBackend() {
 }
 
 function buildAgentHtml_(name, email, mobile, consultationDate, submittedAt, answerRows, nurtureConsent, nurtureConsentVersion) {
+  const summaryRows =
+    detailRow_('Client name', escapeHtml_(name)) +
+    detailRow_('Email address', '<a href="mailto:' + escapeHtml_(email) + '" style="color:' + BRAND.emerald + ';font-weight:700;text-decoration:none;">' + escapeHtml_(email) + '</a>') +
+    detailRow_('Mobile number', escapeHtml_(mobile)) +
+    detailRow_('Preferred consultation', escapeHtml_(consultationDate)) +
+    detailRow_('Submitted', escapeHtml_(submittedAt)) +
+    detailRow_('Privacy consent', 'Confirmed · notice ' + escapeHtml_(PRIVACY_NOTICE_VERSION)) +
+    detailRow_('Property guidance emails', nurtureConsent ? 'Confirmed · version ' + escapeHtml_(nurtureConsentVersion || NURTURE_CONSENT_VERSION) : 'Not selected');
   return emailShell_(
     'New property inquiry',
-    '<div style="background:' + BRAND.deepGreen + ';padding:28px 30px 24px;color:#ffffff;">' +
-      '<div style="font-size:14px;letter-spacing:1.4px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">New lead notification</div>' +
-      '<h1 class="email-title" style="margin:8px 0 5px;font-family:Georgia,serif;font-size:28px;line-height:1.2;font-weight:700;color:#ffffff;">A new Consultation Assessment is ready</h1>' +
-      '<p style="margin:0;color:#e9f1eb;font-size:17px;line-height:1.85;">A potential client has completed the consultation assessment and requested a follow-up.</p>' +
-    '</div>' +
-    '<div class="email-pad" style="padding:30px 30px 14px;">' +
-      '<div style="font-size:14px;letter-spacing:1.1px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:10px;">Client summary</div>' +
-      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:' + BRAND.cream + ';border:1px solid ' + BRAND.line + ';border-radius:10px;overflow:hidden;">' +
-        detailRow_('Client name', escapeHtml_(name)) +
-        detailRow_('Email address', '<a href="mailto:' + escapeHtml_(email) + '" style="color:' + BRAND.emerald + ';font-weight:700;text-decoration:none;">' + escapeHtml_(email) + '</a>') +
-        detailRow_('Mobile number', escapeHtml_(mobile)) +
-        detailRow_('Preferred consultation', escapeHtml_(consultationDate)) +
-        detailRow_('Submitted', escapeHtml_(submittedAt)) +
-        detailRow_('Privacy consent', 'Confirmed · notice ' + escapeHtml_(PRIVACY_NOTICE_VERSION)) +
-        detailRow_('Property guidance emails', nurtureConsent ? 'Confirmed · version ' + escapeHtml_(nurtureConsentVersion || NURTURE_CONSENT_VERSION) : 'Not selected') +
-      '</table>' +
-      '<div style="margin:25px 0 10px;font-size:14px;letter-spacing:1.1px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;">Quiz answers</div>' +
-      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid ' + BRAND.line + ';border-radius:10px;overflow:hidden;">' +
-        (answerRows || '<tr><td style="padding:14px;color:' + BRAND.muted + ';">No answers were recorded.</td></tr>') +
-      '</table>' +
-      '<div style="margin:24px 0 8px;padding:14px 16px;border-left:4px solid ' + BRAND.gold + ';background:#fffaf0;color:' + BRAND.ink + ';font-size:17px;line-height:1.85;"><strong>Recommended next step:</strong> Reply to this email to contact the client directly and confirm the consultation schedule.</div>' +
+    emailHero_('New lead notification', 'A new consultation assessment is ready', 'A potential client has completed the assessment and requested a follow-up.', false) +
+    '<div class="email-pad" style="padding:40px 40px 14px;">' +
+      emailLabel_('Client summary') +
+      emailPanel_(summaryRows, BRAND.cream) +
+      emailGap_(30) +
+      emailLabel_('Quiz answers') +
+      emailPanel_(answerRows || '<tr><td style="padding:16px 22px;font-family:' + EMAIL_FONT_BODY + ';color:' + BRAND.muted + ';">No answers were recorded.</td></tr>', '#ffffff') +
+      emailGap_(30) +
+      emailCallout_('Recommended next step', 'Reply to this email to contact the client directly and confirm the consultation schedule.') +
+      emailGap_(28) +
+      emailButton_('Reply to Client', 'mailto:' + escapeHtml_(email), 'gold') +
+      emailGap_(36) +
     '</div>' +
     footerHtml_('Internal lead notification · Charlene Dellosa')
   );
@@ -1020,58 +1017,52 @@ function buildAgentHtml_(name, email, mobile, consultationDate, submittedAt, ans
 
 function buildClientHtml_(name, mobile, consultationDate, leadType, answers, leadId) {
   const submittedAnswerRows = (answers || []).map(function(item, index) {
-    return '<tr><td style="padding:10px 12px;border-top:1px solid ' + BRAND.line + ';vertical-align:top;color:' + BRAND.muted + ';font-size:15px;width:42%;">' +
-      (index + 1) + '. ' + escapeHtml_(item.question) + '</td><td style="padding:10px 12px;border-top:1px solid ' + BRAND.line + ';vertical-align:top;color:' + BRAND.ink + ';font-size:15px;font-weight:600;">' +
-      escapeHtml_(item.answer || 'No answer') + '</td></tr>';
+    return answerRowHtml_(index, item.question, item.answer);
   }).join('');
   const profile = getLeadProfile_(leadType);
   const unsubscribeUrl = getUnsubscribeUrl_(leadId);
+  const bodyText = function(html) {
+    return '<p class="email-body-text" style="margin:0 0 18px;font-family:' + EMAIL_FONT_BODY + ';color:' + BRAND.ink + ';font-size:16.5px;line-height:1.85;">' + html + '</p>';
+  };
   // The guide is sent only as one PDF attachment.
   // No download link is included, preventing the client from seeing a second PDF path.
   const guideSection =
-    '<div style="margin:24px 0;padding:20px;background:' + BRAND.cream + ';border:1px solid ' + BRAND.line + ';border-radius:10px;text-align:center;">' +
-      '<div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:8px;">Your property guide</div>' +
-      '<p style="margin:0;color:' + BRAND.ink + ';font-size:16px;line-height:1.7;">Your property guide is attached to this email as one PDF file.</p>' +
-    '</div>';
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;"><tr>' +
+      '<td align="center" bgcolor="#fffaf0" style="background:#fffaf0;border:1px solid #eadabd;border-radius:16px;padding:24px 22px;">' +
+        '<div style="display:inline-block;padding:5px 11px;border-radius:6px;background:' + BRAND.gold + ';color:' + BRAND.deepGreen + ';font-family:' + EMAIL_FONT_BODY + ';font-size:11px;font-weight:800;letter-spacing:1.4px;">PDF</div>' +
+        '<div style="margin-top:12px;font-family:' + EMAIL_FONT_HEAD + ';font-size:24px;line-height:1.2;font-weight:600;color:' + BRAND.deepGreen + ';">Your property guide</div>' +
+        '<div style="margin-top:6px;font-family:' + EMAIL_FONT_BODY + ';font-size:14.5px;line-height:1.7;color:' + BRAND.muted + ';">Attached to this email as one PDF file.</div>' +
+      '</td></tr></table>';
+  const ticket =
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;"><tr>' +
+      '<td bgcolor="' + BRAND.deepGreen + '" style="background:' + EMAIL_GREEN_GRADIENT + ';border-radius:18px;padding:28px 28px 26px;border-bottom:3px solid ' + BRAND.gold + ';">' +
+        '<div style="font-family:' + EMAIL_FONT_BODY + ';font-size:11px;letter-spacing:2.4px;text-transform:uppercase;font-weight:700;color:' + BRAND.paleGold + ';">Your preferred consultation</div>' +
+        '<div style="margin-top:10px;font-family:' + EMAIL_FONT_HEAD + ';font-size:30px;line-height:1.2;font-weight:600;color:#ffffff;">' + escapeHtml_(consultationDate) + '</div>' +
+        '<div style="margin-top:12px;font-family:' + EMAIL_FONT_BODY + ';font-size:13.5px;color:#b9cfc1;">Mobile &middot; ' + escapeHtml_(mobile) + '</div>' +
+      '</td></tr></table>';
   return emailShell_(
     profile.previewTitle,
-    '<div style="background:' + BRAND.deepGreen + ';padding:30px;color:#ffffff;text-align:center;">' +
-      '<div style="margin:0 auto 12px;width:48px;height:48px;border-radius:50%;background:' + BRAND.gold + ';color:#ffffff;font-family:Georgia,serif;font-size:22px;line-height:48px;font-weight:700;">CD</div>' +
-      '<div style="font-size:14px;letter-spacing:1.4px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">' + profile.eyebrow + '</div>' +
-      '<h1 class="email-title" style="margin:9px 0 0;font-family:Georgia,serif;font-size:28px;line-height:1.2;color:#ffffff;">' + profile.clientHeadline + '</h1>' +
-    '</div>' +
-    '<div class="email-pad" style="padding:32px 30px 26px;">' +
-      '<p style="margin:0 0 16px;color:' + BRAND.ink + ';font-size:17px;line-height:1.8;">Hi <strong>' + escapeHtml_(name) + '</strong>,</p>' +
-      '<p style="margin:0 0 16px;color:' + BRAND.ink + ';font-size:17px;line-height:1.8;">' + profile.clientIntro + '</p>' +
-      '<div style="margin:22px 0;padding:18px 20px;background:#fffaf0;border:1px solid ' + BRAND.line + ';border-left:5px solid ' + BRAND.gold + ';border-radius:8px;">' +
-        '<div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:7px;">What we will help you avoid</div>' +
-        '<div style="font-size:16px;line-height:1.75;color:' + BRAND.ink + ';">' + profile.painPoint + '</div>' +
-      '</div>' +
-      '<div style="margin:22px 0;padding:18px 20px;background:' + BRAND.cream + ';border:1px solid ' + BRAND.line + ';border-left:5px solid ' + BRAND.gold + ';border-radius:8px;">' +
-        '<div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:6px;">Your preferred consultation</div>' +
-        '<div style="font-size:18px;color:' + BRAND.deepGreen + ';font-weight:700;">' + escapeHtml_(consultationDate) + '</div>' +
-        '<div style="margin-top:10px;font-size:13px;color:' + BRAND.muted + ';">Mobile: ' + escapeHtml_(mobile) + '</div>' +
-      '</div>' +
-      '<div style="margin:22px 0;padding:18px 20px;background:#ffffff;border:1px solid ' + BRAND.line + ';border-radius:10px;">' +
-        '<div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:10px;">Your submitted quiz answers</div>' +
-        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid ' + BRAND.line + ';border-radius:8px;overflow:hidden;">' +
-          (submittedAnswerRows || '<tr><td style="padding:12px;color:' + BRAND.muted + ';">No answers were recorded.</td></tr>') +
-        '</table>' +
-      '</div>' +
-      '<p style="margin:0 0 16px;color:' + BRAND.ink + ';font-size:17px;line-height:1.8;">' + profile.clientPromise + '</p>' +
-      '<div style="margin:22px 0 24px;padding:18px 16px;background:#ffffff;border:1px solid ' + BRAND.line + ';border-radius:10px;">' +
-        '<div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:13px;">Your recommended next step</div>' +
-        '<div style="font-size:17px;line-height:1.85;color:' + BRAND.ink + ';">' + profile.nextStep + '</div>' +
-      '</div>' +
+    emailHero_(profile.eyebrow, profile.clientHeadline, '', true) +
+    '<div class="email-pad" style="padding:42px 44px 40px;">' +
+      '<div style="margin:0 0 16px;font-family:' + EMAIL_FONT_HEAD + ';font-size:30px;line-height:1.2;font-weight:600;color:' + BRAND.deepGreen + ';">Hi ' + escapeHtml_(name) + ',</div>' +
+      bodyText(profile.clientIntro) +
+      emailGap_(8) +
+      emailCallout_('What we will help you avoid', profile.painPoint) +
+      emailGap_(26) +
+      ticket +
+      emailGap_(34) +
+      emailLabel_('Your submitted quiz answers') +
+      emailPanel_(submittedAnswerRows || '<tr><td style="padding:16px 22px;font-family:' + EMAIL_FONT_BODY + ';color:' + BRAND.muted + ';">No answers were recorded.</td></tr>', '#ffffff') +
+      emailGap_(30) +
+      bodyText(profile.clientPromise) +
+      emailCallout_('Your recommended next step', profile.nextStep) +
+      emailGap_(26) +
       guideSection +
-      '<div style="margin:24px 0 4px;text-align:center;"><a href="mailto:' + AGENT_EMAIL + '" style="display:inline-block;background:' + BRAND.gold + ';color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;padding:15px 24px;border-radius:24px;">Share Your Property Preferences</a></div>' +
+      emailGap_(32) +
+      emailButton_('Share Your Property Preferences', 'mailto:' + AGENT_EMAIL, 'gold') +
     '</div>' +
     footerHtml_('Thank you for trusting Charlene Dellosa with your property journey.') +
-    '<div style="padding:4px 30px 28px;background:' + BRAND.cream + ';text-align:center;color:' + BRAND.muted + ';font-size:11px;line-height:1.6;">' +
-      '<div style="margin-bottom:12px;">You are receiving this because you requested property guidance.</div>' +
-      '<a href="' + escapeHtml_(unsubscribeUrl) + '" style="display:inline-block;background:#b54832;color:#ffffff;border:1px solid #b54832;border-radius:24px;padding:11px 20px;font-size:12px;font-weight:700;text-decoration:none;">Unsubscribe from property guidance</a>' +
-      '<div style="margin-top:10px;font-size:10px;color:' + BRAND.muted + ';">You will be asked to confirm before any change is made.</div>' +
-    '</div>'
+    emailUnsubscribeHtml_(unsubscribeUrl)
   );
 }
 
@@ -1112,47 +1103,149 @@ function getLeadProfile_(leadType) {
   return profiles[leadType] || profiles.buyer;
 }
 
+const EMAIL_FONT_HEAD = "'Cormorant Garamond','Playfair Display',Georgia,'Times New Roman',serif";
+const EMAIL_FONT_BODY = "'Inter','Helvetica Neue',Helvetica,Arial,sans-serif";
+const EMAIL_GOLD_DEEP = '#a9741f';
+const EMAIL_GOLD_GRADIENT = 'linear-gradient(135deg,#efc67a 0%,#cc953e 55%,#b57a28 100%)';
+const EMAIL_GREEN_GRADIENT = 'linear-gradient(150deg,#0b5233 0%,#063c24 58%,#04301d 100%)';
+
+function emailGap_(px) {
+  return '<div style="height:' + px + 'px;line-height:' + px + 'px;font-size:0;">&nbsp;</div>';
+}
+
+function emailEyebrow_(text, color) {
+  return '<div style="font-family:' + EMAIL_FONT_BODY + ';font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;color:' + (color || EMAIL_GOLD_DEEP) + ';">' +
+    '<span style="color:' + BRAND.gold + ';">&#9670;</span>&nbsp;&nbsp;' + text + '&nbsp;&nbsp;<span style="color:' + BRAND.gold + ';">&#9670;</span></div>';
+}
+
+function emailHero_(eyebrow, title, subtitle, showMonogram, extraHtml) {
+  const monogram = showMonogram
+    ? '<div style="width:62px;height:62px;margin:0 auto 22px;border:1px solid #d9b56a;border-radius:50%;"><div style="width:52px;height:52px;margin:4px;border-radius:50%;background:' + BRAND.gold + ';color:' + BRAND.deepGreen + ';font-family:' + EMAIL_FONT_HEAD + ';font-size:23px;line-height:52px;font-weight:700;text-align:center;">CD</div></div>'
+    : '';
+  return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' +
+    '<td class="hero-pad" align="center" bgcolor="' + BRAND.deepGreen + '" style="background:' + EMAIL_GREEN_GRADIENT + ';padding:46px 44px 42px;text-align:center;border-top:2px solid ' + BRAND.gold + ';">' +
+      monogram +
+      emailEyebrow_(eyebrow, BRAND.paleGold) +
+      '<h1 class="email-title" style="margin:18px 0 0;font-family:' + EMAIL_FONT_HEAD + ';font-size:40px;line-height:1.12;font-weight:600;letter-spacing:-.4px;color:#ffffff;">' + title + '</h1>' +
+      (subtitle ? '<p style="margin:16px auto 0;max-width:470px;font-family:' + EMAIL_FONT_BODY + ';font-size:15px;line-height:1.75;color:#d4e3d9;">' + subtitle + '</p>' : '') +
+      (extraHtml ? '<div style="max-width:420px;margin:28px auto 0;">' + extraHtml + '</div>'
+                 : '<div style="width:64px;height:2px;margin:28px auto 0;background:' + BRAND.gold + ';font-size:0;line-height:0;">&nbsp;</div>') +
+    '</td></tr></table>';
+}
+
+function emailLabel_(text) {
+  return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px;"><tr>' +
+    '<td style="white-space:nowrap;padding-right:14px;font-family:' + EMAIL_FONT_BODY + ';font-size:11px;letter-spacing:2.4px;text-transform:uppercase;font-weight:700;color:' + EMAIL_GOLD_DEEP + ';">' + text + '</td>' +
+    '<td width="100%" style="border-bottom:1px solid #eadfca;font-size:0;line-height:0;">&nbsp;</td></tr></table>';
+}
+
+function emailPanel_(rows, background) {
+  return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background:' + (background || BRAND.cream) + ';border:1px solid ' + BRAND.line + ';border-radius:14px;overflow:hidden;">' + rows + '</table>';
+}
+
+function emailCallout_(label, html) {
+  return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;"><tr>' +
+    '<td bgcolor="#fffaf0" style="background:#fffaf0;border:1px solid #eadabd;border-left:4px solid ' + BRAND.gold + ';border-radius:12px;padding:18px 22px;font-family:' + EMAIL_FONT_BODY + ';font-size:15.5px;line-height:1.8;color:' + BRAND.ink + ';">' +
+      '<div style="margin-bottom:6px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:' + EMAIL_GOLD_DEEP + ';">' + label + '</div>' + html +
+    '</td></tr></table>';
+}
+
+function emailButton_(label, href, kind) {
+  const dark = kind === 'dark';
+  const bg = dark ? BRAND.deepGreen : BRAND.gold;
+  const grad = dark ? EMAIL_GREEN_GRADIENT : EMAIL_GOLD_GRADIENT;
+  const color = dark ? BRAND.paleGold : BRAND.deepGreen;
+  return '<table role="presentation" class="btn-wrap" align="center" cellpadding="0" cellspacing="0" style="margin:0 auto;"><tr>' +
+    '<td align="center" bgcolor="' + bg + '" style="background:' + grad + ';border-radius:999px;box-shadow:0 8px 20px rgba(6,60,36,.18);">' +
+      '<a href="' + href + '" target="_blank" rel="noopener" style="display:inline-block;padding:16px 36px;font-family:' + EMAIL_FONT_BODY + ';font-size:15px;line-height:1.2;font-weight:700;letter-spacing:.5px;color:' + color + ';text-decoration:none;border-radius:999px;">' + label + '&nbsp;&nbsp;&rarr;</a>' +
+    '</td></tr></table>';
+}
+
 function emailShell_(previewTitle, content) {
-  return '<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light"><style>' +
-    'body{margin:0!important;padding:0!important;background:#f2efe9;font-family:Arial,Helvetica,sans-serif;color:' + BRAND.ink + ';}' +
-    'table{border-spacing:0;}img{border:0;display:block;max-width:100%;}a{color:' + BRAND.emerald + ';}' +
-    '@media only screen and (max-width:680px){.email-outer{padding:12px 6px!important}.email-card{border-radius:10px!important}.email-pad{padding-left:20px!important;padding-right:20px!important}.email-title{font-size:27px!important;line-height:1.3!important}.answer-question,.answer-value{display:block!important;width:auto!important;font-size:16px!important;line-height:1.7!important}.answer-value{border-top:0!important;padding-top:0!important}.social-link{display:block!important;margin:8px auto!important;max-width:280px!important;text-align:left!important;font-size:15px!important;padding:11px 15px!important}.email-pad p,.email-pad td{font-size:16px!important;line-height:1.75!important}.email-pad a{font-size:16px!important}}' +
-    '</style></head>' +
-    '<body>' +
-      '<div style="display:none;max-height:0;overflow:hidden;opacity:0;">' + escapeHtml_(previewTitle) + '</div>' +
-      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;background:#f2efe9;"><tr><td class="email-outer" align="center" style="padding:28px 12px;">' +
-        '<table role="presentation" class="email-card" width="100%" cellpadding="0" cellspacing="0" style="width:100%;max-width:680px;background:' + BRAND.paper + ';border:1px solid ' + BRAND.line + ';border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(18,55,42,.10);">' +
-          '<tr><td style="height:6px;background:' + BRAND.gold + ';font-size:0;line-height:0;">&nbsp;</td></tr>' +
-          '<tr><td align="center" style="padding:22px 30px 4px;background:' + BRAND.paper + ';">' + emailBrandLogoHtml_('center') + '</td></tr>' +
+  const css = [
+    'body{margin:0!important;padding:0!important;background:#efeae0;-webkit-text-size-adjust:100%;}',
+    'table{border-spacing:0;}img{border:0;display:block;max-width:100%;}a{color:' + BRAND.emerald + ';}',
+    '@media only screen and (max-width:680px){',
+    '.email-outer{padding:10px 8px!important}.email-card{border-radius:18px!important}',
+    '.email-pad{padding-left:22px!important;padding-right:22px!important}',
+    '.hero-pad{padding:38px 22px 34px!important}',
+    '.email-title{font-size:31px!important;line-height:1.14!important}',
+    '.detail-label{display:block!important;width:auto!important;padding:14px 18px 0!important;border-bottom:0!important}',
+    '.detail-value{display:block!important;width:auto!important;padding:3px 18px 14px!important}',
+    '.social-link{display:block!important;margin:8px 0!important;text-align:center!important}',
+    '.btn-wrap{width:100%!important}.btn-wrap a{display:block!important;padding:17px 18px!important}',
+    '.email-pad p,.email-body-text{font-size:16px!important;line-height:1.75!important}',
+    '.footer-pad{padding:36px 22px 30px!important}',
+    '}'
+  ].join('');
+  return '<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light">' +
+    '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">' +
+    '<style>' + css + '</style></head>' +
+    '<body style="margin:0;padding:0;background:#efeae0;">' +
+      '<div style="display:none;max-height:0;overflow:hidden;opacity:0;">' + escapeHtml_(previewTitle) + '&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;background:#efeae0;"><tr><td class="email-outer" align="center" style="padding:32px 12px;">' +
+        '<table role="presentation" class="email-card" width="100%" cellpadding="0" cellspacing="0" style="width:100%;max-width:640px;background:' + BRAND.paper + ';border-radius:22px;overflow:hidden;box-shadow:0 24px 60px rgba(6,60,36,.16);">' +
+          '<tr><td align="center" style="padding:30px 30px 24px;background:' + BRAND.paper + ';">' + emailBrandLogoHtml_('center').replace('margin:0 auto 16px', 'margin:0 auto') + '</td></tr>' +
           '<tr><td>' + content + '</td></tr>' +
         '</table>' +
+        '<div style="max-width:640px;margin:18px auto 0;font-family:' + EMAIL_FONT_BODY + ';font-size:11px;line-height:1.6;color:#8a8576;text-align:center;">Charlene Dellosa Properties &middot; Dasmari&ntilde;as, Cavite, Philippines</div>' +
       '</td></tr></table>' +
     '</body></html>';
 }
 
 function detailRow_(label, value) {
-  return '<tr><td style="padding:12px 14px;border-bottom:1px solid ' + BRAND.line + ';color:' + BRAND.muted + ';font-size:16px;width:38%;">' + label + '</td><td style="padding:12px 14px;border-bottom:1px solid ' + BRAND.line + ';color:' + BRAND.ink + ';font-size:16px;font-weight:600;">' + value + '</td></tr>';
+  return '<tr><td class="detail-label" width="36%" valign="top" style="padding:15px 8px 15px 22px;border-bottom:1px solid ' + BRAND.line + ';font-family:' + EMAIL_FONT_BODY + ';font-size:12px;letter-spacing:.7px;text-transform:uppercase;color:' + BRAND.muted + ';font-weight:600;">' + label + '</td>' +
+    '<td class="detail-value" valign="top" style="padding:15px 22px 15px 8px;border-bottom:1px solid ' + BRAND.line + ';font-family:' + EMAIL_FONT_BODY + ';font-size:16px;line-height:1.5;color:' + BRAND.ink + ';font-weight:600;">' + value + '</td></tr>';
+}
+
+function answerRowHtml_(index, question, answer) {
+  return '<tr><td width="52" valign="top" style="padding:16px 0 16px 20px;' + (index ? 'border-top:1px solid ' + BRAND.line + ';' : '') + '">' +
+      '<div style="width:26px;height:26px;border-radius:50%;background:#f8f0df;border:1px solid #ecd9ae;color:' + EMAIL_GOLD_DEEP + ';font-family:' + EMAIL_FONT_BODY + ';font-size:12px;line-height:26px;font-weight:700;text-align:center;">' + (index + 1) + '</div></td>' +
+    '<td valign="top" style="padding:14px 22px 14px 10px;' + (index ? 'border-top:1px solid ' + BRAND.line + ';' : '') + 'font-family:' + EMAIL_FONT_BODY + ';">' +
+      '<div style="font-size:13px;line-height:1.55;color:' + BRAND.muted + ';">' + escapeHtml_(question) + '</div>' +
+      '<div style="margin-top:3px;font-size:16px;line-height:1.5;font-weight:600;color:' + BRAND.deepGreen + ';">' + escapeHtml_(answer || 'No answer') + '</div>' +
+    '</td></tr>';
+}
+
+function emailSocial_(href, badge, label) {
+  return '<a class="social-link" href="' + href + '" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin:5px;padding:9px 18px 9px 10px;border:1px solid #c9a35a;border-radius:999px;background:#0b4a2e;color:' + BRAND.paleGold + ';text-decoration:none;font-family:' + EMAIL_FONT_BODY + ';font-size:12.5px;font-weight:600;letter-spacing:.3px;">' +
+    '<span style="display:inline-block;width:24px;height:24px;margin-right:8px;border-radius:50%;background:' + BRAND.gold + ';color:' + BRAND.deepGreen + ';font-size:10px;line-height:24px;font-weight:800;text-align:center;vertical-align:middle;">' + badge + '</span>' + label + '</a>';
 }
 
 function footerHtml_(text) {
-  return '<div class="email-pad" style="padding:26px 30px 30px;background:' + BRAND.cream + ';border-top:1px solid ' + BRAND.line + ';text-align:center;">' +
-    '<div style="font-family:Georgia,serif;color:' + BRAND.deepGreen + ';font-size:20px;font-weight:700;">Charlene Dellosa</div>' +
-    '<div style="margin-top:5px;color:' + BRAND.gold + ';font-size:13px;letter-spacing:1px;text-transform:uppercase;font-weight:700;">The Dynamic Property Specialist</div>' +
-    '<div style="margin:14px auto 18px;max-width:510px;color:' + BRAND.muted + ';font-size:14px;line-height:1.75;">' + escapeHtml_(text) + '</div>' +
-    '<div style="height:1px;background:' + BRAND.line + ';margin:0 auto 18px;max-width:420px;"></div>' +
-    '<div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:11px;">Follow the property journey</div>' +
-    '<a class="social-link" href="' + SOCIAL_LINKS.instagram + '" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin:4px;padding:9px 14px 9px 9px;border:1px solid #ddc9a7;border-radius:24px;background:#ffffff;color:' + BRAND.deepGreen + ';text-decoration:none;font-size:12px;font-weight:700;box-shadow:0 2px 5px rgba(18,55,42,.06);"><span style="display:inline-block;width:23px;height:23px;margin-right:6px;border-radius:50%;background:' + BRAND.gold + ';color:#ffffff;font-size:10px;line-height:23px;text-align:center;vertical-align:middle;">IG</span>Instagram</a>' +
-    '<a class="social-link" href="' + SOCIAL_LINKS.tiktok + '" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin:4px;padding:9px 14px 9px 9px;border:1px solid #ddc9a7;border-radius:24px;background:#ffffff;color:' + BRAND.deepGreen + ';text-decoration:none;font-size:12px;font-weight:700;box-shadow:0 2px 5px rgba(18,55,42,.06);"><span style="display:inline-block;width:23px;height:23px;margin-right:6px;border-radius:50%;background:' + BRAND.deepGreen + ';color:#ffffff;font-size:10px;line-height:23px;text-align:center;vertical-align:middle;">TT</span>TikTok</a>' +
-    '<a class="social-link" href="' + SOCIAL_LINKS.youtube + '" target="_blank" rel="noopener" style="display:inline-block;vertical-align:middle;margin:4px;padding:9px 14px 9px 9px;border:1px solid #ddc9a7;border-radius:24px;background:#ffffff;color:' + BRAND.deepGreen + ';text-decoration:none;font-size:12px;font-weight:700;box-shadow:0 2px 5px rgba(18,55,42,.06);"><span style="display:inline-block;width:23px;height:23px;margin-right:6px;border-radius:50%;background:#b54832;color:#ffffff;font-size:10px;line-height:23px;text-align:center;vertical-align:middle;">YT</span>YouTube</a>' +
-    '<div style="margin-top:0;color:' + BRAND.muted + ';font-size:10px;line-height:1.5;">Follow us for property tips, new listings, market updates, and community highlights.</div>' +
-    '<div style="height:1px;background:' + BRAND.line + ';margin:24px auto 20px;max-width:420px;"></div>' +
-    '<div style="padding:18px 14px 20px;background:#ffffff;border:1px solid ' + BRAND.line + ';border-radius:12px;text-align:center;">' +
-      '<div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:' + BRAND.gold + ';font-weight:700;margin-bottom:12px;">Join us on Facebook</div>' +
-      '<a href="' + SOCIAL_LINKS.facebook + '" target="_blank" rel="noopener" style="display:block;text-decoration:none;"><img src="' + JOIN_US_BANNER_URL + '" alt="Join us on Facebook — Charlene Dellosa Properties" width="620" style="display:block;width:100%;max-width:620px;height:auto;border:0;border-radius:8px;" /></a>' +
-      '<div style="margin-top:14px;"><a href="' + SOCIAL_LINKS.facebook + '" target="_blank" rel="noopener" style="display:inline-block;background:' + BRAND.deepGreen + ';border:1px solid ' + BRAND.deepGreen + ';border-radius:26px;color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;line-height:1.2;padding:13px 22px;">Join the Community on Facebook</a></div>' +
-    '</div>' +
-  '</div>';
+  const rule = '<div style="height:1px;background:#1f5a40;margin:26px auto;max-width:420px;font-size:0;line-height:0;">&nbsp;</div>';
+  const contactLine = function(label, value) {
+    return '<div style="margin:0 0 6px;font-family:' + EMAIL_FONT_BODY + ';font-size:13px;line-height:1.7;color:#b9cfc1;"><span style="color:' + BRAND.paleGold + ';font-weight:600;">' + label + '&nbsp;&nbsp;</span>' + value + '</div>';
+  };
+  return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' +
+    '<td class="footer-pad" align="center" bgcolor="' + BRAND.deepGreen + '" style="background:' + EMAIL_GREEN_GRADIENT + ';padding:46px 40px 38px;text-align:center;border-top:2px solid ' + BRAND.gold + ';">' +
+      '<div style="font-family:' + EMAIL_FONT_HEAD + ';color:#ffffff;font-size:30px;line-height:1.15;font-weight:600;">Charlene Dellosa</div>' +
+      '<div style="margin-top:8px;font-family:' + EMAIL_FONT_BODY + ';color:' + BRAND.gold + ';font-size:11px;letter-spacing:2.6px;text-transform:uppercase;font-weight:700;">The Dynamic Property Specialist</div>' +
+      '<div style="margin:18px auto 0;max-width:470px;font-family:' + EMAIL_FONT_BODY + ';color:#c3d6ca;font-size:14px;line-height:1.8;">' + escapeHtml_(text) + '</div>' +
+      rule +
+      '<div style="margin-bottom:12px;font-family:' + EMAIL_FONT_BODY + ';font-size:11px;letter-spacing:2.4px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">Follow the property journey</div>' +
+      emailSocial_(SOCIAL_LINKS.instagram, 'IG', 'Instagram') + emailSocial_(SOCIAL_LINKS.tiktok, 'TT', 'TikTok') + emailSocial_(SOCIAL_LINKS.youtube, 'YT', 'YouTube') +
+      '<div style="margin-top:8px;font-family:' + EMAIL_FONT_BODY + ';color:#8fb0a0;font-size:11px;line-height:1.6;">Property tips, new listings, market updates, and community highlights.</div>' +
+      rule +
+      '<a href="' + SOCIAL_LINKS.facebook + '" target="_blank" rel="noopener" style="display:block;text-decoration:none;"><img src="' + JOIN_US_BANNER_URL + '" alt="Join us on Facebook — Charlene Dellosa Properties" width="560" style="display:block;width:100%;max-width:560px;height:auto;margin:0 auto;border:0;border-radius:14px;color:#c3d6ca;font-size:13px;" /></a>' +
+      '<div style="margin-top:18px;">' + emailButton_('Join the Community on Facebook', SOCIAL_LINKS.facebook, 'gold') + '</div>' +
+      rule +
+      contactLine('Call', '<a href="tel:' + PUBLIC_PHONE + '" style="color:#e9f1eb;text-decoration:none;">' + PUBLIC_PHONE + '</a>') +
+      contactLine('Email', '<a href="mailto:' + PUBLIC_CONTACT_EMAIL + '" style="color:#e9f1eb;text-decoration:none;">' + PUBLIC_CONTACT_EMAIL + '</a>') +
+      contactLine('Hours', escapeHtml_(PUBLIC_CONSULTATION_HOURS)) +
+      contactLine('Office', escapeHtml_(PUBLIC_OFFICE_ADDRESS)) +
+    '</td></tr></table>';
 }
+
+function emailUnsubscribeHtml_(url) {
+  return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" bgcolor="#04281a" class="email-pad" style="background:#04281a;padding:24px 30px 30px;text-align:center;font-family:' + EMAIL_FONT_BODY + ';">' +
+    '<div style="font-size:12px;line-height:1.6;color:#8fb0a0;margin-bottom:12px;">You are receiving this because you requested property guidance.</div>' +
+    '<a href="' + escapeHtml_(url) + '" style="display:inline-block;border:1px solid #c9a35a;border-radius:999px;padding:10px 20px;font-size:12px;font-weight:600;letter-spacing:.3px;color:' + BRAND.paleGold + ';text-decoration:none;">Unsubscribe from property guidance</a>' +
+    '<div style="margin-top:10px;font-size:11px;color:#6f9482;">You will be asked to confirm before any change is made.</div>' +
+  '</td></tr></table>';
+}
+
 const LEADS_SPREADSHEET_ID = '10wEesmw6YAh64kc2ypUHgxdkVuRFup0dXYCHUbHMiBQ';
 const LEADS_SHEET_NAME = 'Leads'; // Blank means use the first tab in the existing spreadsheet.
 const FOLLOW_UP_HOURS = [48, 96, 168];
@@ -1378,19 +1471,17 @@ function sendReplyStopAlert_(name, email, leadType, submittedAt, stoppedAt, step
 
   const htmlBody = emailShell_(
     'Lead replied — nurture sequence stopped',
-    '<div style="background:' + BRAND.deepGreen + ';padding:28px 30px;color:#ffffff;">' +
-      '<div style="font-size:14px;letter-spacing:1.4px;text-transform:uppercase;color:' + BRAND.paleGold + ';font-weight:700;">Reply detected</div>' +
-      '<h1 class="email-title" style="margin:8px 0 0;font-family:Georgia,serif;font-size:27px;line-height:1.25;color:#ffffff;">The nurture sequence has stopped</h1>' +
-    '</div>' +
-    '<div class="email-pad" style="padding:30px;">' +
-      '<p style="font-size:17px;line-height:1.8;color:' + BRAND.ink + ';margin:0 0 18px;">' + escapeHtml_(safeName) + ' has replied to the property nurture sequence.</p>' +
-      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:' + BRAND.cream + ';border:1px solid ' + BRAND.line + ';">' +
-        detailRow_('Email address', '<a href="mailto:' + escapeHtml_(safeEmail) + '" style="color:' + BRAND.emerald + ';font-weight:700;">' + escapeHtml_(safeEmail) + '</a>') +
+    emailHero_('Reply detected', 'The nurture sequence has stopped', '', false) +
+    '<div class="email-pad" style="padding:38px 40px 40px;">' +
+      '<p class="email-body-text" style="margin:0 0 22px;font-family:' + EMAIL_FONT_BODY + ';font-size:16.5px;line-height:1.85;color:' + BRAND.ink + ';">' + escapeHtml_(safeName) + ' has replied to the property nurture sequence.</p>' +
+      emailPanel_(
+        detailRow_('Email address', '<a href="mailto:' + escapeHtml_(safeEmail) + '" style="color:' + BRAND.emerald + ';font-weight:700;text-decoration:none;">' + escapeHtml_(safeEmail) + '</a>') +
         detailRow_('Lead type', escapeHtml_(safeType)) +
         detailRow_('Nurture emails sent', escapeHtml_(String(step || 0))) +
-        detailRow_('Reply detected', escapeHtml_(String(stoppedAt || ''))) +
-      '</table>' +
-      '<div style="margin-top:22px;padding:15px 16px;border-left:4px solid ' + BRAND.gold + ';background:#fffaf0;color:' + BRAND.ink + ';font-size:17px;line-height:1.85;">The lead is marked <strong>Replied</strong> and <strong>Nurture Completed</strong>. No further nurture emails will be sent.</div>' +
+        detailRow_('Reply detected', escapeHtml_(String(stoppedAt || ''))),
+        BRAND.cream) +
+      emailGap_(26) +
+      emailCallout_('Status', 'The lead is marked <strong>Replied</strong> and <strong>Nurture Completed</strong>. No further nurture emails will be sent.') +
     '</div>' +
     footerHtml_('Internal reply-stop notification · Charlene Dellosa')
   );
@@ -1811,38 +1902,35 @@ Reply “HOME” and tell me what would be most helpful. We can begin with clari
     'To stop property guidance emails, use the unsubscribe link in the HTML version of this message.'
   ].join('\n');
 
+  const progressBox =
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;"><tr>' +
+      '<td bgcolor="#0c4a2f" style="background:#0c4a2f;border:1px solid #2a7452;border-radius:14px;padding:16px 20px;text-align:left;font-family:' + EMAIL_FONT_BODY + ';">' +
+        '<div style="font-size:11px;letter-spacing:2.2px;text-transform:uppercase;font-weight:700;color:' + BRAND.paleGold + ';">Day ' + safeStep + ' of 30</div>' +
+        '<div style="height:6px;margin-top:11px;background:#14633f;border-radius:9px;overflow:hidden;"><div style="height:6px;width:' + progress + '%;background:' + BRAND.gold + ';border-radius:9px;font-size:0;line-height:0;">&nbsp;</div></div>' +
+        '<div style="margin-top:8px;text-align:right;color:#a9c7b6;font-size:11px;">' + progress + '% of your guided journey</div>' +
+      '</td></tr></table>';
+
   const html = emailShell_(subject,
-    '<div style="background:#fbf8f2 !important;padding:30px 32px 26px;color:#063c24 !important;position:relative;color-scheme:light only;" bgcolor="#fbf8f2">' +
-      '<div style="height:3px;width:58px;background:#cc953e !important;margin-bottom:19px;"></div>' +
-      '<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#063c24 !important;font-weight:700;">Charlene Dellosa Properties</div>' +
-      '<h1 class="email-title" style="margin:9px 0 8px;font-family:Georgia,Times New Roman,serif;font-size:30px;line-height:1.2;color:#063c24 !important;letter-spacing:-.2px;">Homebuyer guidance</h1>' +
-      '<div style="font-size:14px;line-height:1.6;color:#66736c !important;">A thoughtful step toward a home that fits your life.</div>' +
-      '<div style="margin-top:25px;padding:13px 15px;background:#ffffff !important;border:1px solid #eadabd;border-radius:10px;color:#063c24 !important;" bgcolor="#ffffff">' +
-        '<div style="font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:#063c24 !important;font-weight:700;">Day ' + safeStep + ' of 30</div>' +
-        '<div style="height:6px;margin-top:10px;background:#e8dfd2 !important;border-radius:9px;overflow:hidden;"><div style="height:6px;width:' + progress + '%;background:#cc953e !important;border-radius:9px;"></div></div>' +
-        '<div style="margin-top:7px;text-align:right;color:#66736c !important;font-size:11px;">' + progress + '% of your guided journey</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="email-pad" style="padding:34px 34px 30px;background:' + BRAND.paper + ';">' +
-      '<div style="display:inline-block;padding:7px 12px;border-radius:20px;background:#f8f0df;color:' + BRAND.emerald + ';font-size:11px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;">A private note for your property journey</div>' +
-      '<div style="margin-top:22px;font-family:Arial,Helvetica,Segoe UI Emoji,Noto Color Emoji,sans-serif;font-size:17px;line-height:1.85;color:' + BRAND.ink + ';word-break:normal;">' +
+    emailHero_('Charlene Dellosa Properties', 'Homebuyer guidance', 'A thoughtful step toward a home that fits your life.', true, progressBox) +
+    '<div class="email-pad" style="padding:42px 44px 38px;background:' + BRAND.paper + ';">' +
+      '<div style="display:inline-block;padding:7px 14px;border-radius:20px;background:#f8f0df;border:1px solid #ecd9ae;font-family:' + EMAIL_FONT_BODY + ';color:' + EMAIL_GOLD_DEEP + ';font-size:11px;letter-spacing:1.6px;text-transform:uppercase;font-weight:700;">A private note for your property journey</div>' +
+      '<div class="email-body-text" style="margin-top:24px;font-family:' + EMAIL_FONT_BODY + ';font-size:17px;line-height:1.85;color:' + BRAND.ink + ';word-break:normal;">' +
         greetingHtml + messageHtml +
       '</div>' +
-      '<div style="margin:28px 0 0;padding:20px 20px 22px;background:linear-gradient(180deg,#fffaf0 0%,#fbf8f2 100%);border:1px solid #eadabd;border-radius:14px;text-align:center;box-shadow:0 5px 16px rgba(18,55,42,.06);">' +
-        '<div style="font-family:Georgia,Times New Roman,serif;color:' + BRAND.deepGreen + ';font-size:20px;font-weight:700;">Have a question?</div>' +
-        '<div style="margin:6px auto 15px;max-width:390px;color:' + BRAND.muted + ';font-size:13px;line-height:1.6;">Reply directly to this email and Charlene will help you take the next step with clarity.</div>' +
-        '<a href="mailto:' + AGENT_EMAIL + '" style="display:inline-block;background:' + BRAND.deepGreen + ';border:1px solid ' + BRAND.deepGreen + ';color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;line-height:1.2;padding:14px 25px;border-radius:28px;box-shadow:0 4px 10px rgba(6,60,36,.18);">Reply to Charlene</a>' +
-      '</div>' +
-      '<div style="margin-top:22px;text-align:center;color:' + BRAND.muted + ';font-size:11px;line-height:1.6;">Your information is treated with care and used only to support your property journey.</div>' +
+      emailGap_(30) +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;"><tr>' +
+        '<td align="center" bgcolor="#fffaf0" style="background:#fffaf0;border:1px solid #eadabd;border-radius:18px;padding:30px 24px 32px;text-align:center;">' +
+          '<div style="font-family:' + EMAIL_FONT_HEAD + ';color:' + BRAND.deepGreen + ';font-size:28px;line-height:1.2;font-weight:600;">Have a question?</div>' +
+          '<div style="margin:8px auto 22px;max-width:390px;font-family:' + EMAIL_FONT_BODY + ';color:' + BRAND.muted + ';font-size:14px;line-height:1.7;">Reply directly to this email and Charlene will help you take the next step with clarity.</div>' +
+          emailButton_('Reply to Charlene', 'mailto:' + AGENT_EMAIL, 'dark') +
+        '</td></tr></table>' +
+      '<div style="margin-top:24px;text-align:center;font-family:' + EMAIL_FONT_BODY + ';color:' + BRAND.muted + ';font-size:12px;line-height:1.7;">Your information is treated with care and used only to support your property journey.</div>' +
     '</div>' +
     footerHtml_('A helpful daily note from Charlene Dellosa') +
-    '<div style="padding:5px 30px 30px;background:' + BRAND.cream + ';text-align:center;color:' + BRAND.muted + ';font-size:11px;line-height:1.6;">' +
-      '<div style="margin-bottom:12px;">You are receiving this because you requested property guidance.</div>' +
-      '<a href="' + escapeHtml_(unsubscribeUrl) + '" style="display:inline-block;background:#ffffff;color:' + BRAND.emerald + ';border:1px solid ' + BRAND.emerald + ';border-radius:24px;padding:11px 20px;font-size:12px;font-weight:700;text-decoration:none;">Unsubscribe from property guidance</a>' +
-      '<div style="margin-top:10px;font-size:10px;color:' + BRAND.muted + ';">You will be asked to confirm before any change is made.</div>' +
-    '</div>'
+    emailUnsubscribeHtml_(unsubscribeUrl)
   );
 
+  
   return { subject: subject, body: body, htmlBody: html };
 }
 
@@ -2105,5 +2193,3 @@ function authorizeAutomation_() {
   MailApp.getRemainingDailyQuota();
   SpreadsheetApp.openById(LEADS_SPREADSHEET_ID).getName();
 }
-
-
