@@ -6090,6 +6090,31 @@ html.pm-go .hero-text>:not(h1){opacity:1;transform:none;transition:opacity 1s va
 @keyframes pmShine{to{background-position:-260% 0}}
 @keyframes pmFloat{50%{translate:0 -7px}}
 @keyframes pmSheen{0%,55%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+@media (min-width:1100px){html{scroll-padding-top:96px}}
+@media (max-width:768px){
+body{padding-bottom:calc(94px + env(safe-area-inset-bottom))}
+html body .client-popup{bottom:calc(90px + env(safe-area-inset-bottom))!important}
+body>.reference-header{top:10px;width:calc(100% - 20px);padding:.4rem .45rem .4rem .6rem!important;align-items:center;border-radius:999px;background:rgba(255,253,248,.74);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);border:1px solid rgba(204,149,62,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 12px 30px -14px rgba(6,60,36,.35)}
+body>.reference-header .reference-brand{flex-direction:row;align-items:center;gap:.55rem}
+body>.reference-header .reference-brand::before{content:'CD';display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#0e6038,#063c24);color:#f5d68a;font:700 .7rem/1 'Playfair Display',serif;box-shadow:0 0 0 2px #fbf8f2,0 0 0 3px rgba(204,149,62,.75)}
+body>.reference-header .reference-brand-name{font-size:1.02rem}
+body>.reference-header .reference-header-cta{width:40px;height:40px;min-width:0;padding:0!important;border-radius:50%;background:linear-gradient(135deg,#ebc06e,#cc953e 55%,#b57a28);box-shadow:0 8px 18px -6px rgba(181,122,40,.7)}
+html body nav.mobile-nav{inset:auto 12px calc(12px + env(safe-area-inset-bottom)) 12px!important;width:auto!important;height:64px;min-height:0!important;padding:8px!important;gap:0!important;border:1px solid rgba(245,214,138,.38)!important;border-radius:26px!important;background:linear-gradient(160deg,rgba(10,74,45,.88),rgba(5,40,25,.93))!important;-webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);box-shadow:0 22px 44px -12px rgba(3,30,18,.6),inset 0 1px 0 rgba(255,255,255,.14)!important;overflow:hidden!important;animation:none!important;transition:transform .45s var(--pm-ease),opacity .3s,translate .9s var(--pm-ease)!important}
+html.pm-js:not(.pm-go) body nav.mobile-nav{translate:0 160%}
+html body nav.mobile-nav.is-scroll-hidden{transform:translate3d(0,calc(100% + 28px),0)!important;opacity:0}
+html body nav.mobile-nav::after,html body nav.mobile-nav .mobile-nav-brand{display:none!important}
+html body nav.mobile-nav .mobile-nav-links{display:flex!important;flex:1;width:100%;gap:2px!important;padding:0!important;overflow:visible!important;justify-content:stretch!important}
+html body nav.mobile-nav a:not(.mobile-nav-brand){flex:1 1 0!important;min-width:0!important;height:48px!important;min-height:0!important;padding:0!important;display:flex!important;align-items:center;justify-content:center;gap:0!important;border-radius:20px!important;background:transparent!important;color:rgba(255,255,255,.64)!important;box-shadow:none!important;transition:flex-grow .6s var(--pm-ease),background .4s,color .3s,transform .2s!important;-webkit-tap-highlight-color:transparent}
+html body nav.mobile-nav a:not(.mobile-nav-brand) i{font-size:1rem!important;color:inherit!important;flex:none}
+html body nav.mobile-nav a:not(.mobile-nav-brand) span{display:block!important;max-width:0;opacity:0;margin-left:0;overflow:hidden;white-space:nowrap;font:700 .7rem/1 Inter,system-ui,sans-serif;letter-spacing:.01em;transition:max-width .6s var(--pm-ease),opacity .3s,margin .6s var(--pm-ease)}
+html body nav.mobile-nav a:not(.mobile-nav-brand):active{transform:scale(.9)}
+html body nav.mobile-nav a.is-current:not(.mobile-nav-brand){flex-grow:2.4!important;background:linear-gradient(135deg,#f3d58f,#cc953e)!important;color:#063c24!important;box-shadow:0 8px 18px -6px rgba(204,149,62,.75),inset 0 1px 0 rgba(255,255,255,.55)!important}
+html body nav.mobile-nav a.is-current:not(.mobile-nav-brand) span{max-width:72px;opacity:1;margin-left:.4rem}
+html body nav.mobile-nav a.mobile-nav-quiz{flex-grow:1.15!important;color:#f5d68a!important;box-shadow:inset 0 0 0 1px rgba(245,214,138,.55)!important;background:rgba(245,214,138,.12)!important}
+html body nav.mobile-nav a.mobile-nav-quiz span{display:none!important}
+}
+@media (max-width:768px) and (prefers-reduced-motion:no-preference){html body nav.mobile-nav a.mobile-nav-quiz{animation:pmPulse 2.8s ease-out infinite}}
+@keyframes pmPulse{0%{box-shadow:inset 0 0 0 1px rgba(245,214,138,.55),0 0 0 0 rgba(245,214,138,.45)}70%,100%{box-shadow:inset 0 0 0 1px rgba(245,214,138,.55),0 0 0 12px rgba(245,214,138,0)}}
 </style>
 
   </head>
@@ -7949,9 +7974,12 @@ if(nav){ind=D.createElement('span');ind.className='pm-ind';nav.insertBefore(ind,
 function place(a){if(!a||!ind||!a.offsetWidth)return;ind.style.left=a.offsetLeft+'px';ind.style.top=a.offsetTop+'px';ind.style.width=a.offsetWidth+'px';ind.style.height=a.offsetHeight+'px';ind.classList.add('on')}
 links.forEach(function(a){a.addEventListener('mouseenter',function(){place(a)})});
 if(nav)nav.addEventListener('mouseleave',function(){place(cur)});
-var tick=false;
+var tick=false,lock=null;
+function unlock(){lock=null}
+['wheel','touchstart','keydown','pointerdown'].forEach(function(t){D.addEventListener(t,unlock,{passive:true})});
+links.forEach(function(a){a.addEventListener('click',function(){lock=a;cur=a;links.forEach(function(l){l.classList.toggle('is-active',l===a)});place(a)})});
 function upd(){tick=false;var y=Y();if(hd){hd.classList.toggle('is-scrolled',y>30);var m=Math.max(1,H.scrollHeight-W.innerHeight);hd.style.setProperty('--pm-p',Math.min(1,y/m).toFixed(4))}
-var line=y+W.innerHeight*.35,best=links[0],bt=-1e9;links.forEach(function(a){var s=D.querySelector(a.getAttribute('href'));if(!s)return;var t=s.getBoundingClientRect().top+y;if(t<=line&&t>bt){bt=t;best=a}});
+if(lock)return;var line=y+W.innerHeight*.35,best=links[0],bt=-1e9;links.forEach(function(a){var s=D.querySelector(a.getAttribute('href'));if(!s)return;var t=s.getBoundingClientRect().top+y;if(t<=line&&t>bt){bt=t;best=a}});
 if(best&&best!==cur){links.forEach(function(l){l.classList.toggle('is-active',l===best)});cur=best;place(cur)}}
 function req(){if(!tick){tick=true;requestAnimationFrame(upd)}}
 W.addEventListener('scroll',req,{passive:true});D.addEventListener('scroll',req,{passive:true,capture:true});
