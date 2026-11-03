@@ -4124,11 +4124,12 @@
       .hero-consultation-cta:hover::before, .hero-consultation-cta:focus-visible::before { transform: translateX(120%); }
       .hero-consultation-cta-icon { display: grid; flex: 0 0 48px; width: 48px; height: 48px; place-items: center; border-radius: 14px; background: rgba(245,214,138,.18); color: #f5d68a; font-size: 1.35rem; }
       .hero-consultation-cta-copy { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: .12rem; }
+      .hero-consultation-cta-kicker { color: #f5d68a; font-size: .67rem; font-weight: 800; letter-spacing: .14em; line-height: 1.2; text-transform: uppercase; }
       .hero-consultation-cta-copy strong { font-size: clamp(1.1rem, 2.6vw, 1.45rem); line-height: 1.2; letter-spacing: .01em; }
-      .hero-consultation-cta-copy small { color: rgba(255,255,255,.82); font-size: .82rem; line-height: 1.4; }
+      .hero-consultation-cta-copy small { color: rgba(255,255,255,.88); font-size: .82rem; line-height: 1.4; }
       .hero-consultation-cta-arrow { color: #f5d68a; font-size: 1.2rem; transition: transform .25s ease; }
       .hero-consultation-cta:hover .hero-consultation-cta-arrow, .hero-consultation-cta:focus-visible .hero-consultation-cta-arrow { transform: translateX(5px); }
-      @media (max-width: 560px) { .hero-consultation-cta { width: 100%; min-height: 78px; padding: .85rem .9rem; gap: .7rem; border-radius: 15px; } .hero-consultation-cta-icon { flex-basis: 42px; width: 42px; height: 42px; border-radius: 12px; } .hero-consultation-cta-copy small { font-size: .72rem; } }
+      @media (max-width: 560px) { .hero-consultation-cta { width: 100%; min-height: 84px; padding: .9rem .85rem; gap: .65rem; border-radius: 15px; } .hero-consultation-cta-icon { flex-basis: 42px; width: 42px; height: 42px; border-radius: 12px; } .hero-consultation-cta-kicker { font-size: .59rem; letter-spacing: .1em; } .hero-consultation-cta-copy strong { font-size: 1.08rem; } .hero-consultation-cta-copy small { font-size: .72rem; } .hero-consultation-cta-arrow { font-size: 1rem; } }
       @media (prefers-reduced-motion: reduce) { .hero-consultation-cta, .hero-consultation-cta::before, .hero-consultation-cta-arrow { transition: none; } }
 
        
@@ -6321,9 +6322,9 @@ html body nav.mobile-nav a.mobile-nav-quiz span{display:none!important}
               </div>
             </div>
             <div class="cta-buttons">
-              <a href="#" class="btn-primary hero-consultation-cta" onclick="openQuizPopup(event)" aria-label="Book a consultation with Charlene Dellosa">
+              <a href="#quizOverlay" class="btn-primary hero-consultation-cta" onclick="openQuizPopup(event)" aria-label="Start a free 15-minute property consultation with Charlene Dellosa">
                 <span class="hero-consultation-cta-icon"><i class="fas fa-calendar-check" aria-hidden="true"></i></span>
-                <span class="hero-consultation-cta-copy"><strong>Book a Consultation</strong><small>Get clear next steps for your property goals</small></span>
+                <span class="hero-consultation-cta-copy"><span class="hero-consultation-cta-kicker">Free · No pressure</span><strong>Get My Clear Property Plan</strong><small>Start with a private 15-minute consultation</small></span>
                 <i class="fas fa-arrow-right hero-consultation-cta-arrow" aria-hidden="true"></i>
               </a>
               <div class="hero-proof" aria-label="Client assurances"><span><i class="fas fa-check-circle"></i> No-pressure guidance</span><span><i class="fas fa-lock"></i> Confidential consultation</span></div>
