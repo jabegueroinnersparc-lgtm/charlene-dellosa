@@ -6117,6 +6117,77 @@ html body nav.mobile-nav a.mobile-nav-quiz span{display:none!important}
 @media (max-width:768px) and (prefers-reduced-motion:no-preference){html body nav.mobile-nav a.mobile-nav-quiz{animation:pmPulse 2.8s ease-out infinite}}
 @keyframes pmPulse{0%{box-shadow:inset 0 0 0 1px rgba(245,214,138,.55),0 0 0 0 rgba(245,214,138,.45)}70%,100%{box-shadow:inset 0 0 0 1px rgba(245,214,138,.55),0 0 0 12px rgba(245,214,138,0)}}
 </style>
+<style id="landing-guide-overrides">
+/* ===== 1. Landing-page header: brand + single CTA, no menu ===== */
+.reference-header { grid-template-columns: minmax(0, 1fr) auto !important; }
+.reference-header .reference-header-cta { justify-self: end; margin-left: 0; }
+.mobile-nav { display: none !important; }
+@media (max-width: 768px) {
+  body { padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important; }
+  html body .client-popup { bottom: calc(76px + env(safe-area-inset-bottom)) !important; }
+}
+
+/* ===== 2. Premium lead magnet: free homebuyer guide ===== */
+.gl { position: relative; isolation: isolate; margin-top: 2rem; overflow: hidden; border-radius: 28px; border: 1px solid rgba(245,214,138,.4);
+  background: radial-gradient(circle at 12% 8%, rgba(245,214,138,.20), transparent 30%), radial-gradient(circle at 92% 92%, rgba(204,149,62,.22), transparent 34%), linear-gradient(145deg, #042d1c 0%, #063c24 52%, #102f25 100%);
+  box-shadow: 0 30px 70px rgba(6,60,36,.30), inset 0 1px 0 rgba(255,255,255,.14); color: #fbf8f2; }
+.gl::before { content: ''; position: absolute; inset: 10px; z-index: -1; border: 1px solid rgba(245,214,138,.16); border-radius: 20px; pointer-events: none; }
+.gl-inner { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); align-items: center; gap: clamp(1.75rem, 5vw, 4.5rem); padding: clamp(2rem, 5vw, 4rem) clamp(1.25rem, 5vw, 4rem); }
+.gl-visual { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+.gl-book { position: relative; width: min(100%, 340px); transform: rotate(-3deg); transition: transform .5s cubic-bezier(.16,1,.3,1); }
+.gl-book::before { content: ''; position: absolute; inset: 14px -14px -14px 14px; z-index: -1; border-radius: 16px; background: linear-gradient(145deg, #f5d68a, #cc953e); opacity: .9; transform: rotate(5deg); box-shadow: 0 18px 40px rgba(0,0,0,.35); }
+.gl-book::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 7%; border-radius: 12px 0 0 12px; background: linear-gradient(90deg, rgba(0,0,0,.28), transparent); pointer-events: none; }
+.gl-book img { display: block; width: 100%; height: auto; aspect-ratio: .72 / 1; object-fit: contain; padding: 8px; border-radius: 14px; background: #f5efe4; border: 1px solid rgba(204,149,62,.5); box-shadow: 0 26px 50px rgba(0,0,0,.4); }
+.gl-badge { position: absolute; top: -12px; right: clamp(0px, 4vw, 34px); z-index: 3; display: inline-flex; align-items: center; gap: .4rem; padding: .5rem .9rem; border-radius: 999px; background: linear-gradient(135deg, #f5d68a, #cc953e); color: #063c24; font: 800 .72rem/1 Inter, sans-serif; letter-spacing: .12em; box-shadow: 0 10px 22px rgba(0,0,0,.3); }
+.gl-proof { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .5rem .75rem; color: rgba(251,248,242,.82); font-size: .86rem; text-align: center; }
+.gl-proof strong { color: #fff; }
+.gl-stars { color: #f5d68a; font-size: .8rem; letter-spacing: 2px; }
+.gl-copy { min-width: 0; }
+.gl-eyebrow { display: inline-flex; align-items: center; gap: .65rem; margin-bottom: 1rem; color: #f5d68a; font: 800 .74rem/1 Inter, sans-serif; letter-spacing: .22em; text-transform: uppercase; }
+.gl-eyebrow span { width: 2.4rem; height: 2px; background: #cc953e; }
+.gl-copy h2 { margin: 0 0 1rem; max-width: 18ch; color: #fffdf8; font: 700 clamp(2rem, 4.4vw, 3.5rem)/1.06 'Playfair Display', Georgia, serif; letter-spacing: -.025em; text-wrap: balance; }
+.gl-copy h2 em { color: #f5d68a; font-style: italic; }
+.gl-lead { max-width: 56ch; margin: 0 0 1.4rem; color: rgba(251,248,242,.82); font-size: clamp(1rem, 1.5vw, 1.12rem); line-height: 1.75; }
+.gl-list { display: grid; gap: .8rem; margin: 0 0 1.8rem; padding: 0; list-style: none; }
+.gl-list li { display: flex; align-items: flex-start; gap: .75rem; max-width: 60ch; color: rgba(251,248,242,.9); font-size: 1rem; line-height: 1.55; }
+.gl-list i { flex: 0 0 auto; margin-top: .2rem; color: #f5d68a; font-size: 1.05rem; }
+.gl-list strong { color: #fff; }
+.gl-actions { display: flex; flex-direction: column; align-items: flex-start; gap: .8rem; }
+.gl-cta { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: .75rem; min-height: 60px; padding: 1rem 1.9rem; overflow: hidden; border-radius: 999px; background: linear-gradient(135deg, #f5d68a 0%, #cc953e 100%); color: #063c24 !important; font: 800 1.08rem/1.2 Inter, sans-serif; text-decoration: none; box-shadow: 0 16px 34px rgba(204,149,62,.38), inset 0 1px 0 rgba(255,255,255,.5); transition: transform .25s ease, box-shadow .25s ease; animation: gl-pulse 2.8s ease-out infinite; }
+.gl-cta::before { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%); transform: translateX(-130%); animation: gl-sheen 4.2s ease-in-out infinite 1s; pointer-events: none; }
+.gl-cta:hover, .gl-cta:focus-visible { transform: translateY(-3px) scale(1.02); box-shadow: 0 22px 44px rgba(204,149,62,.5); outline: none; }
+.gl-cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.gl-cta i { position: relative; font-size: 1.15rem; }
+.gl-cta-arrow { transition: transform .25s ease; }
+.gl-cta:hover .gl-cta-arrow { transform: translateX(5px); }
+.gl-micro { display: flex; align-items: center; gap: .45rem; margin: 0; color: rgba(251,248,242,.72); font-size: .84rem; }
+.gl-micro i { color: #f5d68a; }
+.gl-trust { display: flex; flex-wrap: wrap; gap: .6rem 1.4rem; margin-top: 1.6rem; padding-top: 1.3rem; border-top: 1px solid rgba(245,214,138,.22); color: rgba(251,248,242,.78); font-size: .82rem; font-weight: 600; }
+.gl-trust i { margin-right: .4rem; color: #f5d68a; }
+@keyframes gl-sheen { 0%, 40% { transform: translateX(-130%); } 80%, 100% { transform: translateX(130%); } }
+@keyframes gl-pulse { 0% { box-shadow: 0 16px 34px rgba(204,149,62,.38), 0 0 0 0 rgba(245,214,138,.5); } 70%, 100% { box-shadow: 0 16px 34px rgba(204,149,62,.38), 0 0 0 16px rgba(245,214,138,0); } }
+@keyframes gl-float { 50% { translate: 0 -8px; } }
+@media (hover: hover) and (pointer: fine) { .gl-visual:hover .gl-book { transform: rotate(0deg) scale(1.03); } }
+@media (prefers-reduced-motion: no-preference) { .gl-book { animation: gl-float 6s ease-in-out infinite; } }
+@media (max-width: 900px) {
+  .gl-inner { grid-template-columns: 1fr; gap: 2rem; padding: 2.25rem 1.25rem 2rem; }
+  .gl-visual { order: -1; }
+  .gl-book { width: min(70%, 260px); }
+  .gl-copy { text-align: left; }
+  .gl-copy h2 { max-width: none; }
+}
+@media (max-width: 560px) {
+  .gl { border-radius: 22px; margin-top: 1.5rem; }
+  .gl::before { inset: 7px; border-radius: 16px; }
+  .gl-inner { padding: 2rem 1rem 1.6rem; }
+  .gl-actions { align-items: stretch; }
+  .gl-cta { width: 100%; min-height: 58px; padding: 1rem 1.1rem; font-size: 1.02rem; }
+  .gl-micro { justify-content: center; font-size: .8rem; text-align: center; }
+  .gl-trust { flex-direction: column; gap: .5rem; }
+  .gl-list li { font-size: .96rem; }
+}
+@media (prefers-reduced-motion: reduce) { .gl-cta, .gl-cta::before, .gl-book { animation: none !important; } }
+</style>
 
   </head>
   <body>
@@ -6255,16 +6326,7 @@ html body nav.mobile-nav a.mobile-nav-quiz span{display:none!important}
             <span class="reference-brand-name">Charlene Dellosa Properties</span>
             
           </a>
-          <nav class="reference-nav" aria-label="Primary navigation">
-            <a class="is-active" href="#home">Home</a>
-            <a href="#about">About</a>
-            <a href="#services">Services</a>
-            <a href="#faq">FAQs</a>
-            <a href="#video-library">Guides</a>
-            <a class="nav-checklist-link" href="#homebuyer-mistakes"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> Mistakes Checklist</a>
-            <a href="#contact-section">Contact</a>
             <a class="reference-header-cta" href="#" onclick="openQuizPopup(event)"><i class="fas fa-phone-volume" aria-hidden="true"></i><span>Book a Consultation</span></a>
-          </nav>
         </header>
         
         <div class="hero-bg-layer"></div>
@@ -6445,28 +6507,39 @@ html body nav.mobile-nav a.mobile-nav-quiz span{display:none!important}
           </div>
 
 
-	          <div class="landing-card reveal client-path" id="client-path">
-	            <div class="client-path-copy">
-	              <div class="section-kicker">A simple next step</div>
-	              <h3>Make Your Next Property Move With Confidence.</h3>
-              <p>Get a practical homebuying guide, explore suitable property options, and take your next step with clear, personalized support.</p>
-              <div class="client-path-copy-actions">
-                <a class="client-path-primary-cta" href="#" onclick="openQuizPopup(event)"><i class="fas fa-file-arrow-down" aria-hidden="true"></i><span>Get Your Free Homebuyer Guide</span></a>
+          <section class="gl reveal" id="free-guide" aria-labelledby="gl-title">
+            <div class="gl-inner">
+              <div class="gl-visual">
+                <span class="gl-badge" aria-hidden="true"><i class="fas fa-gift"></i> FREE PDF</span>
+                <div class="gl-book">
+                  <img src="https://drive.google.com/thumbnail?id=1pTq7tMXdWfutASa_hUUkvEnZuHJ8hD6s&amp;sz=w1600" alt="Cover of the free Homebuyer Real Estate Guide by Charlene Dellosa" loading="lazy" decoding="async" />
+                </div>
+                <div class="gl-proof"><span class="gl-stars" aria-hidden="true"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span><span>Trusted by <strong>100+ happy families</strong></span></div>
               </div>
-              <a class="client-path-quick-chat" href="#" onclick="openQuizPopup(event)"><i class="fas fa-comments" aria-hidden="true"></i> Prefer to start with a quick chat?</a>
-              <div class="path-steps" aria-label="How the consultation works">
-                <div class="path-step"><span class="step-number">01</span><div><strong>Tell Me What You Need</strong><small>Share your goals, budget, and preferred location.</small></div></div>
-                <div class="path-step"><span class="step-number">02</span><div><strong>Explore Your Options</strong><small>Review practical property choices with guidance.</small></div></div>
-                <div class="path-step"><span class="step-number">03</span><div><strong>Move With Confidence</strong><small>Understand the next step before you commit.</small></div></div>
+              <div class="gl-copy">
+                <div class="gl-eyebrow"><span></span> Free Homebuyer Guide</div>
+                <h2 id="gl-title">Before you sign anything, read this <em>free guide.</em></h2>
+                <p class="gl-lead">Buying a home is one of the biggest decisions you will ever make. Get the practical guide that helps you spot costly mistakes early, ask smarter questions, and choose with confidence.</p>
+                <ul class="gl-list">
+                  <li><i class="fas fa-circle-check" aria-hidden="true"></i><span><strong>The hidden costs</strong> beyond the advertised price</span></li>
+                  <li><i class="fas fa-circle-check" aria-hidden="true"></i><span><strong>A financial readiness check</strong> before you commit</span></li>
+                  <li><i class="fas fa-circle-check" aria-hidden="true"></i><span><strong>Location and property checks</strong> that protect your family</span></li>
+                  <li><i class="fas fa-circle-check" aria-hidden="true"></i><span><strong>Contract and document tips</strong> to review before you pay</span></li>
+                </ul>
+                <div class="gl-actions">
+                  <a class="gl-cta" href="#" onclick="openQuizPopup(event,'guide')" aria-label="Get the free homebuyer guide">
+                    <i class="fas fa-file-arrow-down" aria-hidden="true"></i><span>Send Me the Free Guide</span><i class="fas fa-arrow-right gl-cta-arrow" aria-hidden="true"></i>
+                  </a>
+                  <p class="gl-micro"><i class="fas fa-bolt" aria-hidden="true"></i> Takes about 2 minutes · Instant access after you finish</p>
+                </div>
+                <div class="gl-trust" aria-label="Why you can trust this guide">
+                  <span><i class="fas fa-user-shield" aria-hidden="true"></i> Licensed professional</span>
+                  <span><i class="fas fa-lock" aria-hidden="true"></i> Your details stay private</span>
+                  <span><i class="fas fa-ban" aria-hidden="true"></i> No pressure, no spam</span>
+                </div>
               </div>
-              <div class="client-path-trust"><span>Personalized guidance</span><i></i><span>Property options</span><i></i><span>Homebuying support</span></div>
-	            </div>
-	            <div class="client-path-visual">
-	              <img src="https://drive.google.com/thumbnail?id=1pTq7tMXdWfutASa_hUUkvEnZuHJ8hD6s&sz=w1600" alt="Free homebuyer guide cover" loading="lazy" />
-	              <div class="client-path-visual-caption"><span class="client-path-guide-badge">FREE PDF GUIDE</span><span>Homebuying support, made clearer</span></div>
-	              <a class="client-path-visual-cta" href="#" onclick="openQuizPopup(event)"><i class="fas fa-file-arrow-down" aria-hidden="true"></i><span>Get Your Free Homebuyer Guide</span></a>
             </div>
-          </div>
+          </section>
 
           <div class="section-divider"><span>✦ Services ✦</span></div>
           <div class="landing-card reveal" id="services" style="margin-top:0;">
