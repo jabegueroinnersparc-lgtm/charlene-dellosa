@@ -15,11 +15,11 @@ const SECONDARY_AGENT_EMAIL = 'jabeguero.innersparc@gmail.com';
 const AGENT_NAME = 'Charlene Dellosa';
 const SENDER_NAME = 'Charlene Dellosa Properties · Dynamic Property Specialist';
 const EMAIL_BRAND_LOGO_FILE_ID = '1lWJhR0FoVgLXC_AKiKhdDJCxA_kOYWDz';
-// Upload the PDF guide to Google Drive, then paste its file ID here.
-// Set the Drive file to Anyone with the link -> Viewer so the button works
-// for clients who are not signed in to Google.
-const QUIZ_GUIDE_FILE_ID = '17CsjLVE3DV7lOH80Kn6qDHWPgnkZyNLA';
-const QUIZ_GUIDE_FILE_NAME = 'Charlene Dellosa Properties Guide.pdf';
+// PDF guide used in the first client email after a consultation submission.
+// Set the Drive file to Anyone with the link -> Viewer so it remains available
+// to clients who are not signed in to Google.
+const QUIZ_GUIDE_FILE_ID = '1KxT4ZApATxdhV9RZ5XRSRNOszhsAVQaJ';
+const QUIZ_GUIDE_FILE_NAME = "Charlene Dellosa Smart Homebuyer's Guide.pdf";
 
 function getQuizGuide_() {
   if (!QUIZ_GUIDE_FILE_ID || QUIZ_GUIDE_FILE_ID.indexOf('REPLACE_WITH_') === 0) {
@@ -1024,14 +1024,14 @@ function buildClientHtml_(name, mobile, consultationDate, leadType, answers, lea
   const bodyText = function(html) {
     return '<p class="email-body-text" style="margin:0 0 18px;font-family:' + EMAIL_FONT_BODY + ';color:' + BRAND.ink + ';font-size:16.5px;line-height:1.85;">' + html + '</p>';
   };
-  // The guide is sent only as one PDF attachment.
-  // No download link is included, preventing the client from seeing a second PDF path.
+  // The new Smart Homebuyer's Guide is sent as one PDF attachment.
+  // No download link is included, keeping the email focused on the attachment.
   const guideSection =
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;"><tr>' +
       '<td align="center" bgcolor="#fffaf0" style="background:#fffaf0;border:1px solid #eadabd;border-radius:16px;padding:24px 22px;">' +
         '<div style="display:inline-block;padding:5px 11px;border-radius:6px;background:' + BRAND.gold + ';color:' + BRAND.deepGreen + ';font-family:' + EMAIL_FONT_BODY + ';font-size:11px;font-weight:800;letter-spacing:1.4px;">PDF</div>' +
-        '<div style="margin-top:12px;font-family:' + EMAIL_FONT_HEAD + ';font-size:24px;line-height:1.2;font-weight:600;color:' + BRAND.deepGreen + ';">Your property guide</div>' +
-        '<div style="margin-top:6px;font-family:' + EMAIL_FONT_BODY + ';font-size:14.5px;line-height:1.7;color:' + BRAND.muted + ';">Attached to this email as one PDF file.</div>' +
+        '<div style="margin-top:12px;font-family:' + EMAIL_FONT_HEAD + ';font-size:24px;line-height:1.2;font-weight:600;color:' + BRAND.deepGreen + ';">Your Smart Homebuyer&#39;s Guide</div>' +
+        '<div style="margin-top:6px;font-family:' + EMAIL_FONT_BODY + ';font-size:14.5px;line-height:1.7;color:' + BRAND.muted + ';">A practical workbook for clearer decisions, better questions, and a more confident way home. It is attached as a PDF.</div>' +
       '</td></tr></table>';
   const ticket =
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;"><tr>' +
@@ -2060,7 +2060,7 @@ function buildClientText_(name, mobile, consultationDate, leadType, answers, lea
     'Mobile: ' + mobile,
     'Preferred consultation: ' + consultationDate, '',
     'YOUR SUBMITTED QUIZ ANSWERS', answerText || 'No answers were recorded.', '',
-    'Your property guide is attached to this email as one PDF file.', '',
+    "Your Smart Homebuyer's Guide is attached to this email as one PDF file. It includes worksheets for readiness, budgeting, property viewings, comparison, and next steps.", '',
     'To stop property guidance emails, use this unsubscribe link: ' + getUnsubscribeUrl_(leadId), '',
     profile.clientPromise,
     'Recommended next step: ' + profile.nextStep,
