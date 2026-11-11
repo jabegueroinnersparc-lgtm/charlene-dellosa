@@ -6476,7 +6476,17 @@ html body #gallery .media-card-label span{ display:block; margin:.35rem 0 0 calc
 @media (prefers-reduced-motion:reduce){ html body #gallery .media-card,html body #gallery .media-card img,html body #gallery .media-card-label{ transition:none!important; } html body #gallery .gallery-scroll-note i{ animation:none!important; } }
 </style>
 
-  </head>
+  
+      /* Preserve the original right-side header composition across breakpoints. */
+      .hero-bg-layer {
+        background-position: right center !important;
+      }
+      @media (max-width: 768px) {
+        .hero-bg-layer {
+          background-position: right calc(50% + var(--mobile-parallax-y, 0px)) !important;
+        }
+      }
+    </head>
   <body>
     
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MV8KWB86"
