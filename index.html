@@ -7020,6 +7020,115 @@ html body .mistakes-checklist-section .mistake-card.has-media h3::after{
   .mm-shine{display:none}
 }
 
+/* ---------------------------------------------------------------
+   8. SERVICES GALLERY — big scrollable carousel
+   --------------------------------------------------------------- */
+html body #gallery{container-type:inline-size}
+html body #gallery .gallery-scroll-note{display:flex!important;margin:.2rem 0 1rem}
+.tp-dots{display:none!important}
+.mg-stage{position:relative}
+
+html body #gallery .media-grid{
+  display:flex!important;grid-template-columns:none!important;grid-auto-flow:row!important;grid-auto-columns:auto!important;
+  align-items:stretch;gap:clamp(.8rem,2vw,1.4rem)!important;
+  width:100%!important;max-width:none!important;max-height:none!important;margin:0!important;
+  padding:.8rem clamp(.9rem,3vw,2rem) 1.2rem!important;
+  padding-inline:calc((100cqw - min(780px,88cqw)) / 2)!important;
+  overflow-x:auto!important;overflow-y:hidden!important;
+  scroll-snap-type:x mandatory!important;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;position:relative;cursor:grab;
+  border:0!important;background:none!important;box-shadow:none!important;
+}
+html body #gallery .media-grid::-webkit-scrollbar{display:none}
+html body #gallery .media-grid.is-drag{scroll-snap-type:none!important;scroll-behavior:auto!important;cursor:grabbing;user-select:none}
+html body #gallery .media-grid:focus-visible{outline:3px solid rgba(245,214,138,.75);outline-offset:-3px;border-radius:18px}
+
+/* slide */
+html body #gallery .media-grid .media-card{
+  flex:0 0 80%!important;flex:0 0 min(780px,88cqw)!important;
+  width:auto!important;min-width:0!important;aspect-ratio:auto!important;
+  display:flex!important;flex-direction:column;
+  scroll-snap-align:center;scroll-snap-stop:always;
+  border-radius:24px!important;overflow:hidden;
+  border:1px solid rgba(245,214,138,.4)!important;
+  background:#042d1c!important;
+  box-shadow:0 26px 50px -26px rgba(0,0,0,.7)!important;
+  opacity:.5!important;transform:scale(.92)!important;transform-origin:center;
+  transition:opacity .6s var(--pu-ease),transform .8s var(--pu-ease),box-shadow .5s!important;
+  transition-delay:0s!important;
+}
+html body #gallery .media-grid .media-card.is-mg-active{
+  opacity:1!important;transform:none!important;
+  box-shadow:0 34px 64px -28px rgba(0,0,0,.8),0 0 0 3px rgba(245,214,138,.22)!important;
+}
+html body #gallery .media-card::after{display:none!important}
+html body #gallery .media-card.is-image-loading::before,
+html body #gallery .media-card.is-image-error::before{aspect-ratio:4/3!important}
+
+/* photo area: full picture + blurred fill */
+.mg-photo{position:relative;display:block;width:100%;aspect-ratio:4/3;overflow:hidden;isolation:isolate;background:#0a3f27}
+.mg-bg{position:absolute;inset:-12%;z-index:0;background-size:cover;background-position:center;filter:blur(24px) saturate(1.25) brightness(.78);transform:scale(1.1);pointer-events:none}
+html body #gallery .media-card .mg-photo img{
+  position:absolute!important;inset:0!important;top:0!important;left:0!important;
+  width:100%!important;height:100%!important;max-width:100%!important;
+  object-fit:contain!important;object-position:center!important;
+  padding:0!important;border:0!important;background:transparent!important;
+  z-index:1;-webkit-user-drag:none;user-select:none;
+}
+
+/* caption plate under the photo */
+html body #gallery .media-card .media-card-label{
+  position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;
+  margin:0!important;min-height:0!important;padding:1rem 1.25rem 1.1rem!important;
+  border:0!important;border-top:1px solid rgba(245,214,138,.3)!important;border-radius:0!important;
+  background:linear-gradient(180deg,#063c24,#042d1c)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;transform:none!important;
+}
+html body #gallery .media-card .media-card-label strong{font-size:clamp(1.02rem,1.5vw,1.2rem)!important}
+html body #gallery .media-card .media-card-label span{font-size:clamp(.86rem,1.2vw,.98rem)!important}
+
+/* controls */
+.mg-bar{display:flex;align-items:center;justify-content:center;gap:1rem;margin:.1rem 0 .6rem}
+.mg-meter{display:flex;flex-direction:column;align-items:center;gap:.55rem;min-width:min(240px,46vw)}
+.mg-count{color:#f5d68a;font:700 .95rem/1 Inter,system-ui,sans-serif;letter-spacing:.08em}
+.mg-count b{font-size:1.25rem;color:#fff}
+.mg-track{display:block;width:100%;height:4px;border-radius:4px;background:rgba(245,214,138,.25);overflow:hidden}
+.mg-fill{display:block;height:100%;width:100%;border-radius:inherit;background:linear-gradient(90deg,#cc953e,#f5d68a);transform:scaleX(var(--p,.17));transform-origin:left;transition:transform .6s var(--pu-ease)}
+.mg-btn,.mg-arrow{
+  display:inline-grid;place-items:center;border-radius:50%;cursor:pointer;
+  border:1px solid rgba(255,255,255,.4);background:linear-gradient(180deg,#f7dc9a,#cc953e);color:#063c24;
+  box-shadow:0 10px 22px -10px rgba(0,0,0,.6);transition:transform .25s var(--pu-ease),opacity .25s,background .25s;
+}
+.mg-btn{width:48px;height:48px;font-size:1rem}
+.mg-arrow{display:none;position:absolute;top:calc(50% - 40px);z-index:6;width:58px;height:58px;font-size:1.1rem}
+.mg-arrow.prev{left:.6rem}.mg-arrow.next{right:.6rem}
+.mg-btn:hover,.mg-arrow:hover,.mg-btn:focus-visible,.mg-arrow:focus-visible{transform:scale(1.08);background:#fff;outline:none}
+.mg-btn:active,.mg-arrow:active{transform:scale(.94)}
+.mg-btn[disabled],.mg-arrow[disabled]{opacity:.3;pointer-events:none}
+@media (hover:hover) and (pointer:fine) and (min-width:900px){
+  .mg-arrow{display:grid}
+  .mg-btn{display:none}
+}
+
+/* tablets / large phones */
+@media (max-width:768px){
+  html body #gallery{padding-left:0!important;padding-right:0!important}
+  html body #gallery > *:not(.mg-stage){margin-left:1rem!important;margin-right:1rem!important}
+  html body #gallery .media-grid{padding-inline:calc((100cqw - min(780px,90cqw)) / 2)!important}
+  html body #gallery .media-grid .media-card{flex:0 0 84%!important;flex:0 0 min(780px,90cqw)!important;border-radius:20px!important}
+  html body #gallery .media-card .media-card-label{padding:.85rem 1rem .95rem!important}
+}
+/* phones: square photos so the whole picture is big */
+@media (max-width:640px){
+  .mg-photo{aspect-ratio:1/1}
+  html body #gallery .media-card.is-image-loading::before,
+  html body #gallery .media-card.is-image-error::before{aspect-ratio:1/1!important}
+}
+@media (prefers-reduced-motion:reduce){
+  html body #gallery .media-grid .media-card,.mg-fill{transition:none!important}
+  html body #gallery .media-grid{scroll-behavior:auto}
+}
+
 </style>
 </head>
   <body>
@@ -7395,12 +7504,12 @@ html body .mistakes-checklist-section .mistake-card.has-media h3::after{
             <div class="gallery-scroll-note"><i class="fas fa-arrow-right" aria-hidden="true"></i><span>Swipe to explore all services</span></div>
             <div class="media-grid" aria-label="Services gallery">
               
-              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=13meCUlDBZrDcPa5RSFgGAW1CYmF-kxyJ&amp;sz=w2400" srcset="https://drive.google.com/thumbnail?id=13meCUlDBZrDcPa5RSFgGAW1CYmF-kxyJ&amp;sz=w2400 800w, https://drive.google.com/thumbnail?id=13meCUlDBZrDcPa5RSFgGAW1CYmF-kxyJ&amp;sz=w1000 1600w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="Client property viewing"><div class="media-card-label"><strong><i class="fas fa-people-group"></i> Guided Viewings</strong><span>Finding the right fit together</span></div></article>
-              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=18LDXuTKC8tUJFnNWFSzAzpqP9EBPwV48&amp;sz=w2400" srcset="https://drive.google.com/thumbnail?id=18LDXuTKC8tUJFnNWFSzAzpqP9EBPwV48&amp;sz=w2400 800w, https://drive.google.com/thumbnail?id=18LDXuTKC8tUJFnNWFSzAzpqP9EBPwV48&amp;sz=w1000 1600w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="Modern house listing"><div class="media-card-label"><strong><i class="fas fa-house"></i> Property Listings</strong><span>Presenting homes at their best</span></div></article>
-              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=1HcjNsA_TNr9CXcbbVOjy6hk5NUolkXgH&amp;sz=w2400" srcset="https://drive.google.com/thumbnail?id=1HcjNsA_TNr9CXcbbVOjy6hk5NUolkXgH&amp;sz=w2400 800w, https://drive.google.com/thumbnail?id=1HcjNsA_TNr9CXcbbVOjy6hk5NUolkXgH&amp;sz=w1000 1600w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="House exterior"><div class="media-card-label"><strong><i class="fas fa-camera"></i> Home Marketing</strong><span>Photos that make an impression</span></div></article>
-              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=1liPapHqBzpX6UtAzZmgNPqH3R_XITHhT&amp;sz=w2400" srcset="https://drive.google.com/thumbnail?id=1liPapHqBzpX6UtAzZmgNPqH3R_XITHhT&amp;sz=w2400 800w, https://drive.google.com/thumbnail?id=1liPapHqBzpX6UtAzZmgNPqH3R_XITHhT&amp;sz=w1000 1600w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="Bright home interior"><div class="media-card-label"><strong><i class="fas fa-key"></i> Buying Assistance</strong><span>Support from search to keys</span></div></article>
-              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=1JEPJ0ixefMd1pnsRuDboGWRDPwkqKxM7&amp;sz=w2400" srcset="https://drive.google.com/thumbnail?id=1JEPJ0ixefMd1pnsRuDboGWRDPwkqKxM7&amp;sz=w2400 800w, https://drive.google.com/thumbnail?id=1JEPJ0ixefMd1pnsRuDboGWRDPwkqKxM7&amp;sz=w1000 1600w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="Family home"><div class="media-card-label"><strong><i class="fas fa-handshake"></i> Smooth Transactions</strong><span>Clear guidance at every step</span></div></article>
-              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=1e8D3cZtbDyjnsOt5aEBKLq6gp8XAZ2OR&amp;sz=w2400" srcset="https://drive.google.com/thumbnail?id=1e8D3cZtbDyjnsOt5aEBKLq6gp8XAZ2OR&amp;sz=w2400 800w, https://drive.google.com/thumbnail?id=1e8D3cZtbDyjnsOt5aEBKLq6gp8XAZ2OR&amp;sz=w1000 1600w" sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" width="1000" height="1000" decoding="async" loading="lazy" alt="Stylish house interior"><div class="media-card-label"><strong><i class="fas fa-chart-line"></i> Investment Guidance</strong><span>Smarter property decisions</span></div></article>
+              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=13meCUlDBZrDcPa5RSFgGAW1CYmF-kxyJ&amp;sz=w2400" width="1000" height="1000" decoding="async" loading="lazy" alt="Client property viewing"><div class="media-card-label"><strong><i class="fas fa-people-group"></i> Guided Viewings</strong><span>Finding the right fit together</span></div></article>
+              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=18LDXuTKC8tUJFnNWFSzAzpqP9EBPwV48&amp;sz=w2400" width="1000" height="1000" decoding="async" loading="lazy" alt="Modern house listing"><div class="media-card-label"><strong><i class="fas fa-house"></i> Property Listings</strong><span>Presenting homes at their best</span></div></article>
+              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=1HcjNsA_TNr9CXcbbVOjy6hk5NUolkXgH&amp;sz=w2400" width="1000" height="1000" decoding="async" loading="lazy" alt="House exterior"><div class="media-card-label"><strong><i class="fas fa-camera"></i> Home Marketing</strong><span>Photos that make an impression</span></div></article>
+              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=1liPapHqBzpX6UtAzZmgNPqH3R_XITHhT&amp;sz=w2400" width="1000" height="1000" decoding="async" loading="lazy" alt="Bright home interior"><div class="media-card-label"><strong><i class="fas fa-key"></i> Buying Assistance</strong><span>Support from search to keys</span></div></article>
+              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=1JEPJ0ixefMd1pnsRuDboGWRDPwkqKxM7&amp;sz=w2400" width="1000" height="1000" decoding="async" loading="lazy" alt="Family home"><div class="media-card-label"><strong><i class="fas fa-handshake"></i> Smooth Transactions</strong><span>Clear guidance at every step</span></div></article>
+              <article class="media-card"><img src="https://drive.google.com/thumbnail?id=1e8D3cZtbDyjnsOt5aEBKLq6gp8XAZ2OR&amp;sz=w2400" width="1000" height="1000" decoding="async" loading="lazy" alt="Stylish house interior"><div class="media-card-label"><strong><i class="fas fa-chart-line"></i> Investment Guidance</strong><span>Smarter property decisions</span></div></article>
             </div>
             <div class="gallery-cta"><p>Not sure which service fits your situation?</p><a href="#" class="btn-primary" onclick="openQuizPopup(event)"><i class="fas fa-calendar-check" aria-hidden="true"></i> Get My Clear Property Plan</a></div>
             <div class="video-showcase">
@@ -9060,6 +9169,137 @@ c.addEventListener('mouseleave',function(){if(tl)c.style.transform=''})});
         wrap.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
       });
     }
+
+
+    /* ---------- Services gallery: big scrollable carousel ---------- */
+    (function () {
+      var grid = D.querySelector('#gallery .media-grid');
+      if (!grid || grid.dataset.mg) return;
+      var slides = [].slice.call(grid.querySelectorAll('.media-card'));
+      if (!slides.length) return;
+      grid.dataset.mg = '1';
+      var n = slides.length, idx = 0, raf = 0, mouseDown = false, moved = false, sx = 0, sl = 0;
+
+      var stage = D.createElement('div');
+      stage.className = 'mg-stage';
+      grid.parentNode.insertBefore(stage, grid);
+      stage.appendChild(grid);
+      grid.setAttribute('tabindex', '0');
+      grid.setAttribute('role', 'region');
+      grid.setAttribute('aria-label', 'Services gallery. Use the left and right arrow keys or swipe to browse.');
+
+      slides.forEach(function (card) {
+        var img = card.querySelector('img');
+        if (!img) return;
+        var photo = D.createElement('div');
+        photo.className = 'mg-photo';
+        var bg = D.createElement('span');
+        bg.className = 'mg-bg';
+        bg.setAttribute('aria-hidden', 'true');
+        var setBg = function () {
+          var src = img.currentSrc || img.src;
+          if (src) bg.style.backgroundImage = 'url("' + src.replace(/"/g, '%22') + '")';
+        };
+        img.draggable = false;
+        card.insertBefore(photo, card.firstChild);
+        photo.appendChild(bg);
+        photo.appendChild(img);
+        setBg();
+        img.addEventListener('load', setBg);
+      });
+
+      var mk = function (cls, icon, label) {
+        var b = D.createElement('button');
+        b.type = 'button';
+        b.className = cls;
+        b.setAttribute('aria-label', label);
+        b.innerHTML = '<i class="fas ' + icon + '" aria-hidden="true"></i>';
+        return b;
+      };
+      var aPrev = mk('mg-arrow prev', 'fa-arrow-left', 'Previous photo');
+      var aNext = mk('mg-arrow next', 'fa-arrow-right', 'Next photo');
+      stage.appendChild(aPrev);
+      stage.appendChild(aNext);
+
+      var bar = D.createElement('div');
+      bar.className = 'mg-bar';
+      var bPrev = mk('mg-btn', 'fa-arrow-left', 'Previous photo');
+      var bNext = mk('mg-btn', 'fa-arrow-right', 'Next photo');
+      var meter = D.createElement('div');
+      meter.className = 'mg-meter';
+      meter.innerHTML = '<span class="mg-count" aria-live="polite"><b>1</b> / ' + n + '</span><span class="mg-track"><span class="mg-fill"></span></span>';
+      bar.appendChild(bPrev); bar.appendChild(meter); bar.appendChild(bNext);
+      stage.insertAdjacentElement('afterend', bar);
+      var countEl = meter.querySelector('b');
+
+      var note = D.querySelector('#gallery .gallery-scroll-note span');
+      if (note) note.textContent = fine ? 'Drag, scroll or use the arrows to explore' : 'Swipe to explore all services';
+
+      function target(i) {
+        var s = slides[i];
+        return s.offsetLeft - (grid.clientWidth - s.offsetWidth) / 2;
+      }
+      function go(i, instant) {
+        i = Math.max(0, Math.min(n - 1, i));
+        grid.scrollTo({ left: target(i), behavior: (instant || rm) ? 'auto' : 'smooth' });
+      }
+      function nearest() {
+        var c = grid.scrollLeft + grid.clientWidth / 2, best = 0, bd = Infinity;
+        slides.forEach(function (s, i) {
+          var d = Math.abs(s.offsetLeft + s.offsetWidth / 2 - c);
+          if (d < bd) { bd = d; best = i; }
+        });
+        return best;
+      }
+      function paint() {
+        raf = 0;
+        idx = nearest();
+        slides.forEach(function (s, i) { s.classList.toggle('is-mg-active', i === idx); });
+        countEl.textContent = idx + 1;
+        meter.querySelector('.mg-fill').style.setProperty('--p', ((idx + 1) / n).toFixed(3));
+        [aPrev, bPrev].forEach(function (b) { b.disabled = idx === 0; });
+        [aNext, bNext].forEach(function (b) { b.disabled = idx === n - 1; });
+      }
+      function sched() { if (!raf) raf = requestAnimationFrame(paint); }
+
+      grid.addEventListener('scroll', sched, { passive: true });
+      window.addEventListener('resize', function () { go(idx, true); sched(); }, { passive: true });
+      [aPrev, bPrev].forEach(function (b) { b.addEventListener('click', function () { go(idx - 1); }); });
+      [aNext, bNext].forEach(function (b) { b.addEventListener('click', function () { go(idx + 1); }); });
+      slides.forEach(function (s, i) {
+        s.addEventListener('click', function () { if (!moved && i !== idx) go(i); });
+      });
+      grid.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight') { e.preventDefault(); go(idx + 1); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); go(idx - 1); }
+      });
+
+      /* mouse drag-to-scroll (touch already scrolls natively) */
+      grid.addEventListener('pointerdown', function (e) {
+        if (e.pointerType !== 'mouse' || e.button !== 0) return;
+        mouseDown = true; moved = false; sx = e.clientX; sl = grid.scrollLeft;
+      });
+      window.addEventListener('pointermove', function (e) {
+        if (!mouseDown) return;
+        var dx = e.clientX - sx;
+        if (!moved && Math.abs(dx) > 5) { moved = true; grid.classList.add('is-drag'); }
+        if (moved) grid.scrollLeft = sl - dx;
+      });
+      var endDrag = function () {
+        if (!mouseDown) return;
+        mouseDown = false;
+        if (moved) {
+          grid.classList.remove('is-drag');
+          go(nearest());
+          setTimeout(function () { moved = false; }, 60);
+        }
+      };
+      window.addEventListener('pointerup', endDrag);
+      window.addEventListener('pointercancel', endDrag);
+
+      go(0, true);
+      paint();
+    })();
 
     /* Animations stop here for reduced-motion users / old browsers */
     if (rm || !('IntersectionObserver' in window)) return;
