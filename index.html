@@ -6918,6 +6918,108 @@ html body .gl-lead,html body .gl-list li,html body .gl-micro,html body .gl-trust
   html body .pu-zoom-hint{font-size:.7rem}
 }
 
+/* ---------------------------------------------------------------
+   7. HOMEBUYER MISTAKES — illustrated cards
+   --------------------------------------------------------------- */
+html body .mistakes-checklist-section .mistake-card.has-media{
+  padding:0!important;overflow:hidden!important;border-radius:22px!important;
+  background:linear-gradient(160deg,#fffefb,#f8f1e3)!important;
+  border:1px solid rgba(204,149,62,.28)!important;
+  box-shadow:0 18px 40px -26px rgba(6,60,36,.5)!important;
+  transition:transform .5s var(--pu-ease),box-shadow .5s var(--pu-ease),border-color .4s!important;
+}
+html body .mistakes-checklist-section .mistake-card.has-media::before{z-index:4}
+
+/* image frame: blurred ambient fill + full picture always visible */
+.mistake-media{
+  position:relative;display:block;width:100%;aspect-ratio:16/11;overflow:hidden;isolation:isolate;
+  background:linear-gradient(145deg,#042d1c,#0f4d30);
+}
+.mistake-media::before{
+  content:'';position:absolute;inset:-12%;z-index:-2;
+  background:var(--mm) center/cover no-repeat;
+  filter:blur(20px) saturate(1.25) brightness(.8);transform:scale(1.15);
+}
+.mistake-media::after{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(3,34,21,.55) 0%,rgba(3,34,21,0) 38%,rgba(3,34,21,0) 68%,rgba(3,34,21,.28) 100%);
+}
+.mistake-media img{
+  position:relative;z-index:0;display:block;width:100%;height:100%;
+  object-fit:contain;object-position:center;
+  transition:transform 1.2s var(--pu-ease),filter .6s;
+}
+.mistake-media .mm-shine{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.38) 50%,transparent 62%);
+  transform:translateX(-130%);
+}
+.mistake-media.is-empty img{display:none}
+.mistake-media.is-empty::after{content:'\f015';font:900 2.6rem/1 'Font Awesome 6 Free';color:rgba(245,214,138,.7);display:grid;place-items:center;background:none}
+
+/* number + icon chips float over the image */
+html body .mistakes-checklist-section .mistake-card.has-media .mistake-card-top{
+  position:absolute!important;z-index:5;top:.8rem;left:.85rem;right:.85rem;
+  width:auto!important;min-height:0!important;margin:0!important;
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+}
+html body .mistakes-checklist-section .mistake-card.has-media .mistake-number{
+  display:inline-flex;align-items:center;padding:.5rem .85rem;border-radius:999px;
+  background:linear-gradient(180deg,#f7dc9a,#d9a64c);color:#063c24!important;
+  font:800 .8rem/1 Inter,system-ui,sans-serif!important;letter-spacing:.12em;
+  box-shadow:0 8px 18px -8px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.6);
+}
+html body .mistakes-checklist-section .mistake-card.has-media .mistake-card-top > i{
+  background:rgba(5,44,28,.62)!important;color:#f5d68a!important;
+  border:1px solid rgba(245,214,138,.45);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  box-shadow:0 8px 18px -8px rgba(0,0,0,.6);
+}
+
+/* copy under the image */
+html body .mistakes-checklist-section .mistake-card.has-media h3{
+  margin:0 0 .5rem!important;padding:1.15rem 1.25rem 0!important;color:#12372a;
+}
+html body .mistakes-checklist-section .mistake-card.has-media p{
+  margin:0!important;padding:0 1.25rem 1.4rem!important;color:#3f5247;
+}
+/* gold underline accent that grows on hover */
+html body .mistakes-checklist-section .mistake-card.has-media h3::after{
+  content:'';display:block;width:2.2rem;height:3px;margin-top:.65rem;border-radius:3px;
+  background:linear-gradient(90deg,#cc953e,#f5d68a);transition:width .6s var(--pu-ease);
+}
+
+@media (hover:hover) and (pointer:fine){
+  html body .mistakes-checklist-section .mistake-card.has-media:hover{
+    transform:translateY(-8px)!important;border-color:rgba(204,149,62,.7)!important;
+    box-shadow:0 34px 56px -26px rgba(6,60,36,.6),0 0 0 3px rgba(245,214,138,.18)!important;
+  }
+  .mistake-card.has-media:hover .mistake-media img{transform:scale(1.07)}
+  .mistake-card.has-media:hover .mm-shine{animation:puShine 1s ease-out 1 both}
+  html body .mistakes-checklist-section .mistake-card.has-media:hover h3::after{width:4.6rem}
+}
+@keyframes puShine{to{transform:translateX(130%)}}
+
+/* entrance: picture zooms into focus as the card rises */
+.mistake-card.has-media.pu-in .mistake-media img{animation:puMediaIn .8s var(--pu-ease) .1s both}
+.mistake-card.has-media.pu-in .mistake-card-top{animation:puChipIn .7s var(--pu-ease) .25s both}
+@keyframes puMediaIn{from{opacity:0;transform:scale(1.2);filter:blur(7px)}to{opacity:1;transform:none;filter:none}}
+@keyframes puChipIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+
+/* touch feedback on phones */
+@media (hover:none){
+  html body .mistakes-checklist-section .mistake-card.has-media:active{transform:scale(.985)!important}
+}
+@media (max-width:620px){
+  .mistake-media{aspect-ratio:16/10}
+  html body .mistakes-checklist-section .mistake-card.has-media h3{padding:1rem 1.05rem 0!important}
+  html body .mistakes-checklist-section .mistake-card.has-media p{padding:0 1.05rem 1.2rem!important}
+}
+@media (prefers-reduced-motion:reduce){
+  .mistake-card.has-media .mistake-media img,.mistake-card.has-media .mistake-card-top{animation:none!important;transition:none!important}
+  .mm-shine{display:none}
+}
+
 </style>
 </head>
   <body>
@@ -7398,12 +7500,12 @@ html body .gl-lead,html body .gl-list li,html body .gl-micro,html body .gl-trust
                 <div class="mistakes-guide-badge" aria-hidden="true"><i class="fas fa-shield-heart"></i><span>Buy<br>smarter</span></div>
               </div>
               <div class="mistakes-checklist-grid">
-                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">01</span><i class="fas fa-receipt" aria-hidden="true"></i></div><h3>Focusing only on the advertised price</h3><p>Remember to account for the down payment, taxes, loan fees, insurance, association dues, utilities, moving costs, repairs, and ongoing maintenance.</p></article>
-                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">02</span><i class="fas fa-coins" aria-hidden="true"></i></div><h3>Buying before checking financial readiness</h3><p>Do not assume you can afford a property based only on a sample monthly payment. Review your income, debts, savings, emergency fund, and financing eligibility first.</p></article>
-                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">03</span><i class="fas fa-road" aria-hidden="true"></i></div><h3>Choosing a location without testing daily life</h3><p>Check commute times, transportation, schools, healthcare, shops, safety, drainage, flood exposure, and nearby developments at different times of day.</p></article>
-                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">04</span><i class="fas fa-screwdriver-wrench" aria-hidden="true"></i></div><h3>Skipping a careful property inspection</h3><p>Look beyond finishes and staging. Ask about structural condition, leaks, plumbing, electrical systems, drainage, parking, storage, repairs, and what is included.</p></article>
-                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">05</span><i class="fas fa-file-signature" aria-hidden="true"></i></div><h3>Signing before understanding the documents</h3><p>Read the reservation, contract, fees, deadlines, refund terms, inclusions, restrictions, and turnover conditions. Ask for clarification before signing or paying.</p></article>
-                <article class="mistake-card"><div class="mistake-card-top"><span class="mistake-number">06</span><i class="fas fa-hourglass-end" aria-hidden="true"></i></div><h3>Rushing because of pressure or urgency</h3><p>A limited-time offer should not replace due diligence. Compare suitable options, verify important details, and take time to make a decision that fits your goals.</p></article>
+                <article class="mistake-card has-media"><div class="mistake-media" style="--mm:url('https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Focusing%20only%20on%20the%20advertised%20price.png')"><img src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Focusing%20only%20on%20the%20advertised%20price.png" alt="Illustration of a home price tag with hidden extra costs" width="800" height="600" loading="lazy" decoding="async" onerror="this.closest('.mistake-media').classList.add('is-empty')"><span class="mm-shine" aria-hidden="true"></span></div><div class="mistake-card-top"><span class="mistake-number">01</span><i class="fas fa-receipt" aria-hidden="true"></i></div><h3>Focusing only on the advertised price</h3><p>Remember to account for the down payment, taxes, loan fees, insurance, association dues, utilities, moving costs, repairs, and ongoing maintenance.</p></article>
+                <article class="mistake-card has-media"><div class="mistake-media" style="--mm:url('https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Buying%20before%20checking%20financial%20readiness.png')"><img src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Buying%20before%20checking%20financial%20readiness.png" alt="Illustration of reviewing savings and budget before buying a home" width="800" height="600" loading="lazy" decoding="async" onerror="this.closest('.mistake-media').classList.add('is-empty')"><span class="mm-shine" aria-hidden="true"></span></div><div class="mistake-card-top"><span class="mistake-number">02</span><i class="fas fa-coins" aria-hidden="true"></i></div><h3>Buying before checking financial readiness</h3><p>Do not assume you can afford a property based only on a sample monthly payment. Review your income, debts, savings, emergency fund, and financing eligibility first.</p></article>
+                <article class="mistake-card has-media"><div class="mistake-media" style="--mm:url('https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Choosing%20a%20location%20without%20testing%20daily%20life.png')"><img src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Choosing%20a%20location%20without%20testing%20daily%20life.png" alt="Illustration of checking a neighborhood and daily commute" width="800" height="600" loading="lazy" decoding="async" onerror="this.closest('.mistake-media').classList.add('is-empty')"><span class="mm-shine" aria-hidden="true"></span></div><div class="mistake-card-top"><span class="mistake-number">03</span><i class="fas fa-road" aria-hidden="true"></i></div><h3>Choosing a location without testing daily life</h3><p>Check commute times, transportation, schools, healthcare, shops, safety, drainage, flood exposure, and nearby developments at different times of day.</p></article>
+                <article class="mistake-card has-media"><div class="mistake-media" style="--mm:url('https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Skipping%20a%20careful%20property%20inspection.png')"><img src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Skipping%20a%20careful%20property%20inspection.png" alt="Illustration of inspecting a property carefully" width="800" height="600" loading="lazy" decoding="async" onerror="this.closest('.mistake-media').classList.add('is-empty')"><span class="mm-shine" aria-hidden="true"></span></div><div class="mistake-card-top"><span class="mistake-number">04</span><i class="fas fa-screwdriver-wrench" aria-hidden="true"></i></div><h3>Skipping a careful property inspection</h3><p>Look beyond finishes and staging. Ask about structural condition, leaks, plumbing, electrical systems, drainage, parking, storage, repairs, and what is included.</p></article>
+                <article class="mistake-card has-media"><div class="mistake-media" style="--mm:url('https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Signing%20before%20understanding%20the%20documents.png')"><img src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Signing%20before%20understanding%20the%20documents.png" alt="Illustration of reading a contract before signing" width="800" height="600" loading="lazy" decoding="async" onerror="this.closest('.mistake-media').classList.add('is-empty')"><span class="mm-shine" aria-hidden="true"></span></div><div class="mistake-card-top"><span class="mistake-number">05</span><i class="fas fa-file-signature" aria-hidden="true"></i></div><h3>Signing before understanding the documents</h3><p>Read the reservation, contract, fees, deadlines, refund terms, inclusions, restrictions, and turnover conditions. Ask for clarification before signing or paying.</p></article>
+                <article class="mistake-card has-media"><div class="mistake-media" style="--mm:url('https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Rushing%20because%20of%20pressure%20or%20urgency.png')"><img src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/footer-images/Rushing%20because%20of%20pressure%20or%20urgency.png" alt="Illustration of a buyer pausing instead of rushing a decision" width="800" height="600" loading="lazy" decoding="async" onerror="this.closest('.mistake-media').classList.add('is-empty')"><span class="mm-shine" aria-hidden="true"></span></div><div class="mistake-card-top"><span class="mistake-number">06</span><i class="fas fa-hourglass-end" aria-hidden="true"></i></div><h3>Rushing because of pressure or urgency</h3><p>A limited-time offer should not replace due diligence. Compare suitable options, verify important details, and take time to make a decision that fits your goals.</p></article>
               </div>
               <div class="mistakes-guide-action"><div class="mistakes-guide-action-icon" aria-hidden="true"><i class="fas fa-circle-check"></i></div><div class="mistakes-guide-action-content"><strong>Before you make an offer</strong><p>Confirm your total budget, financing plan, property condition, documents, contract terms, and long-term suitability. If you are unsure, ask for professional guidance before committing.</p></div></div>
               <p class="lead-magnet-note"><i class="fas fa-circle-info" aria-hidden="true"></i> This guide is for general information only. Financing, legal, tax, and document requirements may vary, so confirm details with the relevant professional or institution.</p>
