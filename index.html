@@ -6810,6 +6810,58 @@ html.pu-js .section-divider.pu-in span{opacity:1;transform:none}
   .pu-pre{opacity:1!important}
 }
 
+/* ---------------------------------------------------------------
+   5. LARGER, UNIFORM TESTIMONIAL PHOTOS + TAP-TO-ENLARGE
+   --------------------------------------------------------------- */
+html body #mainTestimonial .testimonial-card .testimonial-image-slot,
+html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-image-slot{
+  width:100%!important;max-width:none!important;margin:0!important;
+}
+html body #mainTestimonial .testimonial-card .testimonial-image-wrapper,
+html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-image-wrapper{
+  aspect-ratio:4/3!important;width:100%!important;cursor:zoom-in;
+}
+@media (min-width:1024px){
+  html body #mainTestimonial .testimonial-card .testimonial-row,
+  html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-row{
+    grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)!important;
+    gap:clamp(2rem,4vw,3.6rem)!important;
+  }
+  html body #mainTestimonial .testimonial-card:nth-child(even) .testimonial-row{
+    grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)!important;
+  }
+  html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-image-slot{order:2}
+  html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-text{text-align:left}
+  html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-text::before{margin-inline:0}
+  html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-text p{margin-inline:0!important;max-width:none}
+  html body #mainTestimonial .testimonial-card:nth-child(3) .client-info{justify-content:space-between;text-align:left}
+  html body #mainTestimonial .testimonial-card:nth-child(3) .client-details{align-items:flex-start}
+  html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-image-slot::before{inset:13px -13px -13px 13px}
+}
+html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-text{text-align:left}
+@media (max-width:1023px){
+  html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-text{text-align:left}
+  html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-text::before{margin-inline:0}
+  html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-text p{margin-inline:0!important}
+  html body #mainTestimonial .testimonial-card:nth-child(3) .client-info{align-items:flex-start;justify-content:space-between}
+}
+.pu-zoom-hint{
+  position:absolute;z-index:3;right:.7rem;bottom:.7rem;display:inline-flex;align-items:center;gap:.4rem;
+  padding:.45rem .75rem;border-radius:999px;border:1px solid rgba(245,214,138,.5);
+  background:rgba(5,44,28,.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  color:#fff;font:700 .72rem/1 Inter,system-ui,sans-serif;letter-spacing:.04em;pointer-events:none;
+}
+.pu-zoom-hint i{color:var(--pu-champ)}
+.testimonial-card.ofw-testimonial .pu-zoom-hint{top:.7rem;bottom:auto}
+
+/* lightbox */
+.pu-lightbox{position:fixed;inset:0;z-index:13000;display:none;align-items:center;justify-content:center;padding:max(1rem,env(safe-area-inset-top)) 1rem max(1rem,env(safe-area-inset-bottom));background:rgba(3,24,15,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.pu-lightbox.on{display:flex;animation:puFade .3s ease both}
+.pu-lightbox img{max-width:min(96vw,1200px);max-height:88vh;width:auto;height:auto;border-radius:16px;border:3px solid rgba(245,214,138,.7);box-shadow:0 30px 80px rgba(0,0,0,.6);background:#0a3f27}
+.pu-lightbox button{position:absolute;top:max(.8rem,env(safe-area-inset-top));right:.9rem;width:48px;height:48px;border-radius:50%;border:1px solid rgba(245,214,138,.6);background:rgba(255,255,255,.12);color:#fff;font-size:1.2rem;cursor:pointer}
+.pu-lightbox button:hover,.pu-lightbox button:focus-visible{background:#cc953e;color:#063c24;outline:none}
+@keyframes puFade{from{opacity:0}to{opacity:1}}
+
 </style>
 </head>
   <body>
@@ -8807,6 +8859,48 @@ c.addEventListener('mouseleave',function(){if(tl)c.style.transform=''})});
         });
         box.appendChild(cta);
       }
+    }
+
+
+    /* ---------- Tap-to-enlarge lightbox for testimonial photos ---------- */
+    if (cards.length && !D.querySelector('.pu-lightbox')) {
+      var lb = D.createElement('div');
+      lb.className = 'pu-lightbox';
+      lb.setAttribute('role', 'dialog');
+      lb.setAttribute('aria-modal', 'true');
+      lb.setAttribute('aria-label', 'Enlarged client photo');
+      lb.innerHTML = '<button type="button" aria-label="Close photo"><i class="fas fa-xmark" aria-hidden="true"></i></button><img alt="">';
+      D.body.appendChild(lb);
+      var lbImg = lb.querySelector('img'), lbBtn = lb.querySelector('button'), lastFocus = null;
+      var closeLb = function () {
+        lb.classList.remove('on');
+        D.body.style.overflow = '';
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+      };
+      lb.addEventListener('click', function (e) { if (e.target !== lbImg) closeLb(); });
+      D.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lb.classList.contains('on')) closeLb(); });
+      cards.forEach(function (card) {
+        var wrap = card.querySelector('.testimonial-image-wrapper'), img = card.querySelector('.testimonial-image');
+        if (!wrap || !img) return;
+        var hint = D.createElement('span');
+        hint.className = 'pu-zoom-hint';
+        hint.innerHTML = '<i class="fas fa-magnifying-glass-plus" aria-hidden="true"></i> Tap to enlarge';
+        wrap.appendChild(hint);
+        wrap.setAttribute('tabindex', '0');
+        wrap.setAttribute('role', 'button');
+        wrap.setAttribute('aria-label', 'Enlarge client photo');
+        var open = function () {
+          var src = (img.currentSrc || img.src).replace(/sz=w\d+/, 'sz=w2400');
+          lbImg.src = src;
+          lbImg.alt = img.alt || '';
+          lastFocus = wrap;
+          lb.classList.add('on');
+          D.body.style.overflow = 'hidden';
+          lbBtn.focus();
+        };
+        wrap.addEventListener('click', open);
+        wrap.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+      });
     }
 
     /* Animations stop here for reduced-motion users / old browsers */
