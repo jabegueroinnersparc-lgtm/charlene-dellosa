@@ -17,7 +17,8 @@
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
     
-    <link rel="preload" as="image" href="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/charlene%20delosa.png" fetchpriority="high" />
+    <link rel="preload" as="image" href="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/charlene%20delosa.png" media="(min-width: 769px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/ma%27am%20charlene%20.%20mobile.png" media="(max-width: 768px)" fetchpriority="high" />
     <link rel="icon" href="/favicon.ico?v=20260830" sizes="any" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-brand-96.png?v=20260830" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon-brand-180.png?v=20260830" />
@@ -447,7 +448,7 @@
         }
         .hero-bg-layer {
            
-          background-image: url('https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/charlene%20delosa.png') !important;
+          background-image: url('https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/ma%27am%20charlene%20.%20mobile.png') !important;
           background-size: cover !important;
           background-position: center center !important;
           background-attachment: scroll !important;
@@ -6485,14 +6486,16 @@ html body #gallery .media-card-label span{ display:block; margin:.35rem 0 0 calc
       }
       @media (max-width: 768px) {
         .hero-bg-layer {
-          /* Keep the subject visible on narrow screens while preserving the open space for text. */
-          background-position: 72% calc(50% + var(--mobile-parallax-y, 0px)) !important;
+          background-image: url('https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/ma%27am%20charlene%20.%20mobile.png') !important;
+          /* The portrait asset is centered so the face and upper body remain visible on phones. */
+          background-position: center top !important;
           background-size: cover !important;
         }
       }
       @media (max-width: 480px) {
         .hero-bg-layer {
-          background-position: 70% calc(48% + var(--mobile-parallax-y, 0px)) !important;
+          background-image: url('https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/ma%27am%20charlene%20.%20mobile.png') !important;
+          background-position: center top !important;
         }
       }
     </style>
