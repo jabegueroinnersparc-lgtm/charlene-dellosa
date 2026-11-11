@@ -6862,6 +6862,62 @@ html body #mainTestimonial .testimonial-card:nth-child(3) .testimonial-text{text
 .pu-lightbox button:hover,.pu-lightbox button:focus-visible{background:#cc953e;color:#063c24;outline:none}
 @keyframes puFade{from{opacity:0}to{opacity:1}}
 
+/* ---------------------------------------------------------------
+   6. READABILITY FIXES — text vs. background contrast
+   --------------------------------------------------------------- */
+/* gold text on light backgrounds -> deeper gold */
+html body .landing-card .tagline{color:#8a560f!important}
+html body .section-kicker{color:#8a560f}
+html body .trust-stat-item .number{color:#9a6017}
+html body .badge-item{color:#8a560f}
+html body .kaia-brand .kaia-hashtag{color:#8a560f;background:rgba(204,149,62,.16);border-color:rgba(154,96,23,.3)}
+html body .quiz-modal .quiz-card .quiz-question .q-badge{color:#8a560f}
+html body .quiz-modal .quiz-header h3 span{color:#9a6017}
+html body .quiz-modal .quiz-card .quiz-options .option .letter{color:#8a560f}
+html body .consent-row a{color:#063c24;text-decoration:underline}
+html body .scroll-hint{color:#4b5d52}
+
+/* small grey text -> darker grey */
+html body .badge-strip + div{color:#4b5d52!important;font-size:.78rem!important;letter-spacing:.04em!important}
+html body .client-popup .client-name span{color:#4b5d52!important}
+html body .testimonial-box .client-location{color:#4b5d52}
+html body .quiz-modal .quiz-card .quiz-email-form .privacy-note,
+html body .privacy-meta{color:#4b5d52}
+
+/* hero card: more solid so text never fights the photo behind it */
+html body .hero .hero-text{background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(255,255,255,.86))}
+html body .hero .hero-text .subtitle{color:#23382c}
+html body .hero .hero-proof{color:#2f4538}
+
+/* dark testimonial card (3): KAIA badge was dark-green on dark-green */
+html body #mainTestimonial .testimonial-card:nth-child(3) .kaia-brand{background:rgba(255,255,255,.1);border-color:rgba(245,214,138,.4)}
+html body #mainTestimonial .testimonial-card:nth-child(3) .kaia-brand .kaia-main{color:#fff}
+html body #mainTestimonial .testimonial-card:nth-child(3) .kaia-brand .kaia-sub{color:rgba(255,255,255,.75)}
+html body #mainTestimonial .testimonial-card:nth-child(3) .kaia-brand .kaia-hashtag{color:var(--pu-champ);background:rgba(245,214,138,.14);border-color:rgba(245,214,138,.4)}
+
+/* dark footer: TikTok icon was black on dark green */
+html body .footer-section .footer-social a.tiktok i{color:#fff}
+html body .footer-section .footer-social a{color:#fff}
+html body .footer-section .contact-item,
+html body .footer-section .contact-item a,
+html body .footer-section .contact-item span{color:#fbf8f2}
+html body .footer-section .footer-bottom{color:rgba(251,248,242,.82)}
+
+/* dark gallery + guide sections: keep copy bright */
+html body #gallery .media-showcase-header p{color:rgba(251,248,242,.88)}
+html body #gallery .media-card-label span{color:rgba(255,253,248,.9)!important}
+html body .gl-lead,html body .gl-list li,html body .gl-micro,html body .gl-trust{color:rgba(251,248,242,.92)}
+
+/* mobile: no more tiny text */
+@media (max-width:768px){
+  html body .footer-section .footer-bottom{font-size:.74rem!important}
+  html body .hero .hero-proof{font-size:.8rem!important}
+  html body .badge-item{font-size:.8rem}
+  html body .trust-stat-item .label{font-size:.85rem}
+  html body .client-popup .client-name span{font-size:.7rem!important}
+  html body .pu-zoom-hint{font-size:.7rem}
+}
+
 </style>
 </head>
   <body>
