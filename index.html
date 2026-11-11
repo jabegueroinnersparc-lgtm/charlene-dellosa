@@ -6512,6 +6512,24 @@ html body #gallery .media-card-label span{ display:block; margin:.35rem 0 0 calc
         }
       }
     </style>
+    <style>
+
+      /* Stable responsive framing for section and video artwork. */
+      .pain-point-image-wrap,
+      .guide-video-thumb {
+        contain: layout paint;
+      }
+      .pain-point-image,
+      .guide-video-thumb img {
+        max-width: 100%;
+        object-fit: cover;
+        object-position: center center;
+      }
+      @media (max-width: 560px) {
+        .pain-point-image-wrap { min-height: 190px; }
+        .guide-video-thumb { aspect-ratio: 16 / 9; }
+      }
+    </style>
     </head>
   <body>
     
@@ -6730,25 +6748,25 @@ html body #gallery .media-card-label span{ display:block; margin:.35rem 0 0 calc
         </p>
         <div class="pain-points-grid">
           <article class="pain-point-card">
-            <div class="pain-point-image-wrap"><img class="pain-point-image" src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/images/Still%20searching%2C%20but%20unsure%20what%20truly%20fits.png" loading="lazy" decoding="async" alt="Couple comparing neighborhoods and property locations"></div>
+            <div class="pain-point-image-wrap"><img class="pain-point-image" src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/images/Still%20searching%2C%20but%20unsure%20what%20truly%20fits.png" loading="eager" decoding="async" alt="Couple comparing neighborhoods and property locations"></div>
             <i class="fas fa-screwdriver-wrench" aria-hidden="true"></i>
             <h3>Still searching, but unsure what truly fits?</h3>
             <p>Endless listings and conflicting information make it hard to compare locations, developers, prices, and payment terms with confidence.</p>
           </article>
           <article class="pain-point-card">
-            <div class="pain-point-image-wrap"><img class="pain-point-image" src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/images/Concerned%20the%20numbers%20may%20not%20work%20long-term.png" loading="lazy" decoding="async" alt="Homebuyer reviewing property costs and budget"></div>
+            <div class="pain-point-image-wrap"><img class="pain-point-image" src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/images/Concerned%20the%20numbers%20may%20not%20work%20long-term.png" loading="eager" decoding="async" alt="Homebuyer reviewing property costs and budget"></div>
             <i class="fas fa-peso-sign" aria-hidden="true"></i>
             <h3>Concerned the numbers may not work long-term?</h3>
             <p>The advertised price is only part of the picture. Financing, fees, monthly payments, and everyday affordability all matter before you decide.</p>
           </article>
           <article class="pain-point-card">
-            <div class="pain-point-image-wrap"><img class="pain-point-image" src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/images/Stressed%20by%20requirements%20and%20paperwork.png" loading="lazy" decoding="async" alt="Property documents and checklist prepared for review"></div>
+            <div class="pain-point-image-wrap"><img class="pain-point-image" src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/images/Stressed%20by%20requirements%20and%20paperwork.png" loading="eager" decoding="async" alt="Property documents and checklist prepared for review"></div>
             <i class="fas fa-file-signature" aria-hidden="true"></i>
             <h3>Stressed by requirements and paperwork?</h3>
             <p>Reservations, documents, financing, and timelines can slow you down when no one clearly explains what is needed and what happens next.</p>
           </article>
           <article class="pain-point-card">
-            <div class="pain-point-image-wrap"><img class="pain-point-image" src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/images/Trying%20to%20manage%20everything%20on%20your%20own.png" loading="lazy" decoding="async" alt="Family managing homebuying plans and property schedules"></div>
+            <div class="pain-point-image-wrap"><img class="pain-point-image" src="https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/images/Trying%20to%20manage%20everything%20on%20your%20own.png" loading="eager" decoding="async" alt="Family managing homebuying plans and property schedules"></div>
             <i class="fas fa-clock" aria-hidden="true"></i>
             <h3>Trying to manage everything on your own?</h3>
             <p>Viewings, follow-ups, property marketing, and coordination take time—especially for busy families, sellers, investors, and OFWs planning from overseas.</p>
@@ -6909,7 +6927,7 @@ html body #gallery .media-card-label span{ display:block; margin:.35rem 0 0 calc
               </div>
               <div class="video-frame">
                 <button class="youtube-preview" id="propertyTourPreview" type="button" aria-label="Play featured property tour video" aria-controls="propertyTourPlayerSlot">
-                  <img src="https://i.ytimg.com/vi/Vje0FZ5HqrQ/maxresdefault.jpg" loading="lazy" decoding="async" width="640" height="360" fetchpriority="low" alt="Preview thumbnail for the featured property tour video">
+                  <img src="https://i.ytimg.com/vi/Vje0FZ5HqrQ/maxresdefault.jpg" loading="lazy" decoding="async" width="640" height="360" fetchpriority="low" alt="Preview thumbnail for the featured property tour video" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault.jpg','hqdefault.jpg');">
                   <span class="youtube-preview-shade" aria-hidden="true"></span>
                   <span class="youtube-preview-play" aria-hidden="true"><i class="fas fa-play"></i></span>
                   <span class="youtube-preview-label">Play featured video</span>
@@ -6938,27 +6956,27 @@ html body #gallery .media-card-label span{ display:block; margin:.35rem 0 0 calc
             
             <div class="video-library-grid" id="six-guide-videos">
               <article class="guide-video-card" data-video-category="buying">
-                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=pVIWs3LjIiA" target="_blank" rel="noopener" aria-label="Watch First-time buyer guide on YouTube"><img src="https://i.ytimg.com/vi/pVIWs3LjIiA/maxresdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for First-Time Buyer’s Starting Guide video"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
+                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=pVIWs3LjIiA" target="_blank" rel="noopener" aria-label="Watch First-time buyer guide on YouTube"><img src="https://i.ytimg.com/vi/pVIWs3LjIiA/maxresdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for First-Time Buyer’s Starting Guide video" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault.jpg','hqdefault.jpg');"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
                 <div class="guide-video-copy"><span>Buying a home</span><h4>First-Time Buyer’s Starting Guide</h4><p>Learn the essential steps before you begin looking for a home.</p></div>
               </article>
               <article class="guide-video-card" data-video-category="buying">
-                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=gp8NCyOCLV4" target="_blank" rel="noopener" aria-label="Watch Property viewing checklist on YouTube"><img src="https://i.ytimg.com/vi/gp8NCyOCLV4/maxresdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for Property Viewing Checklist video"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
+                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=gp8NCyOCLV4" target="_blank" rel="noopener" aria-label="Watch Property viewing checklist on YouTube"><img src="https://i.ytimg.com/vi/gp8NCyOCLV4/maxresdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for Property Viewing Checklist video" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault.jpg','hqdefault.jpg');"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
                 <div class="guide-video-copy"><span>Buying a home</span><h4>What to Check During a Viewing</h4><p>A practical checklist for comparing homes with confidence.</p></div>
               </article>
               <article class="guide-video-card" data-video-category="selling">
-                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=4n5yhj0B_Us" target="_blank" rel="noopener" aria-label="Watch How to prepare your home for sale on YouTube"><img src="https://i.ytimg.com/vi/4n5yhj0B_Us/maxresdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for Prepare Your Home to Sell video"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
+                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=4n5yhj0B_Us" target="_blank" rel="noopener" aria-label="Watch How to prepare your home for sale on YouTube"><img src="https://i.ytimg.com/vi/4n5yhj0B_Us/maxresdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for Prepare Your Home to Sell video" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault.jpg','hqdefault.jpg');"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
                 <div class="guide-video-copy"><span>Selling tips</span><h4>Prepare Your Home to Sell</h4><p>Simple presentation tips that make a great first impression.</p></div>
               </article>
               <article class="guide-video-card" data-video-category="investing">
-                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=Vvt-a4ZJOEo" target="_blank" rel="noopener" aria-label="Watch Property investment basics on YouTube"><img src="https://i.ytimg.com/vi/Vvt-a4ZJOEo/maxresdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for Property Investment Basics video"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
+                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=Vvt-a4ZJOEo" target="_blank" rel="noopener" aria-label="Watch Property investment basics on YouTube"><img src="https://i.ytimg.com/vi/Vvt-a4ZJOEo/maxresdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for Property Investment Basics video" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault.jpg','hqdefault.jpg');"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
                 <div class="guide-video-copy"><span>Property investing</span><h4>Property Investment Basics</h4><p>Key factors to consider before making an investment decision.</p></div>
               </article>
               <article class="guide-video-card" data-video-category="buying">
-                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=IgReOJ6sobU" target="_blank" rel="noopener" aria-label="Watch Financing your dream home on YouTube"><img src="https://i.ytimg.com/vi/IgReOJ6sobU/maxresdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for Financing Your Dream Home video"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
+                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=IgReOJ6sobU" target="_blank" rel="noopener" aria-label="Watch Financing your dream home on YouTube"><img src="https://i.ytimg.com/vi/IgReOJ6sobU/hqdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for Financing Your Dream Home video"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
                 <div class="guide-video-copy"><span>Buying a home</span><h4>Financing Your Dream Home</h4><p>Get familiar with your budget, loan options, and next steps.</p></div>
               </article>
               <article class="guide-video-card" data-video-category="investing">
-                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=ViWXPgBJZxQ" target="_blank" rel="noopener" aria-label="Watch Choosing the right location on YouTube"><img src="https://i.ytimg.com/vi/ViWXPgBJZxQ/maxresdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for Choosing the Right Location video"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
+                <a class="guide-video-thumb" href="https://www.youtube.com/watch?v=ViWXPgBJZxQ" target="_blank" rel="noopener" aria-label="Watch Choosing the right location on YouTube"><img src="https://i.ytimg.com/vi/ViWXPgBJZxQ/maxresdefault.jpg" loading="lazy" decoding="async" width="480" height="270" alt="Thumbnail for Choosing the Right Location video" onerror="this.onerror=null;this.src=this.src.replace('maxresdefault.jpg','hqdefault.jpg');"><span class="guide-video-play"><i class="fas fa-play"></i></span></a>
                 <div class="guide-video-copy"><span>Property investing</span><h4>How to Choose the Right Location</h4><p>Understand the neighbourhood factors that affect long-term value.</p></div>
               </article>
             </div>
