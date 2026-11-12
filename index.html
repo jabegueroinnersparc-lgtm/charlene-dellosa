@@ -7073,6 +7073,21 @@ html body #gallery .media-grid .media-card.mg-pre{opacity:0!important;transform:
 html body #gallery .media-grid .media-card{transition:opacity .8s var(--pu-ease),transform .9s var(--pu-ease)!important}
 
 </style>
+
+<style id="mobile-testimonial-fix">
+/* The bio block is thousands of px tall on phones, so reveal-on-scroll never fired.
+   Show everything inside it on small screens and reveal the 7th+ stagger children. */
+.stagger.visible > *:nth-child(n+7){opacity:1;transform:none;transition-delay:.7s}
+@media (max-width:768px){
+  #about .reveal,
+  #about .stagger > *,
+  #about .bio.stagger > *{opacity:1!important;transform:none!important}
+  html.pu-js body #mainTestimonial .testimonial-card,
+  html.pu-js body #mainTestimonial .testimonial-card .testimonial-image-slot,
+  html.pu-js body #mainTestimonial .testimonial-card .testimonial-text,
+  html.pu-js body #mainTestimonial .testimonial-card .client-info{opacity:1!important;transform:none!important;filter:none!important}
+}
+</style>
 </head>
   <body>
     
@@ -7669,7 +7684,7 @@ html body #gallery .media-grid .media-card{transition:opacity .8s var(--pu-ease)
         const revealEls = document.querySelectorAll('.reveal, .stagger');
         const obs = new IntersectionObserver((entries) => {
           entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-        }, { threshold:0.15, rootMargin:'0px 0px -50px 0px' });
+        }, { threshold:0, rootMargin:'0px 0px -50px 0px' });
         revealEls.forEach(el => obs.observe(el));
 
         const serviceGallery = document.querySelector('#gallery .media-grid');
@@ -9150,8 +9165,10 @@ c.addEventListener('mouseleave',function(){if(tl)c.style.transform=''})});
         en.target.classList.add('pu-in');
         tio.unobserve(en.target);
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    }, { threshold: 0.01, rootMargin: '0px 0px -5% 0px' });
     cards.forEach(function (c) { tio.observe(c); });
+    /* safety net: never leave testimonials hidden on phones */
+    setTimeout(function () { cards.forEach(function (c) { c.classList.add('pu-in'); }); }, 4000);
 
     /* ---------- C. Staggered grids ---------- */
     var groups = [
