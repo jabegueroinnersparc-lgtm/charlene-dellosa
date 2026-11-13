@@ -7127,6 +7127,47 @@ html body #gallery .media-grid .media-card{transition:opacity .8s var(--pu-ease)
 .mp.is-playing .mp-eq i:nth-child(2){animation-delay:-.3s}
 .mp.is-playing .mp-eq i:nth-child(3){animation-delay:-.6s}
 .mp.is-playing .mp-eq i:nth-child(4){animation-delay:-.15s}
+/* --- seek bar / playback controls --- */
+.mp-info{flex-direction:column;align-items:stretch;gap:.5rem;border-radius:20px}
+.mp.is-open .mp-info,.mp.is-pinned .mp-info,.mp:focus-within .mp-info{max-width:290px;pointer-events:auto}
+@media (hover:hover) and (pointer:fine){.mp:hover .mp-info{max-width:290px;pointer-events:auto}}
+.mp-top{display:flex;align-items:center;justify-content:space-between;gap:.8rem}
+.mp-seek{display:flex;align-items:center;gap:.55rem;min-width:230px}
+.mp-time{flex:0 0 auto;min-width:2.3em;color:rgba(255,255,255,.88);font-size:.7rem;font-weight:600;font-variant-numeric:tabular-nums}
+.mp-time:last-child{text-align:right}
+.mp-range{--pct:0%;flex:1 1 auto;min-width:0;height:22px;margin:0;background:transparent;cursor:pointer;-webkit-appearance:none;appearance:none;touch-action:none}
+.mp-range:focus-visible{outline:2px solid #f5d68a;outline-offset:2px;border-radius:6px}
+.mp-range::-webkit-slider-runnable-track{height:5px;border-radius:5px;background:linear-gradient(90deg,#f5d68a 0,#cc953e var(--pct),rgba(255,255,255,.25) var(--pct))}
+.mp-range::-moz-range-track{height:5px;border-radius:5px;background:rgba(255,255,255,.25)}
+.mp-range::-moz-range-progress{height:5px;border-radius:5px;background:linear-gradient(90deg,#f5d68a,#cc953e)}
+.mp-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;margin-top:-5.5px;border-radius:50%;border:2px solid #063c24;background:#f5d68a;box-shadow:0 2px 6px rgba(0,0,0,.45)}
+.mp-range::-moz-range-thumb{width:12px;height:12px;border-radius:50%;border:2px solid #063c24;background:#f5d68a}
+.mp-more{display:none;flex:0 0 auto;width:34px;height:34px;padding:0;place-items:center;border:1px solid rgba(245,214,138,.6);border-radius:50%;background:rgba(5,44,28,.9);color:#f5d68a;font-size:.8rem;cursor:pointer;touch-action:manipulation;box-shadow:0 8px 18px -8px rgba(0,0,0,.6)}
+.mp-more:focus-visible{outline:3px solid #f5d68a;outline-offset:2px}
+.mp.is-pinned .mp-more{background:#cc953e;color:#063c24}
+@media (max-width:768px){
+  .mp-more{display:grid}
+  .mp.is-open .mp-info,.mp.is-pinned .mp-info,.mp:focus-within .mp-info{max-width:min(250px,calc(100vw - 130px));padding:.55rem .85rem}
+  .mp-seek{min-width:0;width:calc(min(250px,100vw - 130px) - 1.7rem)}
+}
+/* --- draggable player: root is just the disc; panel + badge float beside it --- */
+.mp{width:64px;height:64px;display:block}
+.mp-btn{cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.mp.is-dragging .mp-btn{cursor:grabbing;transform:scale(1.1)}
+.mp.is-dragging .mp-disc{box-shadow:0 22px 40px -10px rgba(6,60,36,.85),0 0 0 4px rgba(245,214,138,.95),inset 0 0 0 1px rgba(255,255,255,.18)}
+.mp-info{position:absolute;left:calc(100% + .55rem);top:50%;transform:translateY(-50%)}
+.mp.is-flip .mp-info{left:auto;right:calc(100% + .55rem)}
+.mp.is-dragging .mp-info{opacity:0!important;max-width:0!important;padding:0!important;border-color:transparent!important}
+.mp.is-open .mp-info,.mp.is-pinned .mp-info,.mp:focus-within .mp-info{max-width:min(290px,var(--mp-avail,290px))}
+@media (hover:hover) and (pointer:fine){.mp:hover:not(.is-dragging) .mp-info{max-width:min(290px,var(--mp-avail,290px))}}
+.mp-seek{min-width:min(230px,calc(var(--mp-avail,290px) - 1.8rem));width:auto}
+.mp-more{position:absolute;top:-8px;right:-8px;z-index:3;width:28px;height:28px;font-size:.66rem}
+.mp.is-flip .mp-more{right:auto;left:-8px}
+.mp.is-dragging .mp-more{opacity:0}
+@media (max-width:768px){
+  .mp{width:52px;height:52px}
+  .mp-more{width:28px;height:28px}
+}
 @keyframes mpSpin{to{transform:rotate(360deg)}}
 @keyframes mpWave{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.65);opacity:0}}
 @keyframes mpEq{0%,100%{height:25%}50%{height:100%}}
@@ -9441,9 +9482,17 @@ c.addEventListener('mouseleave',function(){if(tl)c.style.transform=''})});
     <span class="mp-disc" aria-hidden="true"></span>
     <span class="mp-icon" aria-hidden="true"><i class="fas fa-play" id="musicIcon"></i></span>
   </button>
-  <div class="mp-info" aria-hidden="true">
-    <div class="mp-text"><small id="musicState">Tap to play</small><strong>Maam Cha Music Video</strong></div>
-    <div class="mp-eq"><i></i><i></i><i></i><i></i></div>
+  <button type="button" class="mp-more" id="musicMore" aria-expanded="false" aria-controls="musicInfo" aria-label="Show playback controls"><i class="fas fa-sliders" aria-hidden="true"></i></button>
+  <div class="mp-info" id="musicInfo">
+    <div class="mp-top">
+      <div class="mp-text"><small id="musicState">Tap to play</small><strong>Maam Cha Music Video</strong></div>
+      <div class="mp-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="mp-seek">
+      <span class="mp-time" id="musicCur">0:00</span>
+      <input type="range" class="mp-range" id="musicSeek" min="0" max="100" step="0.1" value="0" aria-label="Seek through the music" aria-valuetext="0:00">
+      <span class="mp-time" id="musicDur">0:00</span>
+    </div>
   </div>
 </div>
 
@@ -9496,7 +9545,102 @@ c.addEventListener('mouseleave',function(){if(tl)c.style.transform=''})});
   }
   function pause(){audio.pause();render(false);}
 
+  /* ---- seek bar ---- */
+  var seek=document.getElementById('musicSeek'),cur=document.getElementById('musicCur'),dur=document.getElementById('musicDur'),more=document.getElementById('musicMore');
+  var seeking=false;
+  function fmt(t){t=Math.max(0,Math.floor(t||0));var m=Math.floor(t/60),s=t%60;return m+':'+(s<10?'0':'')+s;}
+  function paint(){
+    var d=audio.duration;if(!isFinite(d)||d<=0)return;
+    var t=seeking?parseFloat(seek.value):audio.currentTime;
+    seek.max=d;if(!seeking)seek.value=t;
+    seek.style.setProperty('--pct',(t/d*100).toFixed(2)+'%');
+    cur.textContent=fmt(t);dur.textContent=fmt(d);seek.setAttribute('aria-valuetext',fmt(t)+' of '+fmt(d));
+  }
+  ['timeupdate','loadedmetadata','durationchange'].forEach(function(e){audio.addEventListener(e,paint)});
+  seek.addEventListener('pointerdown',function(){seeking=true;});
+  seek.addEventListener('input',function(){seeking=true;paint();});
+  seek.addEventListener('change',function(){
+    var t=parseFloat(seek.value);
+    if(isFinite(t)){try{audio.currentTime=t;}catch(e){}}
+    seeking=false;paint();
+  });
+  ['pointerup','pointercancel','touchend','blur'].forEach(function(e){seek.addEventListener(e,function(){setTimeout(function(){seeking=false;paint();},50);});});
+  if(more)more.addEventListener('click',function(){
+    var on=!root.classList.contains('is-pinned');
+    root.classList.toggle('is-pinned',on);more.setAttribute('aria-expanded',String(on));
+    root.classList.remove('is-open');clearTimeout(openTimer);
+  });
+  document.addEventListener('pointerdown',function(e){
+    if(root.classList.contains('is-pinned')&&!root.contains(e.target)){root.classList.remove('is-pinned');if(more)more.setAttribute('aria-expanded','false');}
+  });
+
+  /* ---- drag to move (mouse, touch, and Shift+Arrow keys); position is remembered ---- */
+  var KEY='mpPos',M=8,justDragged=false;
+  function size(){return root.getBoundingClientRect().width||64;}
+  function clampPos(x,y){var s=size();return{x:Math.min(Math.max(M,x),window.innerWidth-s-M),y:Math.min(Math.max(M,y),window.innerHeight-s-M)};}
+  function setPos(x,y){
+    var p=clampPos(x,y);
+    root.style.left=p.x+'px';root.style.top=p.y+'px';root.style.bottom='auto';root.style.transform='none';
+    return p;
+  }
+  function updateSide(){
+    var r=root.getBoundingClientRect(),flip=(r.left+r.width/2)>window.innerWidth/2;
+    root.classList.toggle('is-flip',flip);
+    var avail=(flip?r.left:window.innerWidth-r.right)-M-10;
+    root.style.setProperty('--mp-avail',Math.max(150,avail)+'px');
+  }
+  function save(){
+    try{
+      var r=root.getBoundingClientRect(),s=r.width,rx=Math.max(1,window.innerWidth-s-2*M),ry=Math.max(1,window.innerHeight-s-2*M);
+      localStorage.setItem(KEY,JSON.stringify({fx:(r.left-M)/rx,fy:(r.top-M)/ry}));
+    }catch(e){}
+  }
+  function restore(){
+    try{
+      var v=JSON.parse(localStorage.getItem(KEY)||'null');
+      if(v&&isFinite(v.fx)&&isFinite(v.fy)){
+        var s=size();setPos(M+v.fx*(window.innerWidth-s-2*M),M+v.fy*(window.innerHeight-s-2*M));
+      }
+    }catch(e){}
+  }
+  var drag=null;
+  btn.addEventListener('pointerdown',function(e){
+    if(e.button>0)return;
+    var r=root.getBoundingClientRect();
+    drag={id:e.pointerId,sx:e.clientX,sy:e.clientY,ox:r.left,oy:r.top,moved:false};
+    try{btn.setPointerCapture(e.pointerId);}catch(err){}
+  });
+  btn.addEventListener('pointermove',function(e){
+    if(!drag||e.pointerId!==drag.id)return;
+    var dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;
+    if(!drag.moved&&Math.hypot(dx,dy)<6)return;
+    if(!drag.moved){drag.moved=true;root.classList.add('is-dragging');root.classList.remove('is-open','is-pinned');if(more)more.setAttribute('aria-expanded','false');}
+    setPos(drag.ox+dx,drag.oy+dy);updateSide();
+  });
+  function endDrag(e){
+    if(!drag||(e&&e.pointerId!==drag.id))return;
+    var moved=drag.moved;drag=null;
+    try{btn.releasePointerCapture(e.pointerId);}catch(err){}
+    if(moved){justDragged=true;setTimeout(function(){justDragged=false;},0);root.classList.remove('is-dragging');updateSide();save();}
+  }
+  btn.addEventListener('pointerup',endDrag);
+  btn.addEventListener('pointercancel',endDrag);
+  btn.addEventListener('keydown',function(e){
+    if(!e.shiftKey)return;
+    var d={ArrowLeft:[-20,0],ArrowRight:[20,0],ArrowUp:[0,-20],ArrowDown:[0,20]}[e.key];
+    if(!d)return;
+    e.preventDefault();
+    var r=root.getBoundingClientRect();setPos(r.left+d[0],r.top+d[1]);updateSide();save();
+  });
+  window.addEventListener('resize',function(){
+    if(root.style.left){var r=root.getBoundingClientRect();setPos(r.left,r.top);}
+    updateSide();
+  });
+  restore();updateSide();
+  btn.title='Drag to move';
+
   btn.addEventListener('click',function(){
+    if(justDragged){justDragged=false;return;}
     if(audio.paused){userPaused=false;play(true);}
     else{userPaused=true;pause();peek(2000);}
   });
