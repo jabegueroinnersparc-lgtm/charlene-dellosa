@@ -7089,6 +7089,60 @@ html body #gallery .media-grid .media-card{transition:opacity .8s var(--pu-ease)
 }
 </style>
 
+<style id="music-player-css">
+/* ===== Floating music player: rolling vinyl play button (desktop + mobile) ===== */
+.mp{position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:9990;display:flex;align-items:center;gap:.55rem;font-family:Inter,system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+.mp-btn{position:relative;flex:0 0 auto;width:64px;height:64px;padding:0;border:0;border-radius:50%;background:none;cursor:pointer;touch-action:manipulation;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.mp-btn:hover{transform:scale(1.07)}
+.mp-btn:active{transform:scale(.94)}
+.mp-btn:focus-visible{outline:3px solid #f5d68a;outline-offset:4px}
+.mp-disc{position:absolute;inset:0;border-radius:50%;overflow:hidden;border:2px solid rgba(245,214,138,.85);
+  background:conic-gradient(from 0deg,#042d1c,#0f4d30 12%,#cc953e 25%,#0f4d30 38%,#042d1c 50%,#0f4d30 62%,#cc953e 75%,#0f4d30 88%,#042d1c);
+  box-shadow:0 14px 30px -10px rgba(6,60,36,.75),0 0 0 4px rgba(251,248,242,.85),inset 0 0 0 1px rgba(255,255,255,.18);
+  animation:mpSpin 4.5s linear infinite;animation-play-state:paused}
+.mp-disc::before{content:'';position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle at center,rgba(0,0,0,.22) 0 1.5px,transparent 2px 4px)}
+.mp-disc::after{content:'';position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%)}
+.mp.is-playing .mp-disc{animation-play-state:running}
+.mp-icon{position:absolute;z-index:2;left:50%;top:50%;width:44%;height:44%;transform:translate(-50%,-50%);display:grid;place-items:center;border-radius:50%;
+  background:linear-gradient(180deg,#f7dc9a,#cc953e);color:#063c24;font-size:.82rem;box-shadow:0 3px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.6)}
+.mp-icon i{display:block;line-height:1}
+.mp:not(.is-playing) .mp-icon i{margin-left:2px}
+.mp-ring{position:absolute;inset:0;border-radius:50%;pointer-events:none}
+.mp-ring::before,.mp-ring::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid rgba(204,149,62,.6);opacity:0}
+.mp.is-playing .mp-ring::before{animation:mpWave 2.4s ease-out infinite}
+.mp.is-playing .mp-ring::after{animation:mpWave 2.4s ease-out 1.2s infinite}
+.mp.needs-tap .mp-ring::before{animation:mpWave 1.8s ease-out infinite}
+.mp.needs-tap .mp-ring::after{animation:mpWave 1.8s ease-out .9s infinite}
+.mp-info{display:flex;align-items:center;gap:.6rem;max-width:0;padding:0;overflow:hidden;white-space:nowrap;opacity:0;border:1px solid transparent;border-radius:999px;
+  background:rgba(5,44,28,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#fff;pointer-events:none;
+  transition:max-width .55s cubic-bezier(.16,1,.3,1),opacity .35s,padding .55s cubic-bezier(.16,1,.3,1),border-color .35s}
+.mp.is-open .mp-info,.mp:focus-within .mp-info{max-width:230px;padding:.6rem 1rem;opacity:1;border-color:rgba(245,214,138,.5);box-shadow:0 14px 30px -12px rgba(0,0,0,.6)}
+@media (hover:hover) and (pointer:fine){.mp:hover .mp-info{max-width:230px;padding:.6rem 1rem;opacity:1;border-color:rgba(245,214,138,.5);box-shadow:0 14px 30px -12px rgba(0,0,0,.6)}}
+.mp-text{display:flex;flex-direction:column;gap:.15rem;line-height:1.15}
+.mp-text small{color:#f5d68a;font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.mp-text strong{font-size:.84rem;font-weight:600}
+.mp-eq{display:flex;align-items:flex-end;gap:2px;height:16px}
+.mp-eq i{display:block;width:3px;height:30%;border-radius:2px;background:linear-gradient(180deg,#f5d68a,#cc953e)}
+.mp.is-playing .mp-eq i{animation:mpEq .9s ease-in-out infinite}
+.mp.is-playing .mp-eq i:nth-child(2){animation-delay:-.3s}
+.mp.is-playing .mp-eq i:nth-child(3){animation-delay:-.6s}
+.mp.is-playing .mp-eq i:nth-child(4){animation-delay:-.15s}
+@keyframes mpSpin{to{transform:rotate(360deg)}}
+@keyframes mpWave{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.65);opacity:0}}
+@keyframes mpEq{0%,100%{height:25%}50%{height:100%}}
+@media (max-width:768px){
+  .mp{left:10px;top:auto;bottom:calc(170px + env(safe-area-inset-bottom));transform:none}
+  .mp-btn{width:52px;height:52px}
+  .mp-icon{font-size:.72rem}
+  .mp.is-open .mp-info,.mp:focus-within .mp-info{max-width:190px;padding:.5rem .85rem}
+  .mp-text strong{font-size:.78rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .mp-disc,.mp.is-playing .mp-disc{animation:none!important}
+  .mp-ring::before,.mp-ring::after{animation:none!important}
+  .mp.is-playing .mp-eq i{animation:none!important;height:70%}
+}
+</style>
 <style id="mobile-testimonial-big">
 /* ===== MOBILE: large, full-width testimonial photos (no tap-to-enlarge needed) ===== */
 @media (max-width:768px){
@@ -9378,6 +9432,113 @@ c.addEventListener('mouseleave',function(){if(tl)c.style.transform=''})});
       if(r.bottom<0||r.top>vh)return;var p=((r.top+r.height/2)-vh/2)/vh;w.style.setProperty('--tm-par',(Math.max(-1,Math.min(1,p))*-10).toFixed(1)+'px');});}
   window.addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(upd)}},{passive:true});
   upd();
+})();
+</script>
+
+<div class="mp" id="musicPlayer" role="region" aria-label="Background music">
+  <button type="button" class="mp-btn" id="musicToggle" aria-pressed="false" aria-label="Play background music">
+    <span class="mp-ring" aria-hidden="true"></span>
+    <span class="mp-disc" aria-hidden="true"></span>
+    <span class="mp-icon" aria-hidden="true"><i class="fas fa-play" id="musicIcon"></i></span>
+  </button>
+  <div class="mp-info" aria-hidden="true">
+    <div class="mp-text"><small id="musicState">Tap to play</small><strong>Maam Cha Music Video</strong></div>
+    <div class="mp-eq"><i></i><i></i><i></i><i></i></div>
+  </div>
+</div>
+
+<script id="music-player-js">
+(function(){
+  'use strict';
+  var SRC='https://raw.githubusercontent.com/jabegueroinnersparc-lgtm/charlene-dellosa/main/Music%20Video%20Maam%20Cha%20%281%29.mp3';
+  var VOL=0.5;
+  var root=document.getElementById('musicPlayer'),btn=document.getElementById('musicToggle'),icon=document.getElementById('musicIcon'),state=document.getElementById('musicState');
+  if(!root||!btn)return;
+
+  var audio=new Audio();
+  audio.loop=true;audio.preload='auto';audio.crossOrigin='anonymous';audio.src=SRC;audio.volume=VOL;
+  var userPaused=false,openTimer=null,gainSet=false;
+
+  /* iOS ignores audio.volume, so route through a 50% gain node when needed */
+  function ensureVolume(){
+    audio.volume=VOL;
+    if(gainSet||Math.abs(audio.volume-VOL)<0.01)return;
+    try{
+      var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+      var ctx=new AC(),src=ctx.createMediaElementSource(audio),g=ctx.createGain();
+      g.gain.value=VOL;src.connect(g);g.connect(ctx.destination);gainSet=true;
+      if(ctx.state==='suspended')ctx.resume();
+    }catch(e){}
+  }
+  audio.addEventListener('error',function(){
+    /* if CORS mode fails, retry without it (volume still applied where supported) */
+    if(audio.crossOrigin){audio.removeAttribute('crossorigin');audio.crossOrigin=null;audio.src=SRC;audio.volume=VOL;}
+  });
+
+  function peek(ms){
+    root.classList.add('is-open');clearTimeout(openTimer);
+    openTimer=setTimeout(function(){root.classList.remove('is-open')},ms||3200);
+  }
+  function render(playing){
+    root.classList.toggle('is-playing',playing);
+    btn.setAttribute('aria-pressed',String(playing));
+    btn.setAttribute('aria-label',playing?'Pause background music':'Play background music');
+    icon.className='fas '+(playing?'fa-pause':'fa-play');
+    state.textContent=playing?'Now playing':(userPaused?'Paused':'Tap to play');
+  }
+  function play(fromUser){
+    ensureVolume();
+    var p=audio.play();
+    if(p&&p.then){
+      p.then(function(){root.classList.remove('needs-tap');render(true);peek(2600);})
+       .catch(function(){render(false);root.classList.add('needs-tap');});
+    }else{render(true);}
+  }
+  function pause(){audio.pause();render(false);}
+
+  btn.addEventListener('click',function(){
+    if(audio.paused){userPaused=false;play(true);}
+    else{userPaused=true;pause();peek(2000);}
+  });
+  audio.addEventListener('pause',function(){render(false)});
+  audio.addEventListener('play',function(){render(true)});
+
+  /* Try to start when the loading screen ends; browsers may block sound until the first tap */
+  var started=false;
+  function tryStart(){
+    if(started||userPaused)return;
+    started=true;play(false);
+  }
+  function onFirstGesture(e){
+    if(btn.contains(e.target))return;
+    if(audio.paused&&!userPaused)play(false);
+    cleanup();
+  }
+  function cleanup(){['pointerdown','touchend','keydown'].forEach(function(t){document.removeEventListener(t,onFirstGesture,true)})}
+  ['pointerdown','touchend','keydown'].forEach(function(t){document.addEventListener(t,onFirstGesture,true)});
+
+  var H=document.documentElement;
+  function whenReady(){
+    if(!H.classList.contains('is-loading')){setTimeout(tryStart,300);return;}
+    var mo=new MutationObserver(function(){if(!H.classList.contains('is-loading')){mo.disconnect();setTimeout(tryStart,500);}});
+    mo.observe(H,{attributes:true,attributeFilter:['class']});
+    setTimeout(tryStart,10000);
+  }
+  whenReady();
+  render(false);
+  setTimeout(function(){if(audio.paused&&!userPaused)root.classList.add('needs-tap')},1500);
+
+  /* Pause the music when the visitor starts the featured property video */
+  ['propertyTourPreview','videoSoundToggle'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.addEventListener('click',function(){if(!audio.paused){userPaused=true;pause();}});
+  });
+  /* Save battery/data: pause while the tab is hidden, resume after */
+  var wasPlaying=false;
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){wasPlaying=!audio.paused;if(wasPlaying)audio.pause();}
+    else if(wasPlaying&&!userPaused){play(false);}
+  });
 })();
 </script>
 </body>
